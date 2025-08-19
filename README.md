@@ -176,3 +176,46 @@ export const post = defineHandler(
   }
 })
 ```
+
+and call it as either:
+```ts
+import { client } from "client"
+
+async function addBook(title: string) {
+  const book = await client.books.post({}, { title })
+  console.log(book)
+}
+
+addBook('TApi')
+```
+
+or with formData:
+```ts
+import { client } from "client"
+
+async function addBook(title: string) {
+  const book = await client.books.post({}, new FormData({ title }))
+  console.log(book)
+}
+
+addBook('TApi')
+```
+
+
+or with formData without the query-parameter:
+```ts
+import { client } from "client"
+
+async function addBook(title: string) {
+  const book = await client.books.post(new FormData({ title }))
+  console.log(book)
+}
+
+addBook('TApi')
+```
+which is particularly useful with react forms:
+```tsx
+<form action={client.books.post}>
+  <input name="title" />
+</form>
+```
