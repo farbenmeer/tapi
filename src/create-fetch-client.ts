@@ -3,31 +3,40 @@ import type { Handler as BaseHandler } from "./handler";
 import type { Path as BasePath } from "./path";
 import type { BaseRoute } from "./route";
 
+interface Options {
+  fetch?: (url: string, init: RequestInit) => Promise<Response>;
+}
+
 export function createFetchClient<Routes extends Record<BasePath, BaseRoute>>(
   baseUrl: string,
+  options: Options = {},
 ) {
   return new Proxy(() => {}, {
     get(_target, prop: string) {
-      return createProxy(baseUrl, prop);
+      return createProxy(baseUrl, options, prop);
     },
   }) as unknown as Client<Routes>;
 }
 
-function createProxy(baseUrl: string, lastProp: string) {
+function createProxy(baseUrl: string, options: Options, lastProp: string) {
+  const fetch = options.fetch ?? global.fetch;
   return new Proxy(() => {}, {
     get(_target, prop: string) {
-      return createProxy(baseUrl + "/" + lastProp, prop);
+      return createProxy(baseUrl + "/" + lastProp, options, prop);
     },
     async apply(_target, _thisArg, args) {
       switch (lastProp) {
         case "get": {
           const headers = new Headers(args[1]?.headers);
           const searchParams = new URLSearchParams(args[0]);
-          const res = await fetch(baseUrl + "?" + searchParams, {
-            method: lastProp,
-            ...(args[1] ?? {}),
-            headers,
-          });
+          const res = await fetch(
+            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl,
+            {
+              method: lastProp.toUpperCase(),
+              ...(args[1] ?? {}),
+              headers,
+            },
+          );
 
           return handleResponse(res);
         }
@@ -46,13 +55,18 @@ function createProxy(baseUrl: string, lastProp: string) {
             headers.set("Content-Type", "application/json");
           }
 
-          const res = await fetch(baseUrl + new URLSearchParams(args[0]), {
-            method: lastProp,
-            body:
-              args[1] instanceof FormData ? args[1] : JSON.stringify(args[1]),
-            ...(args[2] ?? {}),
-            headers,
-          });
+          const searchParams = new URLSearchParams(args[0]);
+
+          const res = await fetch(
+            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl,
+            {
+              method: lastProp.toUpperCase(),
+              body:
+                args[1] instanceof FormData ? args[1] : JSON.stringify(args[1]),
+              ...(args[2] ?? {}),
+              headers,
+            },
+          );
           return handleResponse(res);
         }
         default:

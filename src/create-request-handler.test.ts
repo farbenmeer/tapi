@@ -3,6 +3,7 @@ import {
   compilePathRegex,
   createRequestHandler,
 } from "./create-request-handler";
+import { api } from "./define-api.test";
 
 describe("compilePathRegex", () => {
   test("match a simple route", () => {
@@ -23,3 +24,5 @@ describe("compilePathRegex", () => {
     expect("/routes/123".match(pattern)?.groups).toEqual({ id: "123" });
   });
 });
+
+export const requestHandler = createRequestHandler(api, { basePath: "/api" });
