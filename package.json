@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "bun run build && bun pm pack --filename package.tgz && bunx npm publish"
+    "release": "bun run build && bun pm pack --filename package.tgz && bunx npm publish package.tgz"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6",
