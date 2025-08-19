@@ -2,6 +2,17 @@
 
 This library makes it possible to build a Rest API including a fully typed client without a compile step.
 
+
+## State of this library
+Very much alpha. I just came up with this idea.
+Currently only supports GET and POST requests.
+
+## Plans
+* Support more HTTP methods
+* Support wildcard paths (`/books/[...path]`)
+* Add function to automatically generate OpenAPI specs
+* Add support for server-clients for use on the server that call the handler functions directly instead of making a fetch request
+
 ## Inspiration
 Very much [TRPC](https://trpc.io/). It's quite similar but with a REST paradigm so the API is actually usable for other clients.
 
