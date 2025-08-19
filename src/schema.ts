@@ -4,7 +4,7 @@ export type Schema<
   Response,
   Params extends Record<string, string>,
   Query extends Record<string, unknown>,
-  Body,
+  Body
 > = {
   __r?: Response;
   __q?: Query;

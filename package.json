@@ -1,8 +1,18 @@
 {
   "name": "@tapi/core",
+  "version": "0.1.0",
   "module": "src/index.ts",
   "type": "module",
+  "main": "dist/index.js",
+  "private": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit false"
+  },
   "devDependencies": {
+    "@changesets/cli": "^2.29.6",
     "@types/bun": "latest",
     "zod": "^4.0.17"
   },
@@ -10,5 +20,9 @@
     "typescript": "^5",
     "zod": "^4.0.17"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/farbenmeer/tapi.git"
+  }
 }
