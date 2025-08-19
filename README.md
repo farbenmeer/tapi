@@ -19,7 +19,7 @@ Very much [TRPC](https://trpc.io/). It's quite similar but with a REST paradigm 
 ## Setup
 
 ```bash
-npm install @tapi/code
+npm install @tapi/core
 yarn add @tapi/core
 pnpm add @tapi/core
 bun add @tapi/core
