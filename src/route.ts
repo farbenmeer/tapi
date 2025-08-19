@@ -5,26 +5,12 @@ export type Route<
   GetQuery extends Record<string, unknown>,
   PostQuery extends Record<string, unknown>,
   PostBody,
-  PutQuery extends Record<string, unknown>,
-  PutBody,
-  DeleteQuery extends Record<string, unknown>,
-  PathQuery extends Record<string, unknown>,
-  PatchBody,
-  HeadQuery extends Record<string, unknown>,
 > = {
-  get?: Handler<Params, GetQuery, never>;
-  post?: Handler<Params, PostQuery, PostBody>;
-  put?: Handler<Params, PutQuery, PutBody>;
-  delete?: Handler<Params, DeleteQuery, never>;
-  patch?: Handler<Params, PathQuery, PatchBody>;
-  head?: Handler<Params, HeadQuery, never>;
+  get?: GetQuery extends never ? never : Handler<Params, GetQuery, never>;
+  post?: PostQuery extends never ? never : Handler<Params, PostQuery, PostBody>;
 };
 
 export type BaseRoute = {
   get?: Handler<any, any, never>;
   post?: Handler<any, any, unknown>;
-  put?: Handler<any, any, unknown>;
-  patch?: Handler<any, any, unknown>;
-  delete?: Handler<any, any, never>;
-  head?: Handler<any, any, never>;
 };

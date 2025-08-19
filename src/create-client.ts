@@ -1,26 +1,99 @@
+import type { Handler as BaseHandler } from "./handler";
 import type { Path as BasePath } from "./path";
 import type { BaseRoute } from "./route";
 
 export function createClient<Routes extends Record<BasePath, BaseRoute>>(
   baseUrl: string,
 ) {
-  return new Client<Routes>(baseUrl);
+  return new Proxy(() => {}, {
+    get(_target, prop: string) {
+      return createProxy(baseUrl, prop);
+    },
+  }) as unknown as Client<Routes>;
 }
 
-class Client<Routes extends Record<BasePath, BaseRoute>> {
-  constructor(private baseUrl: string) {}
-
-  fetch<RoutePath extends keyof Routes>(path: ReadFrom<RoutePath>) {}
+function createProxy(baseUrl: string, lastProp: string) {
+  return new Proxy(() => {}, {
+    get(_target, prop: string) {
+      return createProxy(baseUrl + "/" + lastProp, prop);
+    },
+    apply(_target, _thisArg, args) {
+      switch (lastProp) {
+        case "get": {
+          const headers = new Headers(args[1]?.headers);
+          const searchParams = new URLSearchParams(args[0]);
+          return fetch(baseUrl + "?" + searchParams, {
+            method: lastProp,
+            ...(args[1] ?? {}),
+            headers,
+          });
+        }
+        case "post": {
+          const headers = new Headers(args[2]?.headers);
+          return fetch(baseUrl + new URLSearchParams(args[0]), {
+            method: lastProp,
+            body: JSON.stringify(args[1]),
+            ...(args[2] ?? {}),
+            headers,
+          });
+        }
+        default:
+          throw new Error(`Tapi: Unsupported method: ${lastProp}`);
+      }
+    },
+  });
 }
 
-type ReadFrom<Path> = Path extends `${infer Segment}[${infer Rest}`
-  ? `${Segment}${string}${ReadUntil<Rest>}`
-  : Path;
+type Segment<Path> = Path extends `/${infer Segment}/${string}`
+  ? Segment
+  : Path extends `/${infer Segment}`
+    ? Segment
+    : never;
 
-type ReadUntil<Path> = Path extends `${string}]${infer Rest}`
-  ? ReadFrom<Rest>
-  : never;
+type Rest<
+  Path,
+  Segment extends string,
+> = Path extends `/${Segment}/${infer Rest}` ? `/${Rest}` : never;
 
-type GetPaths<Routes extends Record<BasePath, BaseRoute>> = keyof {
-  [key in keyof Routes]: Routes[key] extends { get: any } ? key : never;
+type Client<Routes extends Record<BasePath, BaseRoute>> = {
+  [segment in Segment<keyof Routes> as segment extends `[${string}]`
+    ? string
+    : segment]: (Extract<keyof Routes, `/${segment}`> extends never
+    ? {}
+    : ClientRoute<Routes[`/${segment}`]>) &
+    (Exclude<keyof Routes, `/${segment}`> extends never
+      ? {}
+      : Client<{
+          [rest in Rest<keyof Routes, segment>]: Routes[`/${segment}${rest}`];
+        }>);
 };
+
+type ClientRoute<Route extends BaseRoute> = {
+  get: RouteWithoutBody<Route["get"]>;
+  post: RouteWithBody<Route["post"]>;
+};
+
+type RouteWithoutBody<
+  Handler extends BaseHandler<any, any, never> | undefined,
+> = Handler extends undefined
+  ? never
+  : keyof QueryType<Handler> extends never
+    ? (query?: {}, req?: RequestInit) => ResponseType<Handler>
+    : (query: QueryType<Handler>, req?: RequestInit) => ResponseType<Handler>;
+
+type RouteWithBody<Handler extends BaseHandler<any, any, unknown> | undefined> =
+  Handler extends undefined
+    ? never
+    : (
+        query: QueryType<Handler>,
+        body: BodyType<Handler>,
+        req?: RequestInit,
+      ) => ResponseType<Handler>;
+
+type QueryType<Handler extends { schema: { __q?: any } } | undefined> =
+  NonNullable<NonNullable<Handler>["schema"]["__q"]>;
+
+type BodyType<Handler extends { schema: { __b?: any } } | undefined> =
+  NonNullable<NonNullable<Handler>["schema"]["__b"]>;
+
+type ResponseType<Handler extends {} | undefined> = Promise<null>;

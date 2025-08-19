@@ -1,4 +1,4 @@
-export type Path = "/" | `/${string}`;
+export type Path = `/${string}`;
 
 type ReadFrom<Path> = Path extends `${string}[${infer Rest}`
   ? ReadUntil<Rest>

@@ -5,6 +5,8 @@ export type Schema<
   Query extends Record<string, unknown>,
   Body,
 > = {
+  __q?: Query;
+  __b?: Body;
   params?: [keyof Params, ...(keyof Params)[]];
   query?: { [key in keyof Query]: ZodType<Query[key], string | string[]> };
   body?: ZodType<Body>;
