@@ -29,6 +29,6 @@
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/farbenmeer/tapi.git"
+    "url": "git+https://github.com/farbenmeer/tapi.git"
   }
 }
