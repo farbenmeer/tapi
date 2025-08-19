@@ -13,7 +13,7 @@ interface Options {
 
 export function createRequestHandler(
   api: ApiDefinition<Record<BasePath, MaybePromise<BaseRoute>>>,
-  options: Options = {},
+  options: Options = {}
 ) {
   const routes: { pattern: RegExp; route: MaybePromise<BaseRoute> }[] = [];
 
@@ -58,10 +58,22 @@ function prepareRequestWithoutBody<TBody = never>(
   handler: Handler<any, any, any, TBody>,
   url: URL,
   params: Record<string, string>,
-  req: Request,
+  req: Request
 ) {
   const treq = req as TRequest<any, any, TBody>;
-  treq.params = params;
+  treq.params = () => {
+    const decodedParams = Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [
+        key,
+        decodeURIComponent(value),
+      ])
+    );
+    if (handler.schema.params) {
+      const schema = z.object(handler.schema.params);
+      return schema.parse(decodedParams);
+    }
+    return decodedParams;
+  };
   treq.query = () => {
     const params = collectData(url.searchParams.entries());
     if (handler.schema.query) {
@@ -78,7 +90,7 @@ function prepareRequestWithBody(
   handler: Handler<any, any, any, unknown>,
   url: URL,
   params: Record<string, string>,
-  req: Request,
+  req: Request
 ) {
   const treq = prepareRequestWithoutBody(handler, url, params, req);
   treq.data = async () => {
@@ -134,7 +146,7 @@ function collectData(input: Iterable<[string, any]>) {
 
 async function executeHandler<Body>(
   handler: Handler<any, any, any, Body>,
-  req: TRequest<any, any, Body>,
+  req: TRequest<any, any, Body>
 ) {
   try {
     const res = await handler.handler(req);

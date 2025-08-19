@@ -94,11 +94,12 @@ fetchBooks()
 Define a route with a dynamic path parameter using the params option for `defineHandler`, for example `/api/book.ts`
 ```ts
 import { defineHandler, TResponse } from "@farbenmeer/tapi"
+import { z } from "zod/v4"
 
-export const get = defineHandler({ params: ['id'] }, async (req) => {
+export const get = defineHandler({ params: { id: z.string() } }, async (req) => {
   return TResponse.json({
-    id: req.params.id,
-    title: `Book with id ${req.params.id}`
+    id: req.params().id,
+    title: `Book with id ${req.params().id}`
   })
 })
 ```

@@ -9,7 +9,7 @@ describe("createFetchClient", () => {
   });
   const client = createFetchClient<typeof api.routes>(
     "https://example.com/api",
-    { fetch },
+    { fetch }
   );
 
   test("get books", async () => {
@@ -25,13 +25,13 @@ describe("createFetchClient", () => {
   });
 
   test("get book", async () => {
-    const response = await client.books["1"]!.get({ test: "asdf" });
+    const response = await client.books[1]!.get({ test: "asdf" });
     expect(fetch).toHaveBeenCalledWith(
       "https://example.com/api/books/1?test=asdf",
       {
         method: "GET",
         headers: {},
-      },
+      }
     );
     expect(response).toEqual({ id: "1", title: "Book 1" });
   });

@@ -9,7 +9,7 @@ export type Schema<
   __r?: Response;
   __q?: Query;
   __b?: Body;
-  params?: [keyof Params, ...(keyof Params)[]];
+  params?: { [key in keyof Params]: ZodType<Params[key], string> };
   query?: { [key in keyof Query]: ZodType<Query[key], string | string[]> };
   body?: ZodType<Body>;
   response?: ZodType<Response>;
