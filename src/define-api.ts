@@ -10,19 +10,30 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
 
   route<
     Path extends BasePath,
+    GetResponse = never,
     GetQuery extends Record<string, unknown> = never,
+    PostResponse = never,
     PostQuery extends Record<string, unknown> = never,
     PostBody = never,
   >(
     path: Path,
-    route: Route<StrictParams<Path>, GetQuery, PostQuery, PostBody>,
+    route: Route<
+      StrictParams<Path>,
+      GetResponse,
+      GetQuery,
+      PostResponse,
+      PostQuery,
+      PostBody
+    >,
   ) {
     (this.routes[path] as any) = route;
     return this as unknown as ApiDefinition<
       Routes & {
         [path in Path]: Route<
           StrictParams<Path>,
+          GetResponse,
           GetQuery,
+          PostResponse,
           PostQuery,
           PostBody
         >;

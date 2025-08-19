@@ -1,5 +1,5 @@
 export type TRequest<Params, Query, Body> = Request & {
-  params: () => Params;
+  params: Params;
   query: () => Query;
-  body: () => Promise<Body>;
+  data: () => Promise<Body>;
 };
