@@ -5,16 +5,17 @@ import { HttpError } from "./http-error";
 import type { Path as BasePath } from "./path";
 import type { BaseRoute } from "./route";
 import type { TRequest } from "./t-request";
+import type { MaybePromise } from "bun";
 
 interface Options {
   basePath?: string;
 }
 
 export function createRequestHandler(
-  api: ApiDefinition<Record<BasePath, BaseRoute>>,
+  api: ApiDefinition<Record<BasePath, MaybePromise<BaseRoute>>>,
   options: Options = {},
 ) {
-  const routes: { pattern: RegExp; route: BaseRoute }[] = [];
+  const routes: { pattern: RegExp; route: MaybePromise<BaseRoute> }[] = [];
 
   for (const [path, route] of Object.entries(api.routes)) {
     const pattern = compilePathRegex((options.basePath ?? "") + path);
@@ -24,8 +25,9 @@ export function createRequestHandler(
   return async (req: Request) => {
     const url = new URL(req.url);
 
-    for (const { pattern, route } of routes) {
+    for (const { pattern, route: routePromise } of routes) {
       const match = url.pathname.match(pattern);
+      const route = await routePromise;
       if (match) {
         const params = match.groups || {};
         switch (req.method) {

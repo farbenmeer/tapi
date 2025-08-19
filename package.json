@@ -1,5 +1,5 @@
 {
-  "name": "tapi",
+  "name": "@tapi/core",
   "module": "src/index.ts",
   "type": "module",
   "devDependencies": {

@@ -1,3 +1,4 @@
+import type { MaybePromise } from "bun";
 import type { Path as BasePath, StrictParams } from "./path";
 import type { Route } from "./route";
 
@@ -17,25 +18,29 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
     PostBody = never,
   >(
     path: Path,
-    route: Route<
-      StrictParams<Path>,
-      GetResponse,
-      GetQuery,
-      PostResponse,
-      PostQuery,
-      PostBody
+    route: MaybePromise<
+      Route<
+        StrictParams<Path>,
+        GetResponse,
+        GetQuery,
+        PostResponse,
+        PostQuery,
+        PostBody
+      >
     >,
   ) {
     (this.routes[path] as any) = route;
     return this as unknown as ApiDefinition<
       Routes & {
-        [path in Path]: Route<
-          StrictParams<Path>,
-          GetResponse,
-          GetQuery,
-          PostResponse,
-          PostQuery,
-          PostBody
+        [path in Path]: MaybePromise<
+          Route<
+            StrictParams<Path>,
+            GetResponse,
+            GetQuery,
+            PostResponse,
+            PostQuery,
+            PostBody
+          >
         >;
       }
     >;

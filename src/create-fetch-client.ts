@@ -1,3 +1,4 @@
+import type { MaybePromise } from "bun";
 import { handleResponse } from "./handle-response";
 import type { Handler as BaseHandler } from "./handler";
 import type { Path as BasePath } from "./path";
@@ -7,13 +8,12 @@ interface Options {
   fetch?: (url: string, init: RequestInit) => Promise<Response>;
 }
 
-export function createFetchClient<Routes extends Record<BasePath, BaseRoute>>(
-  baseUrl: string,
-  options: Options = {},
-) {
+export function createFetchClient<
+  Routes extends Record<BasePath, MaybePromise<BaseRoute>>,
+>(apiUrl: string, options: Options = {}) {
   return new Proxy(() => {}, {
     get(_target, prop: string) {
-      return createProxy(baseUrl, options, prop);
+      return createProxy(apiUrl, options, prop);
     },
   }) as unknown as Client<Routes>;
 }
@@ -87,7 +87,7 @@ type Rest<
   Segment extends string,
 > = Path extends `/${Segment}/${infer Rest}` ? `/${Rest}` : never;
 
-type Client<Routes extends Record<BasePath, BaseRoute>> = {
+type Client<Routes extends Record<BasePath, MaybePromise<BaseRoute>>> = {
   [segment in Segment<keyof Routes> as segment extends `[${string}]`
     ? string
     : segment]: (Extract<keyof Routes, `/${segment}`> extends never
@@ -100,9 +100,9 @@ type Client<Routes extends Record<BasePath, BaseRoute>> = {
         }>);
 };
 
-type ClientRoute<Route extends BaseRoute> = {
-  get: RouteWithoutBody<Route["get"]>;
-  post: RouteWithBody<Route["post"]>;
+type ClientRoute<Route extends MaybePromise<BaseRoute>> = {
+  get: RouteWithoutBody<Awaited<Route>["get"]>;
+  post: RouteWithBody<Awaited<Route>["post"]>;
 };
 
 type RouteWithoutBody<
