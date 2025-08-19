@@ -19,15 +19,15 @@ Very much [TRPC](https://trpc.io/). It's quite similar but with a REST paradigm 
 ## Setup
 
 ```bash
-npm install @tapi/core
-yarn add @tapi/core
-pnpm add @tapi/core
-bun add @tapi/core
+npm install @farbenmeer/tapi
+yarn add @farbenmeer/tapi
+pnpm add @farbenmeer/tapi
+bun add @farbenmeer/tapi
 ```
 
 Create a file (conventionally called `api.ts`) with your API definition:
 ```ts
-import { defineApi } from "@tapi/core"
+import { defineApi } from "@farbenmeer/tapi"
 
 export const api = defineApi()
 ```
@@ -35,7 +35,7 @@ export const api = defineApi()
 Set up a route to handle the requests. This depends on your framework. For Next.js it would be `app/api/[...tap]/route.ts`:
 ```ts
 import { api } from "api"
-import { createRequestHandler } from "@tapi/core"
+import { createRequestHandler } from "@farbenmeer/tapi"
 
 const handler = createRequestHandler(api)
 
@@ -58,7 +58,7 @@ where `apiUrl` is the base URL of your API, usually something like `https://exam
 Define your first route as a file, in this example `api/books.ts`:
 
 ```ts
-import { defineHandler, TResponse } from "@tapi/core"
+import { defineHandler, TResponse } from "@farbenmeer/tapi"
 
 export const get = defineHandler({}, async () => {
   return TResponse.json([
@@ -70,7 +70,7 @@ export const get = defineHandler({}, async () => {
 
 extends `api.ts`:
 ```ts
-import { defineApi } from "@tapi/core"
+import { defineApi } from "@farbenmeer/tapi"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
@@ -93,7 +93,7 @@ fetchBooks()
 ## Dynamic Paths
 Define a route with a dynamic path parameter using the params option for `defineHandler`, for example `/api/book.ts`
 ```ts
-import { defineHandler, TResponse } from "@tapi/core"
+import { defineHandler, TResponse } from "@farbenmeer/tapi"
 
 export const get = defineHandler({ params: ['id'] }, async (req) => {
   return TResponse.json({
@@ -105,7 +105,7 @@ export const get = defineHandler({ params: ['id'] }, async (req) => {
 
 extends `api.ts`:
 ```ts
-import { defineApi } from "@tapi/core"
+import { defineApi } from "@farbenmeer/tapi"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
@@ -127,7 +127,7 @@ fetchBook('1')
 ## Query Parameters
 Define a route with query parameters using the query option for `defineHandler`, for example `/api/search.ts`
 ```ts
-import { defineHandler, TResponse } from "@tapi/core"
+import { defineHandler, TResponse } from "@farbenmeer/tapi"
 import { z } from "zod/v4"
 
 export const get = defineHandler({ query: { q: z.string() } }, async (req) => {
@@ -140,7 +140,7 @@ export const get = defineHandler({ query: { q: z.string() } }, async (req) => {
 
 extends `api.ts`:
 ```ts
-import { defineApi } from "@tapi/core"
+import { defineApi } from "@farbenmeer/tapi"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
@@ -163,7 +163,7 @@ searchBooks('TApi')
 ## Post Requests
 Define a POST-route, for example to add a book in `api/books.ts`:
 ```ts
-import { defineHandler, TResponse } from "@tapi/core"
+import { defineHandler, TResponse } from "@farbenmeer/tapi"
 
 /* export const get = ... */
 
