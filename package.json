@@ -14,7 +14,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --noEmit false"
+    "build": "tsc --noEmit false",
+    "release": "bun run build && bun publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6",
