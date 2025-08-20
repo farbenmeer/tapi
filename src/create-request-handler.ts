@@ -54,7 +54,7 @@ export function compilePathRegex(path: string): RegExp {
   return new RegExp(`^${path.replaceAll(/\[(\w+)\]/g, "(?<$1>\\w+)")}$`);
 }
 
-function prepareRequestWithoutBody<TBody = never>(
+export function prepareRequestWithoutBody<TBody = never>(
   handler: Handler<any, any, any, TBody>,
   url: URL,
   params: Record<string, string>,
@@ -86,7 +86,7 @@ function prepareRequestWithoutBody<TBody = never>(
   return treq;
 }
 
-function prepareRequestWithBody(
+export function prepareRequestWithBody(
   handler: Handler<any, any, any, unknown>,
   url: URL,
   params: Record<string, string>,
@@ -144,7 +144,7 @@ function collectData(input: Iterable<[string, any]>) {
   return params;
 }
 
-async function executeHandler<Body>(
+export async function executeHandler<Body>(
   handler: Handler<any, any, any, Body>,
   req: TRequest<any, any, Body>
 ) {
