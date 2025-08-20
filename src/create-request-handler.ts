@@ -32,14 +32,14 @@ export function createRequestHandler(
         const params = match.groups || {};
         switch (req.method) {
           case "GET": {
-            if (!route.get) return new Response("Not Found", { status: 404 });
-            const treq = prepareRequestWithoutBody(route.get, url, params, req);
-            return executeHandler(route.get, treq);
+            if (!route.GET) return new Response("Not Found", { status: 404 });
+            const treq = prepareRequestWithoutBody(route.GET, url, params, req);
+            return executeHandler(route.GET, treq);
           }
           case "POST":
-            if (!route.post) return new Response("Not Found", { status: 404 });
-            const treq = prepareRequestWithBody(route.post, url, params, req);
-            return executeHandler(route.post, treq);
+            if (!route.POST) return new Response("Not Found", { status: 404 });
+            const treq = prepareRequestWithBody(route.POST, url, params, req);
+            return executeHandler(route.POST, treq);
           default:
             return new Response("Not Found", { status: 404 });
         }

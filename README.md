@@ -60,7 +60,7 @@ Define your first route as a file, in this example `api/books.ts`:
 ```ts
 import { defineHandler, TResponse } from "@farbenmeer/tapi"
 
-export const get = defineHandler({}, async () => {
+export const GET = defineHandler({}, async () => {
   return TResponse.json([
     { id: 1, title: "TApi for Dummies" },
     { id: 2, title: "Advanced TApi" }
@@ -96,7 +96,7 @@ Define a route with a dynamic path parameter using the params option for `define
 import { defineHandler, TResponse } from "@farbenmeer/tapi"
 import { z } from "zod/v4"
 
-export const get = defineHandler({ params: { id: z.string() } }, async (req) => {
+export const GET = defineHandler({ params: { id: z.string() } }, async (req) => {
   return TResponse.json({
     id: req.params().id,
     title: `Book with id ${req.params().id}`
@@ -131,7 +131,7 @@ Define a route with query parameters using the query option for `defineHandler`,
 import { defineHandler, TResponse } from "@farbenmeer/tapi"
 import { z } from "zod/v4"
 
-export const get = defineHandler({ query: { q: z.string() } }, async (req) => {
+export const GET = defineHandler({ query: { q: z.string() } }, async (req) => {
   return TResponse.json({
     query: req.query().q,
     results: []
@@ -166,9 +166,9 @@ Define a POST-route, for example to add a book in `api/books.ts`:
 ```ts
 import { defineHandler, TResponse } from "@farbenmeer/tapi"
 
-/* export const get = ... */
+/* export const GET = ... */
 
-export const post = defineHandler(
+export const POST = defineHandler(
   { body: z.object({ title: z.string() }),
   async (req) => {
     const { title } = await req.data()

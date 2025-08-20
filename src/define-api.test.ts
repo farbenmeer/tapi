@@ -5,7 +5,7 @@ import { TResponse } from "./t-response";
 
 export const api = defineApi()
   .route("/books", {
-    get: defineHandler({}, async () =>
+    GET: defineHandler({}, async () =>
       TResponse.json([
         { id: "1", title: "Book 1" },
         { id: "2", title: "Book 2" },
@@ -13,7 +13,7 @@ export const api = defineApi()
     ),
   })
   .route("/books/[id]", {
-    get: defineHandler(
+    GET: defineHandler(
       { params: { id: z.string() }, query: { test: z.string() } },
       async (req) =>
         TResponse.json({
@@ -23,7 +23,7 @@ export const api = defineApi()
     ),
   })
   .route("/movies/[id]", {
-    get: defineHandler(
+    GET: defineHandler(
       { params: { id: z.string() }, query: { test: z.string() } },
       async (req) =>
         TResponse.json({

@@ -6,17 +6,17 @@ export type Route<
   GetQuery extends Record<string, unknown>,
   PostResponse,
   PostQuery extends Record<string, unknown>,
-  PostBody,
+  PostBody
 > = {
-  get?: GetQuery extends never
+  GET?: GetQuery extends never
     ? never
     : Handler<GetResponse, Params, GetQuery, never>;
-  post?: PostQuery extends never
+  POST?: PostQuery extends never
     ? never
     : Handler<PostResponse, Params, PostQuery, PostBody>;
 };
 
 export type BaseRoute = {
-  get?: Handler<any, any, any, never>;
-  post?: Handler<any, any, any, unknown>;
+  GET?: Handler<any, any, any, never>;
+  POST?: Handler<any, any, any, unknown>;
 };
