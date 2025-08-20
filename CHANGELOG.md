@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.1.2
+
+### Patch Changes
+
+- 7ced7c1: export internal functions for handling single request
+
 ## 0.1.1
 
 ### Patch Changes
