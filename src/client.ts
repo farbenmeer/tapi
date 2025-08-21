@@ -32,7 +32,7 @@ type ClientRoute<Route extends MaybePromise<BaseRoute>> = {
   post: RouteWithBody<Awaited<Route>["POST"]>;
 };
 
-type RouteWithoutBody<
+export type RouteWithoutBody<
   Handler extends BaseHandler<any, any, any, never> | undefined
 > = Handler extends undefined
   ? never
@@ -40,7 +40,7 @@ type RouteWithoutBody<
   ? (query?: {}, req?: RequestInit) => ResponseType<Handler>
   : (query: QueryType<Handler>, req?: RequestInit) => ResponseType<Handler>;
 
-type RouteWithBody<
+export type RouteWithBody<
   Handler extends BaseHandler<any, any, any, unknown> | undefined
 > = Handler extends undefined
   ? never
