@@ -1,6 +1,6 @@
 {
   "name": "@farbenmeer/tapi",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "module": "dist/index.js",
   "author": {
     "name": "Michel Smola",
