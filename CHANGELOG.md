@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.1.3
+
+### Patch Changes
+
+- 0e3587a: assign fetch to variable to avoid global keyword
+
 ## 0.1.2
 
 ### Patch Changes
