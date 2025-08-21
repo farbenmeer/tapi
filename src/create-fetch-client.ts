@@ -4,12 +4,14 @@ import { handleResponse } from "./handle-response";
 import type { Path as BasePath } from "./path";
 import type { BaseRoute } from "./route";
 
+const globalFetch = fetch;
+
 interface Options {
   fetch?: (url: string, init: RequestInit) => Promise<Response>;
 }
 
 export function createFetchClient<
-  Routes extends Record<BasePath, MaybePromise<BaseRoute>>,
+  Routes extends Record<BasePath, MaybePromise<BaseRoute>>
 >(apiUrl: string, options: Options = {}) {
   return new Proxy(() => {}, {
     get(_target, prop: string) {
@@ -19,7 +21,7 @@ export function createFetchClient<
 }
 
 function createProxy(baseUrl: string, options: Options, lastProp: string) {
-  const fetch = options.fetch ?? global.fetch;
+  const fetch = options.fetch ?? globalFetch;
   return new Proxy(() => {}, {
     get(_target, prop: string) {
       return createProxy(baseUrl + "/" + lastProp, options, prop);
@@ -35,7 +37,7 @@ function createProxy(baseUrl: string, options: Options, lastProp: string) {
               method: lastProp.toUpperCase(),
               ...(args[1] ?? {}),
               headers,
-            },
+            }
           );
 
           return handleResponse(res);
@@ -65,7 +67,7 @@ function createProxy(baseUrl: string, options: Options, lastProp: string) {
                 args[1] instanceof FormData ? args[1] : JSON.stringify(args[1]),
               ...(args[2] ?? {}),
               headers,
-            },
+            }
           );
           return handleResponse(res);
         }
