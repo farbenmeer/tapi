@@ -30,6 +30,7 @@ export type Client<Routes extends Record<BasePath, MaybePromise<BaseRoute>>> = {
 type ClientRoute<Route extends MaybePromise<BaseRoute>> = {
   get: RouteWithoutBody<Awaited<Route>["GET"]>;
   post: RouteWithBody<Awaited<Route>["POST"]>;
+  revalidate: () => void;
 };
 
 export type RouteWithoutBody<
