@@ -1,5 +1,12 @@
 # @farbenmeer/tapi
 
+## 0.1.4
+
+### Patch Changes
+
+- d812323: export route types
+- b7c534c: cache responses on client
+
 ## 0.1.3
 
 ### Patch Changes
