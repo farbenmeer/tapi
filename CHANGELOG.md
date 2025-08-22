@@ -1,5 +1,13 @@
 # @farbenmeer/tapi
 
+## 0.1.5
+
+### Patch Changes
+
+- 075598f: subsriptions
+- 075598f: remove react query client
+- 1c38b88: react-query client and tag-based caching
+
 ## 0.1.4
 
 ### Patch Changes
