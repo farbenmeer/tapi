@@ -11,6 +11,15 @@ export const api = defineApi()
         { id: "2", title: "Book 2" },
       ])
     ),
+    POST: defineHandler(
+      {
+        body: z.object({
+          id: z.string(),
+          title: z.string(),
+        }),
+      },
+      async (req) => TResponse.json(await req.data())
+    ),
   })
   .route("/books/[id]", {
     GET: defineHandler(
@@ -26,9 +35,20 @@ export const api = defineApi()
     GET: defineHandler(
       { params: { id: z.string() }, query: { test: z.string() } },
       async (req) =>
-        TResponse.json({
-          id: req.params().id,
-          title: `Movie ${req.params().id}`,
-        })
+        TResponse.json(
+          {
+            id: req.params().id,
+            title: `Movie ${req.params().id}`,
+          },
+          {
+            tags: ["movies"],
+          }
+        )
+    ),
+  })
+  .route("/movies", {
+    POST: defineHandler(
+      { body: z.object({ id: z.string(), title: z.string() }) },
+      async (req) => TResponse.json(await req.data(), { tags: ["movies"] })
     ),
   });

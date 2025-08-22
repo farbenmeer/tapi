@@ -2,44 +2,38 @@ export class TagManager {
   private urlsByTag = new Map<string, Set<string>>();
   private tagsByUrl = new Map<string, Set<string>>();
 
-  add(res: Response): void {
-    const tags = new Set(res.headers.get("X-TAPI-Tags")?.split(" "));
-
-    for (const tag of this.tagsByUrl.get(res.url) ?? []) {
-      if (!tags.has(tag)) {
-        this.urlsByTag.get(tag)?.delete(res.url);
+  add(url: string, tags: string[]): void {
+    const tags_ = new Set(tags);
+    for (const tag of this.tagsByUrl.get(url) ?? []) {
+      if (!tags_.has(tag)) {
+        this.urlsByTag.get(tag)?.delete(url);
       }
     }
 
-    for (const tag of tags.values()) {
+    for (const tag of tags_.values()) {
       let urls = this.urlsByTag.get(tag);
       if (!urls) {
         urls = new Set();
         this.urlsByTag.set(tag, urls);
       }
-      urls.add(res.url);
+      urls.add(url);
     }
 
-    this.tagsByUrl.set(res.url, tags);
+    this.tagsByUrl.set(url, tags_);
   }
 
-  remove(res: Response): string[] {
-    const tags = res.headers.get("X-TAPI-Tags")?.split(" ") ?? [];
-    let removedUrls = new Set<string>();
+  get(tags: string[]): string[] {
+    let urls = new Set<string>();
     for (const tag of tags) {
-      const urls = this.urlsByTag.get(tag);
-      if (urls) {
-        removedUrls = removedUrls.union(urls);
+      const tagUrls = this.urlsByTag.get(tag);
+      if (tagUrls) {
+        urls = urls.union(tagUrls);
       }
-      this.urlsByTag.delete(tag);
     }
-    for (const url of removedUrls.values()) {
-      this.tagsByUrl.delete(url);
-    }
-    return Array.from(removedUrls);
+    return Array.from(urls);
   }
-  
-  removeUrl(url: string) {
+
+  remove(url: string) {
     const tags = this.tagsByUrl.get(url);
     if (!tags) return;
     for (const tag of tags.values()) {

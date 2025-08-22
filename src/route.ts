@@ -18,5 +18,5 @@ export type Route<
 
 export type BaseRoute = {
   GET?: Handler<any, any, any, never>;
-  POST?: Handler<any, any, any, unknown>;
+  POST?: Handler<any, any, any, any>;
 };

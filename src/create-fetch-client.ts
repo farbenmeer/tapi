@@ -1,9 +1,10 @@
 import type { MaybePromise } from "bun";
-import type { Client } from "./client";
+import type { Client, Observable } from "./client";
 import { handleResponse } from "./handle-response";
 import type { Path as BasePath } from "./path";
 import type { BaseRoute } from "./route";
 import { TagManager } from "./tag-manager";
+import { SubscriptionManager } from "./subscription-manager";
 
 const globalFetch = fetch;
 
@@ -21,92 +22,140 @@ export interface DataCache {
 export function createFetchClient<
   Routes extends Record<BasePath, MaybePromise<BaseRoute>>
 >(apiUrl: string, options: Options = {}) {
-  const tagManager = options.cache && new TagManager();
+  const tagManager = new TagManager();
+  const subscriptionManager = new SubscriptionManager();
+  const fetch = options.fetch ?? globalFetch;
+
+  async function load(url: string, init: RequestInit = {}) {
+    const responsePromise = fetch(url, {
+      method: "GET",
+      ...init,
+    });
+    const dataPromise = responsePromise.then(handleResponse);
+    await options.cache?.add(url, responsePromise, dataPromise);
+    subscriptionManager.trigger(url, dataPromise);
+    const res = await responsePromise;
+    tagManager.add(url, res.headers.get("X-TAPI-Tags")?.split(" ") ?? []);
+    return dataPromise;
+  }
+
+  async function revalidate(url: string) {
+    if (subscriptionManager.has(url)) {
+      await load(url);
+      return;
+    }
+    await options.cache?.remove(url);
+    tagManager?.remove(url);
+  }
+
+  async function mutate(
+    method: string,
+    url: string,
+    data?: FormData | unknown,
+    init: RequestInit = {}
+  ) {
+    const headers = new Headers(init.headers);
+
+    if (!(data instanceof FormData) && !headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    const res = await fetch(url, {
+      method,
+      body:
+        typeof data === "undefined"
+          ? undefined
+          : data instanceof FormData
+          ? data
+          : JSON.stringify(data),
+      ...init,
+      headers,
+    });
+
+    for (const url of tagManager.get(
+      res.headers.get("X-TAPI-Tags")?.split(" ") ?? []
+    )) {
+      revalidate(url);
+    }
+
+    return handleResponse(res);
+  }
+
   return new Proxy(() => {}, {
     get(_target, prop: string) {
-      return createProxy(tagManager, apiUrl, options, prop);
+      return createProxy(
+        {
+          revalidate,
+          load,
+          mutate,
+          subscribe: (url, callback) =>
+            subscriptionManager.subscribe(url, callback),
+        },
+        apiUrl,
+        prop
+      );
     },
   }) as unknown as Client<Routes>;
 }
 
-function createProxy(
-  tagManager: TagManager | undefined,
-  baseUrl: string,
-  options: Options,
-  lastProp: string
-) {
-  const fetch = options.fetch ?? globalFetch;
+interface ProxyMethods {
+  load(url: string, init?: RequestInit): Promise<unknown>;
+  revalidate(url: string): Promise<void>;
+  mutate(
+    method: string,
+    url: string,
+    data: FormData | unknown,
+    init?: RequestInit
+  ): Promise<unknown>;
+  subscribe(
+    url: string,
+    callback: (data: Promise<unknown>) => void
+  ): () => void;
+}
+
+function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
   return new Proxy(() => {}, {
     get(_target, prop: string) {
-      return createProxy(tagManager, baseUrl + "/" + lastProp, options, prop);
+      return createProxy(methods, baseUrl + "/" + lastProp, prop);
     },
-    async apply(_target, _thisArg, args) {
+    apply(_target, _thisArg, args) {
       switch (lastProp) {
         case "revalidate": {
           const searchParams = new URLSearchParams(args[0]);
           const url =
             searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
-          await options.cache?.remove(url);
-          tagManager?.removeUrl(url);
-          return;
+          return methods.revalidate(url);
         }
         case "get": {
-          const headers = new Headers(args[1]?.headers);
           const searchParams = new URLSearchParams(args[0]);
           const url =
             searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
 
-          const cached = options.cache?.get(url);
-          if (cached) return cached;
-
-          const responsePromise = fetch(url, {
-            method: lastProp.toUpperCase(),
-            ...(args[1] ?? {}),
-            headers,
-          });
-          const data = responsePromise.then(handleResponse);
-
-          await options.cache?.add(url, responsePromise, data);
-
-          const res = await responsePromise;
-          tagManager?.add(res);
-
-          return data;
+          const promise = methods.load(url, args[1]);
+          return Object.assign(promise, {
+            subscribe(callback: (data: Promise<unknown>) => void) {
+              return methods.subscribe(url, callback);
+            },
+          }) satisfies Promise<unknown> & Observable<unknown>;
         }
-        case "post": {
+        case "delete": {
+          const searchParams = new URLSearchParams(args[0]);
+          const url =
+            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
+          return methods.mutate("DELETE", url, undefined, args[1]);
+        }
+        case "post":
+        case "put":
+        case "patch": {
           if (args[0] instanceof FormData) {
-            const res = await fetch(baseUrl, {
-              method: lastProp,
-              body: args[0],
-            });
-            for (const url of tagManager?.remove(res) ?? []) {
-              await options.cache?.remove(url);
-            }
-            return handleResponse(res);
-          }
-
-          const headers = new Headers(args[2]?.headers);
-
-          if (!(args[1] instanceof FormData) && !headers.has("Content-Type")) {
-            headers.set("Content-Type", "application/json");
+            return methods.mutate(lastProp.toUpperCase(), baseUrl, args[0]);
           }
 
           const searchParams = new URLSearchParams(args[0]);
+          const url =
+            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
 
-          const res = await fetch(
-            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl,
-            {
-              method: lastProp.toUpperCase(),
-              body:
-                args[1] instanceof FormData ? args[1] : JSON.stringify(args[1]),
-              ...(args[2] ?? {}),
-              headers,
-            }
-          );
-          for (const url of tagManager?.remove(res) ?? []) {
-            await options.cache?.remove(url);
-          }
-          return handleResponse(res);
+          return methods.mutate(lastProp.toUpperCase(), url, args[1], args[2]);
         }
         default:
           throw new Error(`Tapi: Unsupported method: ${lastProp}`);
