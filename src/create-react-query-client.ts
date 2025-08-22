@@ -1,5 +1,5 @@
 import type { MaybePromise } from "bun";
-import type { Client } from "./client";
+import type { ReactQueryClient } from "./client";
 import { handleResponse } from "./handle-response";
 import type { Path as BasePath } from "./path";
 import type { BaseRoute } from "./route";
@@ -9,28 +9,24 @@ const globalFetch = fetch;
 
 interface Options {
   fetch?: (url: string, init: RequestInit) => Promise<Response>;
-  cache?: DataCache;
+  queryClient: {
+    invalidateQueries(options: { queryKey: string[] }): void;
+  };
 }
 
-interface DataCache {
-  get(url: string): Promise<any> | null;
-  add(url: string, res: Promise<Response>, data: Promise<any>): Promise<void>;
-  remove(url: string): Promise<void>;
-}
-
-export function createFetchClient<
+export function createReactQueryClient<
   Routes extends Record<BasePath, MaybePromise<BaseRoute>>
->(apiUrl: string, options: Options = {}) {
-  const tagManager = options.cache && new TagManager();
+>(apiUrl: string, options: Options) {
+  const tagManager = new TagManager();
   return new Proxy(() => {}, {
     get(_target, prop: string) {
       return createProxy(tagManager, apiUrl, options, prop);
     },
-  }) as unknown as Client<Routes>;
+  }) as unknown as ReactQueryClient<Routes>;
 }
 
 function createProxy(
-  tagManager: TagManager | undefined,
+  tagManager: TagManager,
   baseUrl: string,
   options: Options,
   lastProp: string
@@ -42,36 +38,24 @@ function createProxy(
     },
     async apply(_target, _thisArg, args) {
       switch (lastProp) {
-        case "revalidate": {
-          const searchParams = new URLSearchParams(args[0]);
-          const url =
-            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
-          await options.cache?.remove(url);
-          tagManager?.removeUrl(url);
-          return;
-        }
         case "get": {
           const headers = new Headers(args[1]?.headers);
           const searchParams = new URLSearchParams(args[0]);
           const url =
             searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
 
-          const cached = options.cache?.get(url);
-          if (cached) return cached;
-
-          const responsePromise = fetch(url, {
-            method: lastProp.toUpperCase(),
-            ...(args[1] ?? {}),
-            headers,
-          });
-          const data = responsePromise.then(handleResponse);
-
-          await options.cache?.add(url, responsePromise, data);
-
-          const res = await responsePromise;
-          tagManager?.add(res);
-
-          return data;
+          return {
+            queryKey: [url],
+            queryFn: async () => {
+              const res = await fetch(url, {
+                method: lastProp.toUpperCase(),
+                ...(args[1] ?? {}),
+                headers,
+              });
+              tagManager.add(res);
+              return handleResponse(res);
+            },
+          };
         }
         case "post": {
           if (args[0] instanceof FormData) {
@@ -79,8 +63,9 @@ function createProxy(
               method: lastProp,
               body: args[0],
             });
-            for (const url of tagManager?.remove(res) ?? []) {
-              await options.cache?.remove(url);
+            const stale = tagManager.remove(res);
+            for (const url of stale) {
+              options.queryClient.invalidateQueries({ queryKey: [url] });
             }
             return handleResponse(res);
           }
@@ -103,8 +88,9 @@ function createProxy(
               headers,
             }
           );
-          for (const url of tagManager?.remove(res) ?? []) {
-            await options.cache?.remove(url);
+          const stale = tagManager.remove(res);
+          for (const url of stale) {
+            options.queryClient.invalidateQueries({ queryKey: [url] });
           }
           return handleResponse(res);
         }
