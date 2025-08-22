@@ -12,7 +12,7 @@ interface Options {
   cache?: DataCache;
 }
 
-interface DataCache {
+export interface DataCache {
   get(url: string): Promise<any> | null;
   add(url: string, res: Promise<Response>, data: Promise<any>): Promise<void>;
   remove(url: string): Promise<void>;
