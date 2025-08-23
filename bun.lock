@@ -7,7 +7,19 @@
         "@changesets/cli": "^2.29.6",
       },
     },
-    "packages/react-tapi": {
+    "packages/1-tapi": {
+      "name": "@farbenmeer/tapi",
+      "version": "0.1.6",
+      "devDependencies": {
+        "@types/bun": "latest",
+        "zod": "^4.0.17",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
+        "zod": "^4.0.17",
+      },
+    },
+    "packages/2-react-tapi": {
       "name": "@farbenmeer/react-tapi",
       "version": "0.1.2",
       "devDependencies": {
@@ -19,18 +31,6 @@
         "@farbenmeer/tapi": "workspace:^",
         "react": "^19.1.1",
         "typescript": "^5",
-      },
-    },
-    "packages/tapi": {
-      "name": "@farbenmeer/tapi",
-      "version": "0.1.6",
-      "devDependencies": {
-        "@types/bun": "latest",
-        "zod": "^4.0.17",
-      },
-      "peerDependencies": {
-        "typescript": "^5",
-        "zod": "^4.0.17",
       },
     },
   },
@@ -71,9 +71,9 @@
 
     "@changesets/write": ["@changesets/write@0.4.0", "", { "dependencies": { "@changesets/types": "^6.1.0", "fs-extra": "^7.0.1", "human-id": "^4.1.1", "prettier": "^2.7.1" } }, "sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q=="],
 
-    "@farbenmeer/react-tapi": ["@farbenmeer/react-tapi@workspace:packages/react-tapi"],
+    "@farbenmeer/react-tapi": ["@farbenmeer/react-tapi@workspace:packages/2-react-tapi"],
 
-    "@farbenmeer/tapi": ["@farbenmeer/tapi@workspace:packages/tapi"],
+    "@farbenmeer/tapi": ["@farbenmeer/tapi@workspace:packages/1-tapi"],
 
     "@inquirer/external-editor": ["@inquirer/external-editor@1.0.1", "", { "dependencies": { "chardet": "^2.1.0", "iconv-lite": "^0.6.3" }, "peerDependencies": { "@types/node": ">=18" }, "optionalPeers": ["@types/node"] }, "sha512-Oau4yL24d2B5IL4ma4UpbQigkVhzPDXLoqy1ggK4gnHg/stmkffJE4oOXHXF3uz0UEpywG68KcyXsyYpA1Re/Q=="],
 
