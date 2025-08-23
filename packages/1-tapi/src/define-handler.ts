@@ -3,12 +3,13 @@ import type { Schema } from "./schema";
 
 export function defineHandler<
   Response,
+  AuthData,
   Params extends Record<string, string> = {},
   Query extends Record<string, unknown> = {},
   Body = never
 >(
-  schema: Schema<Response, Params, Query, Body>,
-  handler: HandlerFn<Response, Params, Query, Body>
+  schema: Schema<Response, AuthData, Params, Query, Body>,
+  handler: HandlerFn<Response, AuthData, Params, Query, Body>
 ): Handler<Response, Params, Query, Body> {
   return {
     schema,

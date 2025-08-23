@@ -33,13 +33,31 @@ export function createRequestHandler(
         switch (req.method) {
           case "GET": {
             if (!route.GET) return new Response("Not Found", { status: 404 });
-            const treq = prepareRequestWithoutBody(route.GET, url, params, req);
-            return executeHandler(route.GET, treq);
+            try {
+              const treq = await prepareRequestWithoutBody(
+                route.GET,
+                url,
+                params,
+                req
+              );
+              return executeHandler(route.GET, treq);
+            } catch (error) {
+              return handleError(error);
+            }
           }
           case "POST":
             if (!route.POST) return new Response("Not Found", { status: 404 });
-            const treq = prepareRequestWithBody(route.POST, url, params, req);
-            return executeHandler(route.POST, treq);
+            try {
+              const treq = await prepareRequestWithBody(
+                route.POST,
+                url,
+                params,
+                req
+              );
+              return executeHandler(route.POST, treq);
+            } catch (error) {
+              return handleError(error);
+            }
           default:
             return new Response("Not Found", { status: 404 });
         }
@@ -54,13 +72,13 @@ export function compilePathRegex(path: string): RegExp {
   return new RegExp(`^${path.replaceAll(/\[(\w+)\]/g, "(?<$1>\\w+)")}$`);
 }
 
-export function prepareRequestWithoutBody<TBody = never>(
+export async function prepareRequestWithoutBody<TBody = never>(
   handler: Handler<any, any, any, TBody>,
   url: URL,
   params: Record<string, string>,
   req: Request
 ) {
-  const treq = req as TRequest<any, any, TBody>;
+  const treq = req as TRequest<any, any, any, TBody>;
   treq.params = () => {
     const decodedParams = Object.fromEntries(
       Object.entries(params).map(([key, value]) => [
@@ -82,17 +100,24 @@ export function prepareRequestWithoutBody<TBody = never>(
     }
     return params;
   };
+  treq.auth = await handler.schema.authorize(
+    treq as TRequest<never, any, any, never>
+  );
+
+  if (!treq.auth) {
+    throw new HttpError(401, "Unauthorized");
+  }
 
   return treq;
 }
 
-export function prepareRequestWithBody(
+export async function prepareRequestWithBody(
   handler: Handler<any, any, any, unknown>,
   url: URL,
   params: Record<string, string>,
   req: Request
 ) {
-  const treq = prepareRequestWithoutBody(handler, url, params, req);
+  const treq = await prepareRequestWithoutBody(handler, url, params, req);
   treq.data = async () => {
     const contentType = req.headers.get("content-type");
 
@@ -146,23 +171,23 @@ function collectData(input: Iterable<[string, any]>) {
 
 export async function executeHandler<Body>(
   handler: Handler<any, any, any, Body>,
-  req: TRequest<any, any, Body>
+  req: TRequest<any, any, any, Body>
 ) {
-  try {
-    const res = await handler.handler(req);
-    if (handler.schema.response) {
-      await handler.schema.response.parseAsync(res.data);
-    }
-    return res;
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return new Response(error.message, { status: 400 });
-    }
-    if (error instanceof HttpError) {
-      return new Response(error.message, {
-        status: error.status,
-      });
-    }
-    return new Response("Internal Server Error", { status: 500 });
+  const res = await handler.handler(req);
+  if (handler.schema.response) {
+    await handler.schema.response.parseAsync(res.data);
   }
+  return res;
+}
+
+function handleError(error: unknown) {
+  if (error instanceof ZodError) {
+    return new Response(error.message, { status: 400 });
+  }
+  if (error instanceof HttpError) {
+    return new Response(error.message, {
+      status: error.status,
+    });
+  }
+  return new Response("Internal Server Error", { status: 500 });
 }

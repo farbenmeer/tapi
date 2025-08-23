@@ -5,7 +5,7 @@ import { TResponse } from "./t-response";
 
 export const api = defineApi()
   .route("/books", {
-    GET: defineHandler({}, async () =>
+    GET: defineHandler({ authorize: () => true }, async () =>
       TResponse.json([
         { id: "1", title: "Book 1" },
         { id: "2", title: "Book 2" },
@@ -13,6 +13,7 @@ export const api = defineApi()
     ),
     POST: defineHandler(
       {
+        authorize: () => true,
         body: z.object({
           id: z.string(),
           title: z.string(),
@@ -23,7 +24,11 @@ export const api = defineApi()
   })
   .route("/books/[id]", {
     GET: defineHandler(
-      { params: { id: z.string() }, query: { test: z.string() } },
+      {
+        params: { id: z.string() },
+        query: { test: z.string() },
+        authorize: () => true,
+      },
       async (req) =>
         TResponse.json({
           id: req.params().id,
@@ -33,7 +38,11 @@ export const api = defineApi()
   })
   .route("/movies/[id]", {
     GET: defineHandler(
-      { params: { id: z.string() }, query: { test: z.string() } },
+      {
+        params: { id: z.string() },
+        query: { test: z.string() },
+        authorize: () => true,
+      },
       async (req) =>
         TResponse.json(
           {
@@ -48,7 +57,21 @@ export const api = defineApi()
   })
   .route("/movies", {
     POST: defineHandler(
-      { body: z.object({ id: z.string(), title: z.string() }) },
+      {
+        body: z.object({ id: z.string(), title: z.string() }),
+        authorize: () => true,
+      },
       async (req) => TResponse.json(await req.data(), { tags: ["movies"] })
+    ),
+  })
+  .route("/authorized", {
+    GET: defineHandler(
+      {
+        authorize: (req) => {
+          const header = req.headers.get("Authorization");
+          return header === "Bearer token";
+        },
+      },
+      async () => TResponse.json({ authorized: true })
     ),
   });
