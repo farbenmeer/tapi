@@ -2,7 +2,6 @@
   "name": "tapi",
   "private": true,
   "scripts": {
-    "pack": "bun run --filter './packages/1-*' build && bun run --filter './packages/2-*' build && bun run --filter '*' pack",
     "release": "bun run --filter './packages/1-*' release ; bun run --filter './packages/2-*' release ; echo 'Done'"
   },
   "devDependencies": {
