@@ -4,26 +4,19 @@ import { handleResponse } from "./handle-response";
 import type { Path as BasePath } from "./path";
 import type { BaseRoute } from "./route";
 import { TagManager } from "./tag-manager";
-import { SubscriptionManager } from "./subscription-manager";
+import { PubSub } from "./pub-sub";
 
 const globalFetch = fetch;
 
 interface Options {
   fetch?: (url: string, init: RequestInit) => Promise<Response>;
-  cache?: DataCache;
-}
-
-export interface DataCache {
-  get(url: string): Promise<any> | null;
-  add(url: string, res: Promise<Response>, data: Promise<any>): Promise<void>;
-  remove(url: string): Promise<void>;
 }
 
 export function createFetchClient<
   Routes extends Record<BasePath, MaybePromise<BaseRoute>>
 >(apiUrl: string, options: Options = {}) {
   const tagManager = new TagManager();
-  const subscriptionManager = new SubscriptionManager();
+  const subscriptionManager = new PubSub();
   const fetch = options.fetch ?? globalFetch;
 
   async function load(url: string, init: RequestInit = {}) {
@@ -32,8 +25,7 @@ export function createFetchClient<
       ...init,
     });
     const dataPromise = responsePromise.then(handleResponse);
-    await options.cache?.add(url, responsePromise, dataPromise);
-    subscriptionManager.trigger(url, dataPromise);
+    subscriptionManager.publish(url, dataPromise);
     const res = await responsePromise;
     tagManager.add(url, res.headers.get("X-TAPI-Tags")?.split(" ") ?? []);
     return dataPromise;
@@ -44,7 +36,6 @@ export function createFetchClient<
       await load(url);
       return;
     }
-    await options.cache?.remove(url);
     tagManager?.remove(url);
   }
 
