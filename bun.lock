@@ -3,10 +3,13 @@
   "workspaces": {
     "": {
       "name": "tapi",
+      "devDependencies": {
+        "@changesets/cli": "^2.29.6",
+      },
     },
     "packages/react-tapi": {
       "name": "@farbenmeer/react-tapi",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "devDependencies": {
         "@farbenmeer/tapi": "workspace:^",
         "@types/bun": "latest",
@@ -22,7 +25,6 @@
       "name": "@farbenmeer/tapi",
       "version": "0.1.6",
       "devDependencies": {
-        "@changesets/cli": "^2.29.6",
         "@types/bun": "latest",
         "zod": "^4.0.17",
       },

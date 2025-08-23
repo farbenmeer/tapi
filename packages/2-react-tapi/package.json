@@ -1,6 +1,6 @@
 {
-  "name": "@farbenmeer/tapi",
-  "version": "0.1.6",
+  "name": "@farbenmeer/react-tapi",
+  "version": "0.1.2",
   "author": {
     "name": "Michel Smola",
     "email": "michel.smola@farbenmeer.de"
@@ -15,21 +15,18 @@
   ],
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "bun pm pack --filename tapi.tgz && bunx npm publish tapi.tgz",
-    "pack": "bun pm pack --filename tapi.tgz"
+    "release": "bun run build && bun run pack && bunx npm publish react-tapi.tgz",
+    "pack": "bun pm pack --filename react-tapi.tgz"
   },
+  "dependencies": {},
   "devDependencies": {
-    "@changesets/cli": "^2.29.6",
     "@types/bun": "latest",
-    "zod": "^4.0.17"
+    "react": "^19.1.1",
+    "@farbenmeer/tapi": "workspace:^"
   },
   "peerDependencies": {
     "typescript": "^5",
-    "zod": "^4.0.17"
-  },
-  "dependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/farbenmeer/tapi.git"
+    "react": "^19.1.1",
+    "@farbenmeer/tapi": "workspace:^"
   }
 }

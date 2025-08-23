@@ -1,0 +1,34 @@
+{
+  "name": "@farbenmeer/tapi",
+  "version": "0.1.6",
+  "author": {
+    "name": "Michel Smola",
+    "email": "michel.smola@farbenmeer.de"
+  },
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "private": false,
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit false",
+    "release": "bun run build && bun run pack && bunx npm publish tapi.tgz",
+    "pack": "bun pm pack --filename tapi.tgz"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "zod": "^4.0.17"
+  },
+  "peerDependencies": {
+    "typescript": "^5",
+    "zod": "^4.0.17"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farbenmeer/tapi.git"
+  }
+}

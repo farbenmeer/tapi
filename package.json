@@ -2,8 +2,11 @@
   "name": "tapi",
   "private": true,
   "scripts": {
-    "build": "bun run --filter './packages/tapi' build && bun run --filter './packages/react-tapi' build",
-    "release": "bun run build && bun run --filter './packages/*' release; echo 'Done'"
+    "pack": "bun run --filter './packages/1-*' build && bun run --filter './packages/2-*' build && bun run --filter '*' pack",
+    "release": "bun run --filter './packages/1-*' release && bun run --filter './packages/2-*' release"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.6"
   },
   "workspaces": [
     "packages/*"
