@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.1.6
+
+### Patch Changes
+
+- 348d6e9: remove cache implementation and add react-tapi package
+
 ## 0.1.5
 
 ### Patch Changes
