@@ -1,0 +1,27 @@
+{
+  "name": "@farbenmeer/lacy",
+  "version": "0.1.0",
+  "author": {
+    "name": "Michel Smola",
+    "email": "michel.smola@farbenmeer.de"
+  },
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "private": false,
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit false",
+    "release": "bun run build && bun publish"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
