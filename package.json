@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "pack": "bun run --filter './packages/1-*' build && bun run --filter './packages/2-*' build && bun run --filter '*' pack",
-    "release": "cp $HOME/.npmrc .npmrc && bun run --filter './packages/1-*' release ; bun run --filter './packages/2-*' release ; echo 'Done'"
+    "release": "bun run --filter './packages/1-*' release ; bun run --filter './packages/2-*' release ; echo 'Done'"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6"
