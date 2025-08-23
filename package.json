@@ -2,7 +2,8 @@
   "name": "tapi",
   "private": true,
   "scripts": {
-    "release": "bun run --filter './packages/*' build && bun run --filter './packages/*' release; echo 'Done'"
+    "build": "bun run --filter './packages/tapi' build && bun run --filter './packages/react-tapi' build",
+    "release": "bun run build && bun run --filter './packages/*' release; echo 'Done'"
   },
   "workspaces": [
     "packages/*"
