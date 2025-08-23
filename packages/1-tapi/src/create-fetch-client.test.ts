@@ -1,19 +1,21 @@
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { createFetchClient } from "./create-fetch-client";
 import { requestHandler } from "./create-request-handler.test";
 import type { api } from "./define-api.test";
-import { describe, test, mock, expect, afterEach } from "bun:test";
 
 describe("createFetchClient", () => {
   const fetch = mock((url: string, init: RequestInit) => {
     return requestHandler(new Request(url, init));
   });
-  const client = createFetchClient<typeof api.routes>(
-    "https://example.com/api",
-    { fetch }
-  );
+  let client = createFetchClient<typeof api.routes>("https://example.com/api", {
+    fetch,
+  });
 
-  afterEach(() => {
+  beforeEach(() => {
     fetch.mockClear();
+    client = createFetchClient<typeof api.routes>("https://example.com/api", {
+      fetch,
+    });
   });
 
   test("get books", async () => {
@@ -65,21 +67,22 @@ describe("createFetchClient", () => {
     const unsubscribe = promise.subscribe(cb);
     expect(cb).toHaveBeenCalledTimes(0);
     await promise;
-    expect(cb).toHaveBeenCalledTimes(1);
+    expect(cb).toHaveBeenCalledTimes(0);
     await client.books.revalidate();
-    expect(cb).toHaveBeenCalledTimes(2);
+    expect(cb).toHaveBeenCalledTimes(1);
     unsubscribe();
     await client.books.revalidate();
-    expect(cb).toHaveBeenCalledTimes(2);
+    expect(cb).toHaveBeenCalledTimes(1);
   });
 
   test("tag-based revalidation", async () => {
     const cb = mock();
     const promise = client.movies[1]!.get({ test: "asdf" });
     promise.subscribe(cb);
-    await promise;
-    expect(cb).toHaveBeenCalledTimes(1);
+    const data = await promise;
+    expect(data.id).toEqual("1");
+    expect(cb).toHaveBeenCalledTimes(0);
     await client.movies.post({}, { id: "3", title: "Movie 3" });
-    expect(cb).toHaveBeenCalledTimes(2);
+    expect(cb).toHaveBeenCalledTimes(1);
   });
 });

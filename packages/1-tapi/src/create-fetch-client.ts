@@ -18,25 +18,32 @@ export function createFetchClient<
   const tagManager = new TagManager();
   const subscriptionManager = new PubSub();
   const fetch = options.fetch ?? globalFetch;
+  const cache = new Map<string, Promise<unknown>>();
 
-  async function load(url: string, init: RequestInit = {}) {
+  function load(url: string, init: RequestInit = {}) {
+    const cached = cache.get(url);
+    if (cached) return cached;
+
     const responsePromise = fetch(url, {
       method: "GET",
       ...init,
     });
+    responsePromise.then((res) => {
+      tagManager.add(url, res.headers.get("X-TAPI-Tags")?.split(" ") ?? []);
+    });
     const dataPromise = responsePromise.then(handleResponse);
+    cache.set(url, dataPromise);
     subscriptionManager.publish(url, dataPromise);
-    const res = await responsePromise;
-    tagManager.add(url, res.headers.get("X-TAPI-Tags")?.split(" ") ?? []);
     return dataPromise;
   }
 
-  async function revalidate(url: string) {
+  function revalidate(url: string) {
+    cache.delete(url);
     if (subscriptionManager.has(url)) {
-      await load(url);
-      return;
+      load(url);
+    } else {
+      tagManager?.remove(url);
     }
-    tagManager?.remove(url);
   }
 
   async function mutate(
@@ -91,7 +98,7 @@ export function createFetchClient<
 
 interface ProxyMethods {
   load(url: string, init?: RequestInit): Promise<unknown>;
-  revalidate(url: string): Promise<void>;
+  revalidate(url: string): void;
   mutate(
     method: string,
     url: string,
