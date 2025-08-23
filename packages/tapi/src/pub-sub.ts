@@ -1,4 +1,4 @@
-export class SubscriptionManager {
+export class PubSub {
   private subscriptions = new Map<
     string,
     Set<(data: Promise<unknown>) => void>
@@ -19,7 +19,7 @@ export class SubscriptionManager {
     };
   }
 
-  trigger(url: string, data: Promise<unknown>) {
+  publish(url: string, data: Promise<unknown>) {
     const urlSubscriptions = this.subscriptions.get(url);
     if (urlSubscriptions) {
       for (const callback of urlSubscriptions.values()) {
