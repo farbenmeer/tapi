@@ -1,6 +1,6 @@
 {
   "name": "@farbenmeer/react-tapi",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": {
     "name": "Michel Smola",
     "email": "michel.smola@farbenmeer.de"
@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "bun run build && bun run pack && bunx npm publish react-tapi.tgz",
+    "release": "bun run build && bun publish",
     "pack": "bun pm pack --filename react-tapi.tgz"
   },
   "dependencies": {},

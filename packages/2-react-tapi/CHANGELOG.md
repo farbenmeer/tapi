@@ -1,5 +1,11 @@
 # @farbenmeer/react-tapi
 
+## 0.1.4
+
+### Patch Changes
+
+- use bun publish
+
 ## 0.1.3
 
 ### Patch Changes
