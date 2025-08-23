@@ -1,5 +1,13 @@
 # @farbenmeer/react-tapi
 
+## 0.1.5
+
+### Patch Changes
+
+- reintroduce cache
+- Updated dependencies
+  - @farbenmeer/tapi@0.1.7
+
 ## 0.1.4
 
 ### Patch Changes

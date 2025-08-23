@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.1.7
+
+### Patch Changes
+
+- reintroduce cache
+
 ## 0.1.6
 
 ### Patch Changes
