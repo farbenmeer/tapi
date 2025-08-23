@@ -1,5 +1,11 @@
 # @farbenmeer/react-tapi
 
+## 0.1.2
+
+### Patch Changes
+
+- 155ce29: explicitly set correct tapi dependency version
+
 ## 0.1.1
 
 ### Patch Changes
