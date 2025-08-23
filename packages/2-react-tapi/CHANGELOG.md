@@ -1,5 +1,11 @@
 # @farbenmeer/react-tapi
 
+## 0.1.3
+
+### Patch Changes
+
+- 1622886: fix release workflow
+
 ## 0.1.2
 
 ### Patch Changes
