@@ -6,20 +6,21 @@
     },
     "packages/react-tapi": {
       "name": "@farbenmeer/react-tapi",
-      "dependencies": {
-        "@farbenmeer/tapi": "workspace:*",
-      },
+      "version": "0.1.1",
       "devDependencies": {
+        "@farbenmeer/tapi": "workspace:^",
         "@types/bun": "latest",
         "react": "^19.1.1",
       },
       "peerDependencies": {
+        "@farbenmeer/tapi": "workspace:^",
+        "react": "^19.1.1",
         "typescript": "^5",
       },
     },
     "packages/tapi": {
       "name": "@farbenmeer/tapi",
-      "version": "0.1.4",
+      "version": "0.1.6",
       "devDependencies": {
         "@changesets/cli": "^2.29.6",
         "@types/bun": "latest",

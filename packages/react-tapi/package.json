@@ -15,17 +15,18 @@
   ],
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "bun pm pack --filename package.tgz && bunx npm publish package.tgz"
+    "release2": "bun pm pack --filename react-tapi.tgz && bunx npm publish react-tapi.tgz",
+    "release": "bun pm pack --filename react-tapi.tgz"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/bun": "latest",
     "react": "^19.1.1",
-    "@farbenmeer/tapi": "workspace:*"
+    "@farbenmeer/tapi": "workspace:^"
   },
   "peerDependencies": {
     "typescript": "^5",
     "react": "^19.1.1",
-    "@farbenmeer/tapi": "workspace:*"
+    "@farbenmeer/tapi": "workspace:^"
   }
 }
