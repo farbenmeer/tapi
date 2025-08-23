@@ -25,7 +25,7 @@ jobs:
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
-          publish: pwd && bun run --filter './packages/*' release; echo 'Done'
+          publish: bun run release
         env:
           NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

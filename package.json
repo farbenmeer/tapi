@@ -1,6 +1,9 @@
 {
   "name": "tapi",
   "private": true,
+  "scripts": {
+    "release": "bun run --filter './packages/*' release; echo 'Done'"
+  },
   "workspaces": [
     "packages/*"
   ]
