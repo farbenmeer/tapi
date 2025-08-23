@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc --noEmit false",
     "release": "bun pm pack --filename tapi.tgz && bunx npm publish tapi.tgz",
-    "release2": "bun pm pack --filename tapi.tgz"
+    "pack": "bun pm pack --filename tapi.tgz"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6",

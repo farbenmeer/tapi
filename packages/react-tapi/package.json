@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc --noEmit false",
     "release": "bun pm pack --filename react-tapi.tgz && bunx npm publish react-tapi.tgz",
-    "release2": "bun pm pack --filename react-tapi.tgz"
+    "pack": "bun pm pack --filename react-tapi.tgz"
   },
   "dependencies": {},
   "devDependencies": {
