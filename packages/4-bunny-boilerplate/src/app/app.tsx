@@ -1,7 +1,8 @@
+import { Auth, SignInButton } from "@farbenmeer/bun-auth/client";
 import { useQuery } from "@farbenmeer/bunny";
 import { client } from "lib/client";
-import { Suspense } from "react";
 import logo from "logo.png";
+import { Suspense } from "react";
 
 export function App() {
   const hello = useQuery(client.hello.get());
@@ -15,6 +16,12 @@ export function App() {
       <Suspense fallback={<div>Loading...</div>}>
         <div>{hello.then((data) => data.message)}</div>
       </Suspense>
+
+      <div className="mt-8">
+        <Auth signIn={<SignInButton provider="mock">Sign In</SignInButton>}>
+          Signed in
+        </Auth>
+      </div>
     </div>
   );
 }
