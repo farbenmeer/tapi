@@ -4,7 +4,7 @@ import postcss from "postcss";
 
 const processCss = postcss([postcssTailwind({})]);
 
-export const tailwindPlugin: BunPlugin = {
+const tailwindPlugin: BunPlugin = {
   name: "Tailwind CSS",
   setup(build) {
     build.onLoad({ filter: /\.(css)$/ }, async ({ path }) => {
@@ -15,3 +15,5 @@ export const tailwindPlugin: BunPlugin = {
     });
   },
 };
+
+export default tailwindPlugin;
