@@ -20,7 +20,7 @@ export function lacy<T>(data: Promise<T>): LacyPromise<T> {
           }
 
           return data[prop];
-        }),
+        })
       );
     },
     apply(target, _thisArg, argArray) {
