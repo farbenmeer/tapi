@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { mkdir, rmdir } from "node:fs/promises";
 import path from "node:path";
 import { generateServer } from "./server";
-import { tailwindPlugin } from "./tailwind-plugin";
+import tailwindPlugin from "./tailwind-plugin";
 
 export const build = new Command()
   .name("build")

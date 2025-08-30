@@ -1,1 +1,2 @@
-preload = ["@farbenmeer/bunny/dist/cli/register-tailwind-plugin.js"]
+[serve.static]
+plugins = ["@farbenmeer/bunny/dist/cli/tailwind-plugin.js"]
