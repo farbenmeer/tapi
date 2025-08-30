@@ -7,7 +7,8 @@
     "dev": "bunny dev",
     "build": "bunny build",
     "start": "bunny start",
-    "migrate": "bunny migrate"
+    "migrate": "bunny migrate",
+    "generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@farbenmeer/bunny": "workspace:*",
