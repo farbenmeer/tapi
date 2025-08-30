@@ -2,12 +2,17 @@
   "name": "tapi",
   "private": true,
   "scripts": {
-    "release": "bun run --filter './packages/1-*' release ; bun run --filter './packages/2-*' release ; echo 'Done'"
+    "build": "for i in {0..3} ; do bun run --filter \"./packages/$i-*\" build ; done",
+    "release": "for i in {0..4} ; do bun run --filter './packages/$i-*' release ; done ; echo 'Done'"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6"
   },
   "workspaces": [
     "packages/*"
+  ],
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@tailwindcss/oxide"
   ]
 }
