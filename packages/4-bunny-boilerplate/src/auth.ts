@@ -1,15 +1,9 @@
 import { defineAuth, OauthProvider } from "@farbenmeer/bun-auth";
 import { DrizzleSqliteAdapter } from "@farbenmeer/bun-auth/adapter-drizzle-sqlite";
-import { db } from "./db";
+import { db } from "./lib/db";
+import { MockProvider } from "@farbenmeer/bun-auth";
 
 export const auth = defineAuth({
-  providers: [
-    OauthProvider({
-      id: "mock",
-      issuer: "https://oauth-mock.mock.beeceptor.com",
-      clientId: "mock",
-      clientSecret: "mock",
-    }),
-  ],
+  providers: [MockProvider()],
   adapter: new DrizzleSqliteAdapter(db),
 });

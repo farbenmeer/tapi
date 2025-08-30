@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "bunny dev",
     "build": "bunny build",
-    "start": "bunny start"
+    "start": "bunny start",
+    "migrate": "bunny migrate"
   },
   "dependencies": {
     "@farbenmeer/bunny": "workspace:*",
@@ -20,6 +21,7 @@
     "@types/bun": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.4",
     "tailwindcss": "^4"
   },
   "peerDependencies": {
