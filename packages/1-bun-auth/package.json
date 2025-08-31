@@ -12,7 +12,8 @@
   "license": "MIT",
   "files": [
     "dist",
-    "adapter-drizzle-sqlite"
+    "adapter-drizzle-sqlite",
+    "client"
   ],
   "scripts": {
     "build": "tsc --noEmit false",

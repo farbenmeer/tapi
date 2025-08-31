@@ -12,7 +12,7 @@
   "license": "MIT",
   "files": [
     "dist",
-    "boilerplate"
+    "boilerplate.tar.gz"
   ],
   "bin": {
     "bunny": "./dist/cli.js"
@@ -21,7 +21,7 @@
     "build": "tsc --noEmit false",
     "pack:boilerplate": "bun --cwd=\"../4-bunny-boilerplate\" pm pack --filename=\"packages/3-bunny/boilerplate.tar.gz\"",
     "cli": "bun src/cli.ts",
-    "release": "bun run build && bun publish"
+    "release": "bun run build && bun run pack:boilerplate && bun publish"
   },
   "dependencies": {
     "@farbenmeer/react-tapi": "workspace:^",
