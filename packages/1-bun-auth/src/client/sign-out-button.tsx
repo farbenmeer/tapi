@@ -1,17 +1,16 @@
 import type { ButtonHTMLAttributes } from "react";
-import { signIn } from ".";
+import { signOut } from ".";
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
-  provider: string;
-}
-
-export function SignInButton({ provider, onClick, ...props }: Props) {
+export function SignOutButton({
+  onClick,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       onClick={async (event) => {
         await onClick?.(event);
         if (event.defaultPrevented) return;
-        await signIn(provider);
+        signOut();
       }}
       {...props}
     />

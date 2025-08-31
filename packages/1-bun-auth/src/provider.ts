@@ -33,7 +33,7 @@ export function OauthProvider(options: OauthOptions): ProviderConfig {
   };
 }
 
-interface MockProviderConfig {
+export interface MockProviderConfig {
   type: "mock";
   id: string;
 }

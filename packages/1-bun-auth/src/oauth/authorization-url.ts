@@ -1,6 +1,6 @@
 import * as oauth from "oauth4webapi";
-import { secureCookie } from "./cookie";
-import type { OauthProviderConfig } from "./provider";
+import { secureCookie } from "../cookie";
+import type { OauthProviderConfig } from "../provider";
 
 export async function generateAuthorizationUrl(
   { client_id, authorizationServer }: OauthProviderConfig,
@@ -50,15 +50,19 @@ export async function generateAuthorizationUrl(
 
 export async function handleAuthorizationUrlRequest(
   provider: OauthProviderConfig,
-  url: string
+  url: URL
 ) {
-  const redirectUri = new URL(
-    `/api/auth/${provider.id}/callback`,
-    url
-  ).toString();
+  const redirectUri = new URL(`/api/auth/${provider.id}/callback`, url);
+
+  redirectUri.searchParams.set(
+    "redirect",
+    url.searchParams.get("redirect") ?? "/"
+  );
 
   const { authorizationUrl, codeVerifier, nonce } =
-    await generateAuthorizationUrl(provider, { redirectUri });
+    await generateAuthorizationUrl(provider, {
+      redirectUri: redirectUri.toString(),
+    });
 
   const isDev = process.env.NODE_ENV === "development";
 
@@ -77,12 +81,6 @@ export async function handleAuthorizationUrlRequest(
         [
           "Set-Cookie",
           secureCookie("bun-auth-nonce", nonce, {
-            secure: !isDev,
-          }),
-        ],
-        [
-          "Set-Cookie",
-          secureCookie("bun-auth-redirect", btoa(url), {
             secure: !isDev,
           }),
         ],

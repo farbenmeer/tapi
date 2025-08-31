@@ -35,26 +35,30 @@ export class DrizzleSqliteAdapter implements Adapter<Session> {
 
   async createAccount(provider: string, userInfo: UserInfoResponse) {
     const { name, email, picture, sub, ...accountInfo } = userInfo;
-    const [user] = await this.db
-      .insert(users)
-      .values({
-        email: email,
-        name: name,
-        picture: picture,
-      })
-      .returning({
-        id: users.id,
+    const user = await this.db.transaction(async (tx) => {
+      const [user] = await this.db
+        .insert(users)
+        .values({
+          email: email,
+          name: name,
+          picture: picture,
+        })
+        .returning({
+          id: users.id,
+        });
+
+      if (!user) {
+        throw new Error("Failed to create user");
+      }
+
+      await this.db.insert(accounts).values({
+        userId: user.id,
+        provider,
+        providerAccountId: sub,
+        info: accountInfo,
       });
 
-    if (!user) {
-      throw new Error("Failed to create user");
-    }
-
-    await this.db.insert(accounts).values({
-      userId: user.id,
-      provider,
-      providerAccountId: sub,
-      info: accountInfo,
+      return user;
     });
 
     return { userId: user.id };

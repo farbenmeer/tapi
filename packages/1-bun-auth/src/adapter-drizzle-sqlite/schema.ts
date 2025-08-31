@@ -26,7 +26,7 @@ export const accounts = d.sqliteTable(
     provider: d.text("provider").notNull(),
     providerAccountId: d.text("provider_account_id").notNull(),
     info: d
-      .blob("info")
+      .text("info", { mode: "json" })
       .$type<
         Omit<
           UserInfoResponse,

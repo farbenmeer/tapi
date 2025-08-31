@@ -1,5 +1,6 @@
 import { createContext, use, type ReactNode } from "react";
 export * from "./sign-in-button";
+export * from "./sign-out-button";
 
 let session: Promise<any> | null = null;
 
@@ -40,4 +41,20 @@ export function useSession<Session>(): Session {
   if (!session)
     throw new Error("useSession must be used within the Auth component");
   return session;
+}
+
+export function signOut() {
+  window.location.href = `/api/auth/sign-out?redirect=${encodeURIComponent(
+    window.location.pathname + window.location.search
+  )}`;
+}
+
+export async function signIn(provider: string) {
+  const res = await fetch(
+    `/api/auth/${provider}/url?redirect=${encodeURIComponent(
+      window.location.pathname + window.location.search
+    )}`
+  );
+  const { authorizationUrl } = await res.json();
+  window.location.href = authorizationUrl;
 }
