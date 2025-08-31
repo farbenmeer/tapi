@@ -3,7 +3,7 @@ CREATE TABLE `accounts` (
 	`user_id` text NOT NULL,
 	`provider` text NOT NULL,
 	`provider_account_id` text NOT NULL,
-	`info` blob,
+	`info` text,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
