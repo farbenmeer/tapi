@@ -5,14 +5,16 @@
  * It is included in `src/index.html`.
  */
 
-import { StrictMode } from "react";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/app";
 
 const elem = document.getElementById("root")!;
 const app = (
   <StrictMode>
-    <App />
+    <Suspense fallback={<div>Loading ...</div>}>
+      <App />
+    </Suspense>
   </StrictMode>
 );
 

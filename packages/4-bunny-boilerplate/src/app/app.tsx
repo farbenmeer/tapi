@@ -1,4 +1,4 @@
-import { Auth, SignInButton } from "@farbenmeer/bun-auth/client";
+import { Auth, SignInButton, SignOutButton } from "@farbenmeer/bun-auth/client";
 import { useQuery } from "@farbenmeer/bunny";
 import { client } from "lib/client";
 import logo from "logo.png";
@@ -18,8 +18,17 @@ export function App() {
       </Suspense>
 
       <div className="mt-8">
-        <Auth signIn={<SignInButton provider="mock">Sign In</SignInButton>}>
-          Signed in
+        <Auth
+          signIn={
+            <SignInButton className="border rounded-md p-2" provider="mock">
+              Sign In
+            </SignInButton>
+          }
+        >
+          <p className="mb-2">Signed in</p>
+          <SignOutButton className="border rounded-md p-2">
+            Sign Out
+          </SignOutButton>
         </Auth>
       </div>
     </div>

@@ -1,8 +1,8 @@
 import * as oauth from "oauth4webapi";
-import type { OauthProviderConfig, ProviderConfig } from "./provider";
-import type { Adapter, AuthDefinition } from "./define-auth";
+import type { OauthProviderConfig, ProviderConfig } from "../provider";
+import type { Adapter, AuthDefinition } from "../define-auth";
 import type { BunRequest } from "bun";
-import { secureCookie } from "./cookie";
+import { secureCookie } from "../cookie";
 
 interface Options {
   currentUrl: URL;
@@ -76,10 +76,7 @@ export async function handleCallbackRequest(
 ) {
   const codeVerifier = req.cookies.get("bun-auth-code-verifier");
   const nonce = req.cookies.get("bun-auth-nonce");
-  const redirectUri = new URL(
-    `/api/auth/${provider.id}/callback`,
-    req.url
-  ).toString();
+  const redirectUri = new URL(`/api/auth/${provider.id}/callback`, req.url);
 
   if (!codeVerifier) {
     return new Response("Code verifier not found", { status: 400 });
@@ -89,10 +86,10 @@ export async function handleCallbackRequest(
   let accessToken, claims;
   try {
     ({ accessToken, claims } = await callback(provider, {
-      currentUrl: currentUrl,
+      currentUrl: new URL(req.url),
       code_verifier: codeVerifier,
       nonce: nonce || undefined,
-      redirectUri,
+      redirectUri: redirectUri.toString(),
     }));
   } catch (error) {
     return new Response("Authentication failed", { status: 401 });
@@ -127,9 +124,10 @@ export async function handleCallbackRequest(
   try {
     const sessionId = await adapter.createSession(userId);
 
-    const redirectUrl =
-      req.cookies.get("bun-auth-redirect") ??
-      currentUrl.protocol + "//" + currentUrl.host;
+    const redirectUrl = new URL(
+      currentUrl.searchParams.get("redirect") ?? "/",
+      currentUrl
+    );
 
     const res = Response.redirect(redirectUrl);
     res.headers.append(
