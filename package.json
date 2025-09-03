@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "for i in {0..3} ; do bun run --filter \"./packages/$i-*\" build ; done",
-    "release": "for i in {0..4} ; do bun run --filter './packages/$i-*' release ; done ; echo 'Done'"
+    "release": "for i in {0..4} ; do bun run --filter \"./packages/$i-*\" release ; done ; echo 'Done'"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6"
