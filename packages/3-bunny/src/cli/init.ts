@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { exists, mkdir, readdir } from "node:fs/promises";
 import { $ } from "bun";
 import path from "node:path";
+import { gitignoreTemplate } from "./gitignore-template";
 
 export const init = new Command()
   .name("init")
@@ -37,6 +38,10 @@ export const init = new Command()
     await $`tar -xzf ${tarBall} --strip-components=1`;
 
     await $`bun pm pkg set name=${name ?? path.basename(process.cwd())}`;
+
+    await Bun.write(path.join(process.cwd(), ".gitignore"), gitignoreTemplate);
+
+    await $`git init`;
 
     console.log("Project initialized successfully!");
   });
