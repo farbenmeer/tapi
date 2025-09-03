@@ -1,5 +1,0 @@
----
-"@farbenmeer/tapi": patch
----
-
-authorization

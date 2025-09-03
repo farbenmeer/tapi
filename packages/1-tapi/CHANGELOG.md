@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.1.8
+
+### Patch Changes
+
+- b86ac32: authorization
+
 ## 0.1.7
 
 ### Patch Changes
