@@ -11,10 +11,26 @@
   "private": false,
   "license": "MIT",
   "files": [
-    "dist",
-    "adapter-drizzle-sqlite",
-    "client"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "default": "./dist/client/index.js",
+      "types": "./dist/client/index.d.ts"
+    },
+    "./adapter-drizzle-sqlite": {
+      "default": "./dist/adapter-drizzle-sqlite/index.js",
+      "types": "./dist/adapter-drizzle-sqlite/index.d.ts"
+    },
+    "./adapter-drizzle-sqlite/schema": {
+      "default": "./dist/adapter-drizzle-sqlite/schema.js",
+      "types": "./dist/adapter-drizzle-sqlite/schema.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc --noEmit false",
     "release": "bun run build && bun publish"
