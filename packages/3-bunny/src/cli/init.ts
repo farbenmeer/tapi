@@ -36,7 +36,9 @@ export const init = new Command()
     // Extract the tarball to the current directory
     await $`tar -xzf ${tarBall} --strip-components=1`;
 
-    await $`bun pm pkg set name=${name ?? path.basename(process.cwd())}`;
+    await $`bun pm pkg set name=${
+      name ?? path.basename(process.cwd())
+    } version=0.1.0`;
 
     await $`git init`;
     await $`bun install`;
