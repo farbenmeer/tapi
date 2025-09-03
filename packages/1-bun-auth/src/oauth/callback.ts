@@ -124,12 +124,13 @@ export async function handleCallbackRequest(
   try {
     const sessionId = await adapter.createSession(userId);
 
-    const redirectUrl = new URL(
-      currentUrl.searchParams.get("redirect") ?? "/",
+    const redirectCookie = req.cookies.get("bun-auth-redirect");
+    const redirectTarget = new URL(
+      redirectCookie ? atob(redirectCookie) : "/",
       currentUrl
     );
 
-    const res = Response.redirect(redirectUrl);
+    const res = Response.redirect(redirectTarget);
     res.headers.append(
       "Set-Cookie",
       secureCookie("bun-auth-session", sessionId, {

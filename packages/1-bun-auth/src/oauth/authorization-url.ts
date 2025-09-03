@@ -54,11 +54,6 @@ export async function handleAuthorizationUrlRequest(
 ) {
   const redirectUri = new URL(`/api/auth/${provider.id}/callback`, url);
 
-  redirectUri.searchParams.set(
-    "redirect",
-    url.searchParams.get("redirect") ?? "/"
-  );
-
   const { authorizationUrl, codeVerifier, nonce } =
     await generateAuthorizationUrl(provider, {
       redirectUri: redirectUri.toString(),
@@ -83,6 +78,16 @@ export async function handleAuthorizationUrlRequest(
           secureCookie("bun-auth-nonce", nonce, {
             secure: !isDev,
           }),
+        ],
+        [
+          "Set-Cookie",
+          secureCookie(
+            "bun-auth-redirect",
+            btoa(url.searchParams.get("redirect") ?? "/"),
+            {
+              secure: !isDev,
+            }
+          ),
         ],
       ],
     }
