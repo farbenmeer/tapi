@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.1.3
+
+### Patch Changes
+
+- 13eb226: Include files explicitly in boilerplate repo and run install, generate migrate commands in init script
+
 ## 0.1.2
 
 ### Patch Changes
