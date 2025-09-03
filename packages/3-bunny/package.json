@@ -8,7 +8,7 @@
   "type": "module",
   "module": "dist/index.js",
   "main": "dist/index.js",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "files": [
     "dist",
