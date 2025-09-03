@@ -1,15 +1,12 @@
-# boilerplate
+# Bunny Project
 
-To install dependencies:
+This project was created using `@farbenmeer/bunny init`.
 
-```bash
-bun install
-```
+It uses the `@farbenmeer/bunny`-Framework.
 
-To run:
-
-```bash
-bun run src/index.ts
-```
-
-This project was created using `bun init` in bun v1.2.21. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Commands:
+* `bun run dev` starts the dev-server.
+* `bun run build` creates a production build.
+* `bun run start` starts the production server (run `bun run build` first).
+* `bun run generate` generates a migration based on the drizzle schema in `src/lib/schema.ts`
+* `bun run migrate` to apply the migrations

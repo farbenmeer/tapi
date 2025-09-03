@@ -1,8 +1,7 @@
+import { $ } from "bun";
 import { Command } from "commander";
 import { exists, mkdir, readdir } from "node:fs/promises";
-import { $ } from "bun";
 import path from "node:path";
-import { gitignoreTemplate } from "./gitignore-template";
 
 export const init = new Command()
   .name("init")
@@ -39,9 +38,10 @@ export const init = new Command()
 
     await $`bun pm pkg set name=${name ?? path.basename(process.cwd())}`;
 
-    await Bun.write(path.join(process.cwd(), ".gitignore"), gitignoreTemplate);
-
     await $`git init`;
+    await $`bun install`;
+    await $`bun run generate`;
+    await $`bun run migrate`;
 
     console.log("Project initialized successfully!");
   });
