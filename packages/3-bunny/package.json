@@ -15,7 +15,8 @@
     "boilerplate.tar.gz"
   ],
   "bin": {
-    "bunny": "./dist/cli.js"
+    "bunny": "./dist/cli.js",
+    "@farbenmeer/bunny": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc --noEmit false",
