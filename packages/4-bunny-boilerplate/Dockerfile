@@ -16,8 +16,11 @@ RUN bun run build
 # copy production dependencies and source code into final image
 FROM base AS runner
 COPY --from=builder /usr/src/app/.bunny/prod .
+COPY drizzle /usr/src/app/drizzle
+
+ENV SQLITE_FILE=/mnt/data/db.sqlite
 
 # run the app
 USER bun
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "server.js" ]
+CMD [ "bun", "run", "migrate", "&&", "bun", "run", "server.js" ]
