@@ -1,5 +1,12 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [c3e9eaa]
+  - @farbenmeer/bun-auth@0.1.3
+
 ## 0.1.4
 
 ### Patch Changes

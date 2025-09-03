@@ -1,5 +1,11 @@
 # @farbenmeer/bun-auth
 
+## 0.1.3
+
+### Patch Changes
+
+- c3e9eaa: Store redirect url in cookie instead of url parameter
+
 ## 0.1.2
 
 ### Patch Changes
