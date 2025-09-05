@@ -9,6 +9,7 @@ import { describe, expect, test } from "bun:test";
 import { Suspense } from "react";
 import { z } from "zod/v4";
 import { useQuery } from ".";
+import type { GetRoute } from "@farbenmeer/tapi/client";
 
 describe("useQuery", () => {
   const api = defineApi()
@@ -66,6 +67,28 @@ describe("useQuery", () => {
       render(
         <Suspense fallback={<div>Loading...</div>}>
           <Sut />
+        </Suspense>
+      )
+    );
+
+    expect(screen.getByText("Query: test")).toBeInTheDocument();
+  });
+
+  test("Pass Route to Component", async () => {
+    interface Props {
+      route: {
+        get: GetRoute<{ message: string }, { q: string }>;
+      };
+    }
+    function Sut({ route }: Props) {
+      const data = useQuery(route.get({ q: "test" }));
+      return <div>{data.then((data) => data.message)}</div>;
+    }
+
+    await act(() =>
+      render(
+        <Suspense fallback={<div>Loading...</div>}>
+          <Sut route={client.withQuery} />
         </Suspense>
       )
     );
