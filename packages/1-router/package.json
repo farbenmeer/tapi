@@ -14,7 +14,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --noEmit false",
+    "build": "tsc -p tsconfig.build.json",
     "release": "bun run build && bun publish"
   },
   "dependencies": {},
