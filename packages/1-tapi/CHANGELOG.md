@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.1.9
+
+### Patch Changes
+
+- 8620659: split package into separate server and client exports
+
 ## 0.1.8
 
 ### Patch Changes

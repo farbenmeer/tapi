@@ -1,5 +1,11 @@
 # @farbenmeer/bun-auth
 
+## 0.1.4
+
+### Patch Changes
+
+- 8620659: split package into separate server and client exports
+
 ## 0.1.3
 
 ### Patch Changes
