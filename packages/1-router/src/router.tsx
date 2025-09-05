@@ -43,6 +43,7 @@ export function Router(props: Props) {
           startTransition(() => {
             setPathname(removeTrailingSlash(window.location.pathname));
             setSearch(window.location.search);
+            setHash(window.location.hash);
           });
         }
       },
@@ -52,6 +53,7 @@ export function Router(props: Props) {
           startTransition(() => {
             setPathname(removeTrailingSlash(window.location.pathname));
             setSearch(window.location.search);
+            setHash(window.location.hash);
           });
         }
       },
