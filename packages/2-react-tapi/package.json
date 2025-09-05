@@ -14,14 +14,20 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --noEmit false",
-    "release": "bun run build && bun publish"
+    "build": "tsc -p tsconfig.build.json",
+    "release": "bun run build && bun publish",
+    "test": "bun test"
   },
   "dependencies": {},
   "devDependencies": {
+    "@farbenmeer/tapi": "workspace:^",
+    "@happy-dom/global-registrator": "^18.0.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
     "@types/bun": "latest",
     "react": "^19.1.1",
-    "@farbenmeer/tapi": "workspace:^"
+    "zod": "^4.1.5"
   },
   "peerDependencies": {
     "typescript": "^5",

@@ -9,7 +9,7 @@
     },
     "packages/1-bun-auth": {
       "name": "@farbenmeer/bun-auth",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "dependencies": {
         "oauth4webapi": "^3.8.1",
       },
@@ -51,7 +51,7 @@
     },
     "packages/1-tapi": {
       "name": "@farbenmeer/tapi",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "dependencies": {
         "zod-openapi": "^5.4.0",
       },
@@ -69,8 +69,13 @@
       "version": "0.1.5",
       "devDependencies": {
         "@farbenmeer/tapi": "workspace:^",
+        "@happy-dom/global-registrator": "^18.0.1",
+        "@testing-library/dom": "^10.4.1",
+        "@testing-library/jest-dom": "^6.8.0",
+        "@testing-library/react": "^16.3.0",
         "@types/bun": "latest",
         "react": "^19.1.1",
+        "zod": "^4.1.5",
       },
       "peerDependencies": {
         "@farbenmeer/tapi": "workspace:^",
@@ -80,7 +85,7 @@
     },
     "packages/3-bunny": {
       "name": "@farbenmeer/bunny",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "bin": {
         "bunny": "./dist/cli.js",
         "@farbenmeer/bunny": "./dist/cli.js",
@@ -104,7 +109,7 @@
     },
     "packages/4-bunny-boilerplate": {
       "name": "@farbenmeer/bunny-boilerplate",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "dependencies": {
         "@farbenmeer/bunny": "workspace:*",
         "drizzle-orm": "^0.44",
@@ -589,6 +594,10 @@
     "zod-openapi": ["zod-openapi@5.4.0", "", { "peerDependencies": { "zod": "^3.25.74 || ^4.0.0" } }, "sha512-5FdEnJmeNFmSEzfoH10GGF0OQFtSkJCnoXBZR618/Aozv2NF7dhS6y4dj+88rwAgNezbUH+9GJC3QsEiyu3rUQ=="],
 
     "@esbuild-kit/core-utils/esbuild": ["esbuild@0.18.20", "", { "optionalDependencies": { "@esbuild/android-arm": "0.18.20", "@esbuild/android-arm64": "0.18.20", "@esbuild/android-x64": "0.18.20", "@esbuild/darwin-arm64": "0.18.20", "@esbuild/darwin-x64": "0.18.20", "@esbuild/freebsd-arm64": "0.18.20", "@esbuild/freebsd-x64": "0.18.20", "@esbuild/linux-arm": "0.18.20", "@esbuild/linux-arm64": "0.18.20", "@esbuild/linux-ia32": "0.18.20", "@esbuild/linux-loong64": "0.18.20", "@esbuild/linux-mips64el": "0.18.20", "@esbuild/linux-ppc64": "0.18.20", "@esbuild/linux-riscv64": "0.18.20", "@esbuild/linux-s390x": "0.18.20", "@esbuild/linux-x64": "0.18.20", "@esbuild/netbsd-x64": "0.18.20", "@esbuild/openbsd-x64": "0.18.20", "@esbuild/sunos-x64": "0.18.20", "@esbuild/win32-arm64": "0.18.20", "@esbuild/win32-ia32": "0.18.20", "@esbuild/win32-x64": "0.18.20" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA=="],
+
+    "@farbenmeer/react-tapi/zod": ["zod@4.1.5", "", {}, "sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg=="],
+
+    "@farbenmeer/tapi/zod": ["zod@4.1.5", "", {}, "sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg=="],
 
     "@manypkg/find-root/@types/node": ["@types/node@12.20.55", "", {}, "sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ=="],
 
