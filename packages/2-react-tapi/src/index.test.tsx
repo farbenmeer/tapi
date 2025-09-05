@@ -40,7 +40,7 @@ describe("useQuery", () => {
 
   const client = createLocalClient(api);
 
-  test("no query", async () => {
+  test("Without Query", async () => {
     function Sut() {
       const data = useQuery(client.noQuery.get());
       return <div>{data.then((data) => data.message)}</div>;
@@ -74,25 +74,49 @@ describe("useQuery", () => {
     expect(screen.getByText("Query: test")).toBeInTheDocument();
   });
 
-  test("Pass Route to Component", async () => {
-    interface Props {
-      route: {
-        get: GetRoute<{ message: string }, { q: string }>;
-      };
-    }
-    function Sut({ route }: Props) {
-      const data = useQuery(route.get({ q: "test" }));
-      return <div>{data.then((data) => data.message)}</div>;
-    }
+  describe("Route as Prop", () => {
+    test("Without Query", async () => {
+      interface Props {
+        route: {
+          get: GetRoute<{ message: string }>;
+        };
+      }
+      function Sut({ route }: Props) {
+        const data = useQuery(route.get());
+        return <div>{data.then((data) => data.message)}</div>;
+      }
 
-    await act(() =>
-      render(
-        <Suspense fallback={<div>Loading...</div>}>
-          <Sut route={client.withQuery} />
-        </Suspense>
-      )
-    );
+      await act(() =>
+        render(
+          <Suspense fallback={<div>Loading...</div>}>
+            <Sut route={client.withQuery} />
+          </Suspense>
+        )
+      );
 
-    expect(screen.getByText("Query: test")).toBeInTheDocument();
+      expect(screen.getByText("No Query")).toBeInTheDocument();
+    });
+
+    test("With Query", async () => {
+      interface Props {
+        route: {
+          get: GetRoute<{ message: string }, { q: string }>;
+        };
+      }
+      function Sut({ route }: Props) {
+        const data = useQuery(route.get({ q: "test" }));
+        return <div>{data.then((data) => data.message)}</div>;
+      }
+
+      await act(() =>
+        render(
+          <Suspense fallback={<div>Loading...</div>}>
+            <Sut route={client.withQuery} />
+          </Suspense>
+        )
+      );
+
+      expect(screen.getByText("Query: test")).toBeInTheDocument();
+    });
   });
 });
