@@ -16,7 +16,7 @@ export async function generateServer() {
 import { serve } from "bun";
 ${
   hasApi
-    ? 'import { api } from "api"; import { createRequestHandler } from "@farbenmeer/bunny/server";'
+    ? 'import { api } from "api"; import { createRequestHandler, generateOpenAPISchema } from "@farbenmeer/bunny/server"; import packageJson from "../package.json"'
     : ""
 }
 ${
@@ -35,6 +35,11 @@ ${
 const server = serve({
   routes: {
     ${hasAuth ? '"/api/auth/*": createAuthRoute(auth),' : ""}
+    ${
+      hasApi
+        ? '"/openapi.json": Response.json(await generateOpenAPISchema(api, { info: { title: packageJson.name, version: packageJson.version }})),'
+        : ""
+    }
     ${hasApi ? '"/api/*": (req) => tapiHandler(new Request(req)),' : ""}
     "/*": client,
   },
