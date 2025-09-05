@@ -14,9 +14,9 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "./server": {
+      "default": "./dist/server/index.js",
+      "types": "./dist/server/index.d.ts"
     },
     "./client": {
       "default": "./dist/client/index.js",

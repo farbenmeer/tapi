@@ -1,6 +1,6 @@
 import type { MaybePromise } from "bun";
-import type { Path as BasePath, StrictParams } from "./path";
-import type { Route } from "./route";
+import type { Path as BasePath, StrictParams } from "../shared/path";
+import type { Route } from "../shared/route";
 
 export function defineApi() {
   return new ApiDefinition({});
@@ -15,7 +15,7 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
     GetQuery extends Record<string, unknown> = never,
     PostResponse = never,
     PostQuery extends Record<string, unknown> = never,
-    PostBody = never,
+    PostBody = never
   >(
     path: Path,
     route: MaybePromise<
@@ -27,7 +27,7 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
         PostQuery,
         PostBody
       >
-    >,
+    >
   ) {
     (this.routes[path] as any) = route;
     return this as unknown as ApiDefinition<

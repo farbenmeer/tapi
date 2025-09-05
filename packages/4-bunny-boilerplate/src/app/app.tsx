@@ -1,5 +1,9 @@
-import { Auth, SignInButton, SignOutButton } from "@farbenmeer/bun-auth/client";
-import { useQuery } from "@farbenmeer/bunny";
+import {
+  useQuery,
+  Auth,
+  SignInButton,
+  SignOutButton,
+} from "@farbenmeer/bunny/client";
 import { client } from "lib/client";
 import logo from "logo.png";
 import { Suspense } from "react";

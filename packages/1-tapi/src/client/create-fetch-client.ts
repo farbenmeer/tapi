@@ -1,8 +1,8 @@
 import type { MaybePromise } from "bun";
-import type { Client, Observable } from "./client";
+import type { Client, Observable } from "./client-types";
 import { handleResponse } from "./handle-response";
-import type { Path as BasePath } from "./path";
-import type { BaseRoute } from "./route";
+import type { Path as BasePath } from "../shared/path";
+import type { BaseRoute } from "../shared/route";
 import { TagManager } from "./tag-manager";
 import { PubSub } from "./pub-sub";
 

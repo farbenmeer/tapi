@@ -1,4 +1,4 @@
-import type { Observable } from "@farbenmeer/tapi/dist/client";
+import type { Observable } from "@farbenmeer/tapi/client";
 import * as React from "react";
 
 type ObservablePromise<T> = Promise<T> & Observable<T>;

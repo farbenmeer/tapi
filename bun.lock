@@ -9,7 +9,7 @@
     },
     "packages/1-bun-auth": {
       "name": "@farbenmeer/bun-auth",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "dependencies": {
         "oauth4webapi": "^3.8.1",
       },
@@ -83,7 +83,9 @@
         "@farbenmeer/bunny": "./dist/cli.js",
       },
       "dependencies": {
+        "@farbenmeer/bun-auth": "workspace:^",
         "@farbenmeer/react-tapi": "workspace:^",
+        "@farbenmeer/router": "workspace:^",
         "@farbenmeer/tapi": "workspace:^",
         "@tailwindcss/postcss": "^4.1.12",
         "commander": "^14.0.0",
@@ -99,7 +101,7 @@
     },
     "packages/4-bunny-boilerplate": {
       "name": "@farbenmeer/bunny-boilerplate",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "dependencies": {
         "@farbenmeer/bun-auth": "workspace:*",
         "@farbenmeer/bunny": "workspace:*",

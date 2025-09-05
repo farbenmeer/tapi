@@ -1,1 +1,1 @@
-export * from "@farbenmeer/bun-auth/adapter-drizzle-sqlite/schema";
+export * from "@farbenmeer/bunny/auth/adapter-drizzle-sqlite/schema";

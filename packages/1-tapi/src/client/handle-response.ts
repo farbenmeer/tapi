@@ -1,4 +1,4 @@
-import { HttpError } from "./http-error";
+import { HttpError } from "../shared/http-error";
 
 export function handleResponse(res: Response) {
   switch (res.status) {

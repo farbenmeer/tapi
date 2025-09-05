@@ -1,9 +1,9 @@
 import { z, ZodError } from "zod/v4";
 import type { ApiDefinition } from "./define-api";
 import type { Handler } from "./handler";
-import { HttpError } from "./http-error";
-import type { Path as BasePath } from "./path";
-import type { BaseRoute } from "./route";
+import { HttpError } from "../shared/http-error";
+import type { Path as BasePath } from "../shared/path";
+import type { BaseRoute } from "../shared/route";
 import type { TRequest } from "./t-request";
 import type { MaybePromise } from "bun";
 

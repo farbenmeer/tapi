@@ -1,5 +1,5 @@
 import { and, eq, lte } from "drizzle-orm";
-import type { Adapter } from "../define-auth";
+import type { Adapter } from "../server/define-auth";
 import { accounts, sessions, users } from "./schema";
 import type { UserInfoResponse } from "oauth4webapi";
 import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
