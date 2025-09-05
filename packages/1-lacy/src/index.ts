@@ -1,4 +1,4 @@
-type LacyPromise<T, P = never> = T extends (...args: infer A) => infer R
+export type LacyPromise<T, P = never> = T extends (...args: infer A) => infer R
   ? (...args: A) => LacyPromise<R>
   : {
       [key in Exclude<keyof T, "then" | "catch" | "finally">]: LacyPromise<
