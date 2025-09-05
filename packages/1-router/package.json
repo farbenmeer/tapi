@@ -1,0 +1,33 @@
+{
+  "name": "@farbenmeer/router",
+  "version": "0.1.0",
+  "author": {
+    "name": "Michel Smola",
+    "email": "michel.smola@farbenmeer.de"
+  },
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "private": false,
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit false",
+    "release": "bun run build && bun publish"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@happy-dom/global-registrator": "^18.0.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/bun": "latest",
+    "react": "^19.1.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5",
+    "react": "^19.1.1"
+  }
+}
