@@ -1,15 +1,15 @@
+import type { GetRoute } from "@farbenmeer/tapi/client";
 import {
   createLocalClient,
   defineApi,
   defineHandler,
   TResponse,
 } from "@farbenmeer/tapi/server";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { describe, expect, test } from "bun:test";
 import { Suspense } from "react";
 import { z } from "zod/v4";
 import { useQuery } from ".";
-import type { GetRoute } from "@farbenmeer/tapi/client";
 
 describe("useQuery", () => {
   const api = defineApi()
