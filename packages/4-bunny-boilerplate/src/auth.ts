@@ -1,7 +1,7 @@
-import { defineAuth, OauthProvider } from "@farbenmeer/bun-auth";
-import { DrizzleSqliteAdapter } from "@farbenmeer/bun-auth/adapter-drizzle-sqlite";
+import { defineAuth, OauthProvider } from "@farbenmeer/bunny/server";
+import { DrizzleSqliteAdapter } from "@farbenmeer/bunny/auth/adapter-drizzle-sqlite";
 import { db } from "./lib/db";
-import { MockProvider } from "@farbenmeer/bun-auth";
+import { MockProvider } from "@farbenmeer/bunny/server";
 
 export const auth = defineAuth({
   providers: [MockProvider()],

@@ -7,7 +7,7 @@ interface Options {
 export function secureCookie(
   name: string,
   value: string | undefined | null,
-  options: Options,
+  options: Options
 ) {
   const parts = [
     `${name}=${value ?? ""}`,

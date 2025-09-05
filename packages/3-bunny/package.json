@@ -18,6 +18,24 @@
     "bunny": "./dist/cli.js",
     "@farbenmeer/bunny": "./dist/cli.js"
   },
+  "exports": {
+    "./client": {
+      "default": "./dist/client.js",
+      "types": "./dist/client.d.ts"
+    },
+    "./server": {
+      "default": "./dist/server.js",
+      "types": "./dist/server.d.ts"
+    },
+    "./auth/adapter-drizzle-sqlite": {
+      "default": "./dist/auth/adapter-drizzle-sqlite/index.js",
+      "types": "./dist/auth/adapter-drizzle-sqlite/index.d.ts"
+    },
+    "./auth/adapter-drizzle-sqlite/schema": {
+      "default": "./dist/auth/adapter-drizzle-sqlite/schema.js",
+      "types": "./dist/auth/adapter-drizzle-sqlite/schema.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc --noEmit false",
     "pack:boilerplate": "bun --cwd=\"../4-bunny-boilerplate\" pm pack --filename=\"packages/3-bunny/boilerplate.tar.gz\"",
@@ -27,6 +45,8 @@
   "dependencies": {
     "@farbenmeer/react-tapi": "workspace:^",
     "@farbenmeer/tapi": "workspace:^",
+    "@farbenmeer/bun-auth": "workspace:^",
+    "@farbenmeer/router": "workspace:^",
     "@tailwindcss/postcss": "^4.1.12",
     "commander": "^14.0.0",
     "drizzle-orm": "^0.44.5",

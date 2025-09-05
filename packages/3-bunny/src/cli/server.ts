@@ -16,12 +16,12 @@ export async function generateServer() {
 import { serve } from "bun";
 ${
   hasApi
-    ? 'import { api } from "api"; import { createRequestHandler } from "@farbenmeer/bunny";'
+    ? 'import { api } from "api"; import { createRequestHandler } from "@farbenmeer/bunny/server";'
     : ""
 }
 ${
   hasAuth
-    ? 'import { auth } from "auth"; import { createAuthRoute } from "@farbenmeer/bun-auth";'
+    ? 'import { auth } from "auth"; import { createAuthRoute } from "@farbenmeer/bunny/server";'
     : ""
 }
 import client from "index.html";

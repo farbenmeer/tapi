@@ -1,4 +1,4 @@
-import type { Handler } from "./handler";
+import type { Handler } from "../server/handler";
 
 export type Route<
   Params extends Record<string, string>,

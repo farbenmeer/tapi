@@ -26,7 +26,7 @@ const db = drizzle(process.env.SQLITE_FILE || "./db.sqlite", { schema });
 Define your authentication strategy:
 ```ts
 // auth.ts
-import { defineAuth, OauthProvider } from "@farbenmeer/bun-auth";
+import { defineAuth, OauthProvider } from "@farbenmeer/bun-auth/server";
 import { db } from "./db"
 import { DrizzleSqliteAdapter } from "@farbenmeer/bun-auth/adapter-drizzle-sqlite";
 
@@ -49,7 +49,7 @@ Set up the route where you define your web server:
 ```ts
 import { serve } from "bun";
 import { auth } from "./auth";
-import { createAuthRoute } from "@farbenmeer/bun-auth"
+import { createAuthRoute } from "@farbenmeer/bun-auth/server"
 
 const server = serve({
   routes: {

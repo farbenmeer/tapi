@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@farbenmeer/bunny": "workspace:*",
-    "@farbenmeer/bun-auth": "workspace:*",
     "zod": "^4",
     "react": "^19",
     "react-dom": "^19",

@@ -27,7 +27,7 @@ bun add @farbenmeer/tapi
 
 Create a file (conventionally called `api.ts`) with your API definition:
 ```ts
-import { defineApi } from "@farbenmeer/tapi"
+import { defineApi } from "@farbenmeer/tapi/server"
 
 export const api = defineApi()
 ```
@@ -35,7 +35,7 @@ export const api = defineApi()
 Set up a route to handle the requests. This depends on your framework. For Next.js it would be `app/api/[...tap]/route.ts`:
 ```ts
 import { api } from "api"
-import { createRequestHandler } from "@farbenmeer/tapi"
+import { createRequestHandler } from "@farbenmeer/tapi/server"
 
 const handler = createRequestHandler(api)
 
@@ -49,6 +49,7 @@ export const PATCH = handler
 Create another file (conventionally called `client.ts`) with your client definition:
 ```ts
 import type { api } from "./api"
+import { defineFetchClient } from "@farbenmeer/tapi/client"
 
 export const client = defineFetchClient<typeof api>(apiUrl)
 ```
@@ -58,7 +59,7 @@ where `apiUrl` is the base URL of your API, usually something like `https://exam
 Define your first route as a file, in this example `api/books.ts`:
 
 ```ts
-import { defineHandler, TResponse } from "@farbenmeer/tapi"
+import { defineHandler, TResponse } from "@farbenmeer/tapi/server"
 
 export const GET = defineHandler({ authorize: () => true }, async () => {
   return TResponse.json([
@@ -70,7 +71,7 @@ export const GET = defineHandler({ authorize: () => true }, async () => {
 
 extends `api.ts`:
 ```ts
-import { defineApi } from "@farbenmeer/tapi"
+import { defineApi } from "@farbenmeer/tapi/server"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
@@ -81,13 +82,15 @@ export const api = defineApi()
 The `authorize` argument in `defineHandler` allows you to authorize routes based on request headers and other request data. The authorize function receives a `TRequest` object that extends the standard Request, giving you access to headers, URL parameters, and query parameters for authorization decisions.
 
 ```ts
+import { defineHandler, TResponse } from "@farbenmeer/tapi/server"
+
 export const GET = defineHandler({
   authorize: (req) => {
     const authHeader = req.headers.get('Authorization')
     if (!authHeader?.startsWith('Bearer ')) {
       throw new Error('Unauthorized: Missing or invalid token')
     }
-    
+
     const token = authHeader.slice(7) // Remove 'Bearer ' prefix
     // Validate token and return user data
     return validateTokenAndGetUser(token)
@@ -118,7 +121,7 @@ fetchBooks()
 ## Dynamic Paths
 Define a route with a dynamic path parameter using the params option for `defineHandler`, for example `/api/book.ts`
 ```ts
-import { defineHandler, TResponse } from "@farbenmeer/tapi"
+import { defineHandler, TResponse } from "@farbenmeer/tapi/server"
 import { z } from "zod/v4"
 
 export const GET = defineHandler({
@@ -134,7 +137,7 @@ export const GET = defineHandler({
 
 extends `api.ts`:
 ```ts
-import { defineApi } from "@farbenmeer/tapi"
+import { defineApi } from "@farbenmeer/tapi/server"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
@@ -156,7 +159,7 @@ fetchBook('1')
 ## Query Parameters
 Define a route with query parameters using the query option for `defineHandler`, for example `/api/search.ts`
 ```ts
-import { defineHandler, TResponse } from "@farbenmeer/tapi"
+import { defineHandler, TResponse } from "@farbenmeer/tapi/server"
 import { z } from "zod/v4"
 
 export const GET = defineHandler({
@@ -172,7 +175,7 @@ export const GET = defineHandler({
 
 extends `api.ts`:
 ```ts
-import { defineApi } from "@farbenmeer/tapi"
+import { defineApi } from "@farbenmeer/tapi/server"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
@@ -195,7 +198,8 @@ searchBooks('TApi')
 ## Post Requests
 Define a POST-route, for example to add a book in `api/books.ts`:
 ```ts
-import { defineHandler, TResponse } from "@farbenmeer/tapi"
+import { defineHandler, TResponse } from "@farbenmeer/tapi/server"
+import { z } from "zod/v4"
 
 /* export const GET = ... */
 

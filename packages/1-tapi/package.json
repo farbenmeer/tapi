@@ -13,6 +13,16 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    "./server": {
+      "default": "./dist/server/index.js",
+      "types": "./dist/server/index.d.ts"
+    },
+    "./client": {
+      "default": "./dist/client/index.js",
+      "types": "./dist/client/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc --noEmit false",
     "release": "bun run build && bun publish"
