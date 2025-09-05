@@ -89,7 +89,7 @@ describe("useQuery", () => {
       await act(() =>
         render(
           <Suspense fallback={<div>Loading...</div>}>
-            <Sut route={client.withQuery} />
+            <Sut route={client.noQuery} />
           </Suspense>
         )
       );
