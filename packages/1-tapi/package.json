@@ -36,7 +36,9 @@
     "typescript": "^5",
     "zod": "^4.0.17"
   },
-  "dependencies": {},
+  "dependencies": {
+    "zod-openapi": "^5.4.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/farbenmeer/tapi.git"
