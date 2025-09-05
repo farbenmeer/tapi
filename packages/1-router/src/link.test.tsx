@@ -1,10 +1,8 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, test, beforeEach, mock } from "bun:test";
-import { Router } from "./router";
-import { Route } from "./route";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, mock, test } from "bun:test";
 import { Link } from "./link";
-import { afterEach } from "bun:test";
-import { spyOn } from "bun:test";
+import { Route } from "./route";
+import { Router } from "./router";
 
 describe("Link", () => {
   const mockHistory = {
