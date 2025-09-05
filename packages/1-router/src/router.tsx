@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { startTransition, useMemo, useState, type ReactNode } from "react";
 import {
   HashContext,
   PathnameContext,
@@ -40,15 +40,19 @@ export function Router(props: Props) {
       push: (url: string) => {
         (props.history ?? window.history).pushState(null, "", url);
         if (!props.location) {
-          setPathname(removeTrailingSlash(window.location.pathname));
-          setSearch(window.location.search);
+          startTransition(() => {
+            setPathname(removeTrailingSlash(window.location.pathname));
+            setSearch(window.location.search);
+          });
         }
       },
       replace: (url: string) => {
         (props.history ?? window.history).replaceState(null, "", url);
         if (!props.location) {
-          setPathname(removeTrailingSlash(window.location.pathname));
-          setSearch(window.location.search);
+          startTransition(() => {
+            setPathname(removeTrailingSlash(window.location.pathname));
+            setSearch(window.location.search);
+          });
         }
       },
     }),
