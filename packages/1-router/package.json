@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "release": "bun run build && bun publish"
+    "release": "bun run build && bun publish",
+    "test": "bun test"
   },
   "dependencies": {},
   "devDependencies": {

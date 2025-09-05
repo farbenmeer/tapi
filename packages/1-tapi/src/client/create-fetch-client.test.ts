@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { createFetchClient } from "./create-fetch-client";
-import { requestHandler } from "./create-request-handler.test";
-import type { api } from "./define-api.test";
+import { requestHandler } from "../server/create-request-handler.test";
+import type { api } from "../server/define-api.test";
 
 describe("createFetchClient", () => {
   const fetch = mock((url: string, init: RequestInit) => {
