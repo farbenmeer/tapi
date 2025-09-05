@@ -1,5 +1,13 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.1.6
+
+### Patch Changes
+
+- 8620659: Bunny re-exports all the internal packages
+- Updated dependencies [8620659]
+  - @farbenmeer/bunny@0.1.4
+
 ## 0.1.5
 
 ### Patch Changes

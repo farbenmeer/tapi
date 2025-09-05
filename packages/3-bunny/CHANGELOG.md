@@ -1,5 +1,15 @@
 # @farbenmeer/bunny
 
+## 0.1.4
+
+### Patch Changes
+
+- 8620659: Bunny re-exports all the internal packages
+- Updated dependencies [8620659]
+- Updated dependencies [8620659]
+  - @farbenmeer/bun-auth@0.1.4
+  - @farbenmeer/tapi@0.1.9
+
 ## 0.1.3
 
 ### Patch Changes
