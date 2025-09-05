@@ -34,6 +34,10 @@
     "./auth/adapter-drizzle-sqlite/schema": {
       "default": "./dist/auth/adapter-drizzle-sqlite/schema.js",
       "types": "./dist/auth/adapter-drizzle-sqlite/schema.d.ts"
+    },
+    "./bun-plugin-tailwind": {
+      "default": "./dist/cli/tailwind-plugin.js",
+      "types": "./dist/cli/tailwind-plugin.d.ts"
     }
   },
   "scripts": {

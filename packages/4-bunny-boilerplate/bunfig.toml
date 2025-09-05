@@ -1,2 +1,2 @@
 [serve.static]
-plugins = ["@farbenmeer/bunny/dist/cli/tailwind-plugin.js"]
+plugins = ["@farbenmeer/bunny/bun-plugin-tailwind.js"]
