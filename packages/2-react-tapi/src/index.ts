@@ -1,5 +1,6 @@
 import type { Observable } from "@farbenmeer/tapi/client";
 import * as React from "react";
+import { lacy } from "@farbenmeer/lacy";
 
 type ObservablePromise<T> = Promise<T> & Observable<T>;
 
@@ -45,5 +46,5 @@ export function useQuery<T>(
     return unsubscribe;
   }, []);
 
-  return data;
+  return React.useMemo(() => lacy(data), [data]);
 }

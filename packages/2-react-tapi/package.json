@@ -21,6 +21,7 @@
   "dependencies": {},
   "devDependencies": {
     "@farbenmeer/tapi": "workspace:^",
+    "@farbenmeer/lacy": "workspace:^",
     "@happy-dom/global-registrator": "^18.0.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
