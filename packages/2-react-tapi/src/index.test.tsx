@@ -105,7 +105,7 @@ describe("useQuery", () => {
       }
       function Sut({ route }: Props) {
         const data = useQuery(route.get({ q: "test" }));
-        return <div>{data.then((data) => data.message)}</div>;
+        return <div>{data.message.then()}</div>;
       }
 
       await act(() =>
