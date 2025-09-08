@@ -3,9 +3,9 @@ import { lacy } from "./index";
 
 describe("lacy", () => {
   test("Makes a property on an object accessible", async () => {
-    const eagerPromise = lacy(Promise.resolve({ a: 1 }));
+    const lacyPromise = lacy(Promise.resolve({ a: 1 }));
 
-    expect(await eagerPromise.a).toBe(1);
+    expect(await lacyPromise.a).toBe(1);
   });
 
   test("Works for an array element", async () => {
@@ -31,5 +31,11 @@ describe("lacy", () => {
     const lacyPromise = lacy(Promise.resolve({ test: undefined }));
 
     expect(await lacyPromise.test).toBeUndefined();
+  });
+
+  test("returns a raw promise when then is called", () => {
+    const lacyPromise = lacy(Promise.resolve(null));
+
+    expect(lacyPromise.then() instanceof Promise).toBeTrue();
   });
 });
