@@ -18,7 +18,7 @@ export function App() {
       <img src={logo} alt="Logo" className="w-48 h-48 mb-8" />
 
       <Suspense fallback={<div>Loading...</div>}>
-        <div>{hello.then((data) => data.message)}</div>
+        <div>{hello.message.$}</div>
       </Suspense>
 
       <div className="mt-8">
