@@ -46,6 +46,7 @@
     "drizzle-orm": "^0.44"
   },
   "peerDependencies": {
+    "react": "^19.2.0",
     "typescript": "^5"
   }
 }
