@@ -37,7 +37,7 @@ const server = serve({
     ${hasAuth ? '"/api/auth/*": createAuthRoute(auth),' : ""}
     ${
       hasApi
-        ? '".well-known/openapi.json": Response.json(await generateOpenAPISchema(api, { info: { title: packageJson.name, version: packageJson.version }})),'
+        ? '"/.well-known/openapi.json": Response.json(await generateOpenAPISchema(api, { info: { title: packageJson.name, version: packageJson.version }})),'
         : ""
     }
     ${hasApi ? '"/api/*": (req) => tapiHandler(new Request(req)),' : ""}
