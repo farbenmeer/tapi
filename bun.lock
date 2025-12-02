@@ -6,6 +6,7 @@
       "name": "tapi",
       "devDependencies": {
         "@changesets/cli": "^2.29.6",
+        "typescript": "^5.9.3",
       },
     },
     "packages/1-bun-auth": {
