@@ -42,7 +42,7 @@
     "@types/bun": "latest"
   },
   "optionalDependencies": {
-    "drizzle-orm": "^0.44"
+    "drizzle-orm": "^0.45.0"
   },
   "peerDependencies": {
     "typescript": "^5"
