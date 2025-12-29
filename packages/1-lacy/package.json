@@ -15,12 +15,12 @@
   ],
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "bun run build && bun publish",
-    "test": "bun test"
+    "release": "pnpm run build && pnpm publish",
+    "test": "vitest"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^25.0.3"
+    "@types/node": "^25.0.3",
+    "vitest": "^4.0.16"
   },
   "peerDependencies": {
     "typescript": "^5"
