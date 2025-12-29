@@ -1,7 +1,7 @@
-import type { Path as BasePath } from "../shared/path";
-import type { BaseRoute } from "../shared/route";
-import type { Handler as BaseHandler } from "../server/handler";
-import type { MaybePromise } from "../shared/maybe-promise";
+import type { Path as BasePath } from "../shared/path.js";
+import type { BaseRoute } from "../shared/route.js";
+import type { Handler as BaseHandler } from "../server/handler.js";
+import type { MaybePromise } from "../shared/maybe-promise.js";
 
 type Segment<Path> = Path extends `/${infer Segment}/${string}`
   ? Segment

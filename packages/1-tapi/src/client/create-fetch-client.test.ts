@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, vi, test } from "vitest";
-import { createFetchClient } from "./create-fetch-client";
-import type { api } from "../server/define-api.mock";
-import { requestHandler } from "../server/request-handler.mock";
+import { createFetchClient } from "./create-fetch-client.js";
+import type { api } from "../server/define-api.mock.js";
+import { requestHandler } from "../server/request-handler.mock.js";
 
 describe("createFetchClient", () => {
   const fetch = vi.fn((url: string, init: RequestInit) => {

@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 
 import { Command } from "commander";
-import { init } from "./cli/init";
-import { dev } from "./cli/dev";
-import { build } from "./cli/build";
-import { start } from "./cli/start";
+import { init } from "./cli/init.js";
+import { dev } from "./cli/dev.js";
+import { build } from "./cli/build.js";
+import { start } from "./cli/start.js";
 
 const program = new Command();
 

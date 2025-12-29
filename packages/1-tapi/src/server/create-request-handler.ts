@@ -1,11 +1,11 @@
 import { z, ZodError } from "zod/v4";
-import type { ApiDefinition } from "./define-api";
-import type { Handler } from "./handler";
-import { HttpError } from "../shared/http-error";
-import type { Path as BasePath } from "../shared/path";
-import type { BaseRoute } from "../shared/route";
-import type { TRequest } from "./t-request";
-import type { MaybePromise } from "../shared/maybe-promise";
+import type { ApiDefinition } from "./define-api.js";
+import type { Handler } from "./handler.js";
+import { HttpError } from "../shared/http-error.js";
+import type { Path as BasePath } from "../shared/path.js";
+import type { BaseRoute } from "../shared/route.js";
+import type { TRequest } from "./t-request.js";
+import type { MaybePromise } from "../shared/maybe-promise.js";
 
 interface Options {
   basePath?: string;

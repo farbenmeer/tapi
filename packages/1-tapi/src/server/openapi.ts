@@ -1,9 +1,9 @@
-import { createDocument, type ZodOpenApiObject } from "zod-openapi";
-import { ApiDefinition } from "./define-api";
-import type { Path } from "../shared/path";
-import type { BaseRoute } from "../shared/route";
+import { createDocument } from "zod-openapi";
 import z from "zod/v4";
-import type { MaybePromise } from "../shared/maybe-promise";
+import type { MaybePromise } from "../shared/maybe-promise.js";
+import type { Path } from "../shared/path.js";
+import type { BaseRoute } from "../shared/route.js";
+import { ApiDefinition } from "./define-api.js";
 
 interface Options {
   info: {

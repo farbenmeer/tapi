@@ -1,4 +1,4 @@
-import type { Observable } from "./client-types";
+import type { Observable } from "./client-types.js";
 
 export type GetRoute<R, Q = undefined> = Q extends undefined
   ? (query?: {}, req?: RequestInit) => Promise<R> & Observable<R>

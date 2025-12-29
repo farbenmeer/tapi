@@ -28,6 +28,7 @@
     "noPropertyAccessFromIndexSignature": false,
 
     "outDir": "./dist",
+    "sourceMap": true,
     "declarationDir": "./dist",
     "declaration": true,
     "declarationMap": true

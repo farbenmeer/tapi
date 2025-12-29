@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import path from "node:path";
-import { startBunnyServer } from "../server";
+import { startBunnyServer } from "../server.js";
 
 export const start = new Command()
   .name("start")

@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
-import { defineApi } from "./define-api";
-import { defineHandler } from "./define-handler";
-import { TResponse } from "./t-response";
+import { defineApi } from "./define-api.js";
+import { defineHandler } from "./define-handler.js";
+import { TResponse } from "./t-response.js";
 
 export const api = defineApi()
   .route("/books", {

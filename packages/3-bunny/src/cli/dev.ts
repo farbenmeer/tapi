@@ -9,7 +9,7 @@ import { mkdir, readFile, rm } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { createServer } from "vite";
-import { fromResponse, toRequest } from "../node-http-adapter";
+import { fromResponse, toRequest } from "../node-http-adapter.js";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import { existsSync } from "node:fs";
 

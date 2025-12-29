@@ -1,6 +1,6 @@
-import type { MaybePromise } from "../shared/maybe-promise";
-import type { Path as BasePath, StrictParams } from "../shared/path";
-import type { Route } from "../shared/route";
+import type { MaybePromise } from "../shared/maybe-promise.js";
+import type { Path as BasePath, StrictParams } from "../shared/path.js";
+import type { Route } from "../shared/route.js";
 
 export function defineApi() {
   return new ApiDefinition({});
