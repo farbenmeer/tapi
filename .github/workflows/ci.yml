@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4.2.0
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - uses: pnpm/action-setup@v4.2.0
 
       - run: pnpm install
       - run: pnpm run build
