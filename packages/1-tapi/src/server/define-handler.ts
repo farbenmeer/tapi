@@ -1,5 +1,5 @@
-import type { Handler, HandlerFn } from "./handler";
-import type { Schema } from "./schema";
+import type { Handler, HandlerFn } from "./handler.js";
+import type { Schema } from "./schema.js";
 
 export function defineHandler<
   Response,

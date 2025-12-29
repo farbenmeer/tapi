@@ -1,6 +1,6 @@
 export function generateServer() {
   return `
-import api from "./api.js"
+import api from "./api.cjs"
 import { startBunnyServer } from "@farbenmeer/bunny/server"
 
 startBunnyServer({

@@ -2,7 +2,7 @@ import { Command } from "commander";
 import esbuild from "esbuild";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { generateServer } from "./generate-server";
+import { generateServer } from "./generate-server.js";
 import * as vite from "vite";
 import { generateOpenAPISchema } from "@farbenmeer/tapi/server";
 import { existsSync } from "node:fs";
@@ -43,10 +43,13 @@ export const build = new Command()
       sourcemap: options.sourcemap,
       platform: "node",
       target: "node24",
+      outExtension: {
+        ".js": ".cjs",
+      },
       packages: options.standalone ? "bundle" : "external",
     });
 
-    const { api } = require(path.join(bunnyDir, "api.js"));
+    const { api } = await import(path.join(bunnyDir, "api.cjs"));
     const wellKnownDir = path.join(bunnyDir, "dist", ".well-known");
     const packageJson = JSON.parse(
       await readFile(path.join(process.cwd(), "package.json"), "utf8")

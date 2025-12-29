@@ -1,3 +1,3 @@
-export type { Observable } from "./client-types";
-export { createFetchClient } from "./create-fetch-client";
-export type { GetRoute, PostRoute } from "./route-types";
+export type { Observable } from "./client-types.js";
+export { createFetchClient } from "./create-fetch-client.js";
+export type { GetRoute, PostRoute } from "./route-types.js";

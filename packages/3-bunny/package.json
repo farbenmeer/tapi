@@ -26,18 +26,13 @@
     "./server": {
       "types": "./dist/server.d.ts",
       "default": "./dist/server.js"
-    },
-    "./node-http-adapter": {
-      "types": "./dist/node-http-adapter.d.ts",
-      "default": "./dist/node-http-adapter.js"
     }
   },
   "scripts": {
     "build": "tsc --noEmit false",
     "pack:boilerplate": "bun --cwd=\"../4-bunny-boilerplate\" pm pack --filename=\"packages/3-bunny/boilerplate.tar.gz\"",
     "cli": "node dist/cli.js",
-    "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish",
-    "postinstall": "mkdir dist && touch dist/cli.js"
+    "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish"
   },
   "dependencies": {
     "@farbenmeer/react-tapi": "workspace:^",

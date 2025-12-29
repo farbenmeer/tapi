@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { compilePathRegex } from "./create-request-handler";
+import { compilePathRegex } from "./create-request-handler.js";
 
 describe("compilePathRegex", () => {
   test("match a simple route", () => {

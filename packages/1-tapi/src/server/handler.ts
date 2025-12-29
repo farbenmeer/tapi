@@ -1,6 +1,6 @@
-import type { Schema } from "./schema";
-import type { TRequest } from "./t-request";
-import type { TResponse } from "./t-response";
+import type { Schema } from "./schema.js";
+import type { TRequest } from "./t-request.js";
+import type { TResponse } from "./t-response.js";
 
 export type HandlerFn<Response, AuthData, Params, Query, Body> = (
   request: TRequest<AuthData, Params, Query, Body>

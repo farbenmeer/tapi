@@ -1,8 +1,9 @@
-export { createRequestHandler } from "./create-request-handler";
-export { createLocalClient } from "./create-local-client";
-export { defineApi } from "./define-api";
-export { defineHandler } from "./define-handler";
-export { HttpError } from "../shared/http-error";
-export { TResponse } from "./t-response";
-export type { TRequest } from "./t-request";
-export { generateOpenAPISchema } from "./openapi";
+export { createRequestHandler } from "./create-request-handler.js";
+export { createLocalClient } from "./create-local-client.js";
+export { defineApi } from "./define-api.js";
+export { defineHandler } from "./define-handler.js";
+export { HttpError } from "../shared/http-error.js";
+export { TResponse } from "./t-response.js";
+export type { TRequest } from "./t-request.js";
+export { generateOpenAPISchema } from "./openapi.js";
+export type { ApiDefinition } from "./define-api.js";

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { TResponse } from "./t-response";
+import { TResponse } from "./t-response.js";
 
 describe("TResponse", () => {
   test("correctly sets tags-header", () => {

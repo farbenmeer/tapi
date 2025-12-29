@@ -1,10 +1,10 @@
-import type { Client, Observable } from "./client-types";
-import { handleResponse } from "./handle-response";
-import type { Path as BasePath } from "../shared/path";
-import type { BaseRoute } from "../shared/route";
-import { TagManager } from "./tag-manager";
-import { PubSub } from "./pub-sub";
-import type { MaybePromise } from "../shared/maybe-promise";
+import type { Client, Observable } from "./client-types.js";
+import { handleResponse } from "./handle-response.js";
+import type { Path as BasePath } from "../shared/path.js";
+import type { BaseRoute } from "../shared/route.js";
+import { TagManager } from "./tag-manager.js";
+import { PubSub } from "./pub-sub.js";
+import type { MaybePromise } from "../shared/maybe-promise.js";
 
 const globalFetch = fetch;
 

@@ -2,8 +2,8 @@ export * from "@farbenmeer/tapi/server";
 import { createRequestHandler } from "@farbenmeer/tapi/server";
 import connect from "connect";
 import serveStatic from "serve-static";
-import type { ApiDefinition } from "../../1-tapi/dist/server/define-api";
-import { fromResponse, toRequest } from "./node-http-adapter";
+import type { ApiDefinition } from "@farbenmeer/tapi/server";
+import { fromResponse, toRequest } from "./node-http-adapter.js";
 
 interface BunnyServerOptions {
   port: number;

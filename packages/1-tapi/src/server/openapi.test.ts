@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { api } from "./define-api.mock";
-import { generateOpenAPISchema } from "./openapi";
+import { api } from "./define-api.mock.js";
+import { generateOpenAPISchema } from "./openapi.js";
 
 describe("OpenAPI", () => {
   test("generate basic OpenAPI schema", async () => {

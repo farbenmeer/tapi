@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { TagManager } from "./tag-manager";
+import { TagManager } from "./tag-manager.js";
 
 describe("TagManager", () => {
   test("get one of two urls", () => {

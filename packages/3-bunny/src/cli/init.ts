@@ -11,7 +11,7 @@ import {
 import path from "node:path";
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
-import ownPackageJson from "../../package.json";
+import ownPackageJson from "../../package.json" with {type: "json"};
 
 const $ = promisify(exec);
 
