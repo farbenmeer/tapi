@@ -37,7 +37,7 @@
     "pack:boilerplate": "bun --cwd=\"../4-bunny-boilerplate\" pm pack --filename=\"packages/3-bunny/boilerplate.tar.gz\"",
     "cli": "node dist/cli.js",
     "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish",
-    "postinstall": "tsc --noEmit false"
+    "postinstall": "mkdir dist && touch dist/cli.js"
   },
   "dependencies": {
     "@farbenmeer/react-tapi": "workspace:^",
