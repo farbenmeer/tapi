@@ -13,7 +13,8 @@ import {
 import { FilesystemCache } from "./filesystem-cache";
 
 describe("FilesystemCache", () => {
-  const dir = mkdtempSync(tmpdir() + "test-filesystem-cache-");
+  const dir =
+    process.env.RUNNER_TEMP ?? mkdtempSync(tmpdir() + "test-filesystem-cache-");
 
   beforeEach(() => {
     vi.useFakeTimers();
