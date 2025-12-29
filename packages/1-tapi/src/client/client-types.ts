@@ -1,7 +1,7 @@
-import type { MaybePromise } from "bun";
 import type { Path as BasePath } from "../shared/path";
 import type { BaseRoute } from "../shared/route";
 import type { Handler as BaseHandler } from "../server/handler";
+import type { MaybePromise } from "../shared/maybe-promise";
 
 type Segment<Path> = Path extends `/${infer Segment}/${string}`
   ? Segment

@@ -1,4 +1,4 @@
-import type { MaybePromise } from "bun";
+import type { MaybePromise } from "../shared/maybe-promise";
 import type { Path as BasePath, StrictParams } from "../shared/path";
 import type { Route } from "../shared/route";
 

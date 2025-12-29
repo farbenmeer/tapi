@@ -12,7 +12,7 @@
   "license": "MIT",
   "files": [
     "dist",
-    "boilerplate.tar.gz"
+    "boilerplate"
   ],
   "bin": {
     "bunny": "./dist/cli.js",
@@ -20,46 +20,47 @@
   },
   "exports": {
     "./client": {
-      "default": "./dist/client.js",
-      "types": "./dist/client.d.ts"
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
     },
     "./server": {
-      "default": "./dist/server.js",
-      "types": "./dist/server.d.ts"
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
     },
-    "./auth/adapter-drizzle-sqlite": {
-      "default": "./dist/auth/adapter-drizzle-sqlite/index.js",
-      "types": "./dist/auth/adapter-drizzle-sqlite/index.d.ts"
-    },
-    "./auth/adapter-drizzle-sqlite/schema": {
-      "default": "./dist/auth/adapter-drizzle-sqlite/schema.js",
-      "types": "./dist/auth/adapter-drizzle-sqlite/schema.d.ts"
-    },
-    "./bun-plugin-tailwind": {
-      "default": "./dist/cli/tailwind-plugin.js",
-      "types": "./dist/cli/tailwind-plugin.d.ts"
+    "./node-http-adapter": {
+      "types": "./dist/node-http-adapter.d.ts",
+      "default": "./dist/node-http-adapter.js"
     }
   },
   "scripts": {
     "build": "tsc --noEmit false",
     "pack:boilerplate": "bun --cwd=\"../4-bunny-boilerplate\" pm pack --filename=\"packages/3-bunny/boilerplate.tar.gz\"",
-    "cli": "bun src/cli.ts",
-    "release": "bun run build && bun run pack:boilerplate && bun publish"
+    "cli": "node dist/cli.js",
+    "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish"
   },
   "dependencies": {
     "@farbenmeer/react-tapi": "workspace:^",
-    "@farbenmeer/tapi": "workspace:^",
-    "@farbenmeer/bun-auth": "workspace:^",
     "@farbenmeer/router": "workspace:^",
-    "@tailwindcss/postcss": "^4.1.12",
+    "@farbenmeer/tapi": "workspace:^",
     "commander": "^14.0.0",
-    "drizzle-orm": "^0.44.5",
-    "postcss": "^8.5.6"
+    "connect": "^3.7.0",
+    "esbuild": "^0.27.2",
+    "serve-static": "^2.2.1",
+    "vite": "^7.3.0",
+    "vite-tsconfig-paths": "^6.0.3"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/connect": "^3.4.38",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19",
+    "@types/serve-static": "^2.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19"
   },
   "peerDependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19",
     "typescript": "^5"
   }
 }

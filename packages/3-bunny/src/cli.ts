@@ -5,7 +5,6 @@ import { init } from "./cli/init";
 import { dev } from "./cli/dev";
 import { build } from "./cli/build";
 import { start } from "./cli/start";
-import { migrate } from "./cli/migrate";
 
 const program = new Command();
 
@@ -16,7 +15,6 @@ program
   .addCommand(init)
   .addCommand(dev)
   .addCommand(build)
-  .addCommand(start)
-  .addCommand(migrate);
+  .addCommand(start);
 
 await program.parseAsync(process.argv);

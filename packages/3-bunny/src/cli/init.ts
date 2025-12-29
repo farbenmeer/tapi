@@ -1,7 +1,19 @@
-import { $ } from "bun";
 import { Command } from "commander";
-import { exists, mkdir, readdir } from "node:fs/promises";
+import {
+  access,
+  constants,
+  cp,
+  mkdir,
+  readdir,
+  readFile,
+  stat,
+} from "node:fs/promises";
 import path from "node:path";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import ownPackageJson from "../../package.json";
+
+const $ = promisify(exec);
 
 export const init = new Command()
   .name("init")
@@ -11,37 +23,38 @@ export const init = new Command()
     console.info("Initializing project...");
     if (name) {
       const dirPath = path.join(process.cwd(), name);
-      if (await exists(dirPath)) {
-        if ((await readdir(dirPath, { recursive: true })).length > 0) {
-          console.error(`Directory ${name} already exists and contains files.`);
-          process.exit(1);
-        }
+      if ((await readdir(dirPath, { recursive: true })).length > 0) {
+        console.error(`Directory ${name} already exists and contains files.`);
+        process.exit(1);
       } else {
         await mkdir(dirPath, { recursive: true });
       }
       process.chdir(dirPath);
     } else {
       const pkgPath = path.join(process.cwd(), "package.json");
-      if (await Bun.file(pkgPath).exists()) {
+      try {
+        await access(pkgPath, constants.F_OK);
         console.error(`Package.json already exists.`);
         process.exit(1);
-      }
+      } catch {}
     }
 
-    const tarBall = path.join(
-      path.dirname(path.dirname(__dirname)),
-      "boilerplate.tar.gz"
+    const pm =
+      process.env.npm_config_user_agent?.match(/^(pnpm|yarn|npm|bun)/)?.[1] ??
+      "npm";
+
+    const packageJson = JSON.parse(
+      await readFile(
+        path.join(process.cwd(), "boilerplate/package.json"),
+        "utf8"
+      )
     );
+    packageJson.name = path.basename(process.cwd());
+    packageJson.dependencies[
+      "@farbenmeer/bunny"
+    ] = `^${ownPackageJson.version}`;
 
-    // Extract the tarball to the current directory
-    await $`tar -xzf ${tarBall} --strip-components=1`;
-
-    await $`bun pm pkg set name=${name ?? path.basename(process.cwd())}`;
-
-    await $`git init`;
-    await $`bun install`;
-    await $`bun run generate`;
-    await $`bun run migrate`;
+    await $(`${pm} install`);
 
     console.log("Project initialized successfully!");
   });

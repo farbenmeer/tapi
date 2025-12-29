@@ -15,21 +15,22 @@
   ],
   "exports": {
     "./server": {
-      "default": "./dist/server/index.js",
-      "types": "./dist/server/index.d.ts"
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
     },
     "./client": {
-      "default": "./dist/client/index.js",
-      "types": "./dist/client/index.d.ts"
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
     }
   },
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "bun run build && bun publish",
-    "test": "bun test"
+    "release": "pnpm build && pnpm publish",
+    "test": "vitest"
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/node": "^25.0.3",
+    "vitest": "^4.0.16",
     "zod": "^4.0.17"
   },
   "peerDependencies": {

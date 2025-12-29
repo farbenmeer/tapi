@@ -5,7 +5,7 @@ import { HttpError } from "../shared/http-error";
 import type { Path as BasePath } from "../shared/path";
 import type { BaseRoute } from "../shared/route";
 import type { TRequest } from "./t-request";
-import type { MaybePromise } from "bun";
+import type { MaybePromise } from "../shared/maybe-promise";
 
 interface Options {
   basePath?: string;
@@ -46,7 +46,11 @@ export function createRequestHandler(
             }
           }
           case "POST":
-            if (!route.POST) return new Response("Not Found", { status: 404 });
+            if (!route.POST)
+              return new Response("Not Found", {
+                status: 404,
+                statusText: "Not Found",
+              });
             try {
               const treq = await prepareRequestWithBody(
                 route.POST,
@@ -59,12 +63,15 @@ export function createRequestHandler(
               return handleError(error);
             }
           default:
-            return new Response("Not Found", { status: 404 });
+            return new Response("Not Found", {
+              status: 404,
+              statusText: "Not Found",
+            });
         }
       }
     }
 
-    return new Response("Not Found", { status: 404 });
+    return new Response("Not Found", { status: 404, statusText: "Not Found" });
   };
 }
 

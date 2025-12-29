@@ -1,10 +1,5 @@
-import {
-  useQuery,
-  Auth,
-  SignInButton,
-  SignOutButton,
-} from "@farbenmeer/bunny/client";
-import { client } from "lib/client";
+import { useQuery } from "@farbenmeer/bunny/client";
+import { client } from "client";
 import logo from "logo.png";
 import { Suspense } from "react";
 
@@ -20,21 +15,6 @@ export function App() {
       <Suspense fallback={<div>Loading...</div>}>
         <div>{hello.message.$}</div>
       </Suspense>
-
-      <div className="mt-8">
-        <Auth
-          signIn={
-            <SignInButton className="border rounded-md p-2" provider="mock">
-              Sign In
-            </SignInButton>
-          }
-        >
-          <p className="mb-2">Signed in</p>
-          <SignOutButton className="border rounded-md p-2">
-            Sign Out
-          </SignOutButton>
-        </Auth>
-      </div>
     </div>
   );
 }

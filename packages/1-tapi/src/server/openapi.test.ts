@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { api } from "./define-api.test";
+import { describe, expect, test } from "vitest";
+import { api } from "./define-api.mock";
 import { generateOpenAPISchema } from "./openapi";
 
 describe("OpenAPI", () => {

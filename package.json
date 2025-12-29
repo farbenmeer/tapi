@@ -2,20 +2,13 @@
   "name": "tapi",
   "private": true,
   "scripts": {
-    "build": "for i in {1..4} ; do bun run --filter \"./packages/$i-*\" build ; done",
-    "release": "for i in {1..4} ; do bun run --filter \"./packages/$i-*\" release ; done ; echo 'Done'",
-    "test": "bun run --filter '*' test",
-    "clean": "rm -rf node_modules && rm -rf packages/*/node_modules packages/*/dist"
+    "build": "pnpm run -r build",
+    "release": "pnpm run -r release",
+    "test": "pnpm run -r test"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6",
     "typescript": "^5.9.3"
   },
-  "workspaces": [
-    "packages/*"
-  ],
-  "trustedDependencies": [
-    "@parcel/watcher",
-    "@tailwindcss/oxide"
-  ]
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }

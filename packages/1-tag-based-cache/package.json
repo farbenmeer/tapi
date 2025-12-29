@@ -1,0 +1,51 @@
+{
+  "name": "@farbenmeer/tag-based-cache",
+  "version": "0.1.0",
+  "author": {
+    "name": "Michel Smola",
+    "email": "michel.smola@farbenmeer.de"
+  },
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "private": false,
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./filesystem-cache": {
+      "default": "./dist/filesystem-cache.js",
+      "types": "./dist/filesystem-cache.d.ts"
+    },
+    "./redis-cache": {
+      "default": "./dist/redis-cache.js",
+      "types": "./dist/redis-cache.d.ts"
+    },
+    "./in-memory-cache": {
+      "default": "./dist/in-memory-cache.js",
+      "types": "./dist/in-memory-cache.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --noEmit false",
+    "release": "pnpm build && pnpm publish",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "vitest": "^4.0.16",
+    "typescript": "^5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farbenmeer/tapi.git"
+  },
+  "dependencies": {
+    "@redis/client": "^5.10.0"
+  }
+}

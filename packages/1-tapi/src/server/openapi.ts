@@ -3,7 +3,7 @@ import { ApiDefinition } from "./define-api";
 import type { Path } from "../shared/path";
 import type { BaseRoute } from "../shared/route";
 import z from "zod/v4";
-import type { MaybePromise } from "bun";
+import type { MaybePromise } from "../shared/maybe-promise";
 
 interface Options {
   info: {

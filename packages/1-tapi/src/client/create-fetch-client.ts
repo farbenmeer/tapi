@@ -1,10 +1,10 @@
-import type { MaybePromise } from "bun";
 import type { Client, Observable } from "./client-types";
 import { handleResponse } from "./handle-response";
 import type { Path as BasePath } from "../shared/path";
 import type { BaseRoute } from "../shared/route";
 import { TagManager } from "./tag-manager";
 import { PubSub } from "./pub-sub";
+import type { MaybePromise } from "../shared/maybe-promise";
 
 const globalFetch = fetch;
 
