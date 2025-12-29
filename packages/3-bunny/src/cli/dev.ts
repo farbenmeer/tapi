@@ -40,12 +40,9 @@ export const dev = new Command()
     let apiRequestHandler: (req: Request) => Promise<Response>;
     let openAPISchema: string;
     async function reload() {
-      for (const key of Object.keys(require.cache)) {
-        if (key.startsWith(bunnyDir)) {
-          delete require.cache[key];
-        }
-      }
-      const { api } = require(path.resolve(bunnyDir, "api.js"));
+      const { api } = await import(
+        path.resolve(bunnyDir, `api.cjs?ts=${Date.now()}`)
+      );
       apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
       });
@@ -68,6 +65,7 @@ export const dev = new Command()
       outdir: bunnyDir,
       platform: "node",
       target: "node24",
+      outExtension: { ".js": ".cjs" },
       plugins: [
         {
           name: "bunny-hot-reload",
