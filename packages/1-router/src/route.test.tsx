@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { Router } from "./router";
 import { Route } from "./route";
 import { useParams } from "./use-params";
