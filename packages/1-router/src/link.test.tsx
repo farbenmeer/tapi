@@ -1,17 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, mock, test } from "bun:test";
+import { afterEach, describe, expect, vi, test } from "vitest";
 import { Link } from "./link";
 import { Route } from "./route";
 import { Router } from "./router";
 
 describe("Link", () => {
   const mockHistory = {
-    pushState: mock((state: any, title: string, url: string) => {}),
-    replaceState: mock((state: any, title: string, url: string) => {}),
+    pushState: vi.fn((state: any, title: string, url: string) => {}),
+    replaceState: vi.fn((state: any, title: string, url: string) => {}),
   };
 
   afterEach(() => {
-    mock.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("basic functionality", () => {
@@ -185,7 +185,7 @@ describe("Link", () => {
     });
 
     test("calls custom onClick handler before navigation", () => {
-      const handleClick = mock(() => {});
+      const handleClick = vi.fn(() => {});
 
       render(
         <Router
