@@ -23,6 +23,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 6379:6379
 
     steps:
       - uses: actions/checkout@v6
@@ -35,5 +37,3 @@ jobs:
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run test
-        env:
-          REDIS_URL: redis://redis:6379
