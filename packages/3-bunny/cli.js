@@ -1,1 +1,1 @@
-import "dist/cli.js";
+import "./dist/cli.js";
