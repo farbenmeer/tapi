@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, test, expect } from "vitest";
 import { lacy } from "./index";
 
 describe("lacy", () => {
@@ -36,6 +36,6 @@ describe("lacy", () => {
   test("returns a raw promise when then is called", () => {
     const lacyPromise = lacy(Promise.resolve(null));
 
-    expect(lacyPromise.then() instanceof Promise).toBeTrue();
+    expect(lacyPromise.then()).toBeInstanceOf(Promise);
   });
 });
