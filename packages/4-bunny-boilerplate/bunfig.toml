@@ -1,2 +1,0 @@
-[serve.static]
-plugins = ["@farbenmeer/bunny/bun-plugin-tailwind.js"]

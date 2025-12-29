@@ -28,7 +28,9 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+
+    "types": ["@testing-library/jest-dom"]
   },
   "include": ["src"]
 }

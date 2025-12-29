@@ -1,6 +1,6 @@
 import type { ZodType } from "zod/v4";
 import type { TRequest } from "./t-request";
-import type { MaybePromise } from "bun";
+import type { MaybePromise } from "../shared/maybe-promise";
 
 export type Schema<
   Response,

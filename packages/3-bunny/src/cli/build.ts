@@ -1,31 +1,70 @@
 import { Command } from "commander";
-import { mkdir, rmdir } from "node:fs/promises";
+import esbuild from "esbuild";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { generateServer } from "./server";
-import tailwindPlugin from "./tailwind-plugin";
+import { generateServer } from "./generate-server";
+import * as vite from "vite";
+import { generateOpenAPISchema } from "@farbenmeer/tapi/server";
+import { existsSync } from "node:fs";
+import viteTsconfigPaths from "vite-tsconfig-paths";
 
 export const build = new Command()
   .name("build")
-  .option("--sourcemap", "Generate sourcemaps", false)
-  .description("Bunny Development server")
+  .option("--sourcemap", "Generate sourcemaps", true)
+  .option("--standalone", "Generate standalone server", false)
+  .description("Bunny Production Build")
   .action(async (options) => {
-    const distDir = path.join(process.cwd(), ".bunny", "dist");
-    await rmdir(distDir, { recursive: true });
-    await mkdir(distDir, { recursive: true });
-    const serverFile = await generateServer();
-    await Bun.build({
-      entrypoints: [serverFile],
-      outdir: distDir,
-      target: "bun",
-      format: "esm",
-      minify: true,
-      naming: {
-        entry: "[name].[ext]",
-        asset: "__bunny/assets/[name]-[hash].[ext]",
-        chunk: "__bunny/chunks/[name]-[hash].[ext]",
+    const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
+    const srcDir = path.join(process.cwd(), "src");
+    if (existsSync(bunnyDir)) {
+      await rm(bunnyDir, { recursive: true, force: true });
+    }
+    await mkdir(bunnyDir, { recursive: true });
+
+    await vite.build({
+      configFile: false,
+      root: srcDir,
+      build: {
+        outDir: path.join(bunnyDir, "dist"),
+        sourcemap: options.sourcemap,
+        rollupOptions: {
+          input: path.join(srcDir, "index.html"),
+        },
+        emptyOutDir: false,
       },
-      sourcemap: options.sourcemap,
-      env: "BUNNY_PUBLIC_*",
-      plugins: [tailwindPlugin],
+      mode: "production",
+      plugins: [viteTsconfigPaths()],
     });
+
+    await esbuild.build({
+      entryPoints: [path.join(srcDir, "api.ts")],
+      bundle: true,
+      outdir: bunnyDir,
+      sourcemap: options.sourcemap,
+      platform: "node",
+      target: "node24",
+      packages: options.standalone ? "bundle" : "external",
+    });
+
+    const { api } = require(path.join(bunnyDir, "api.js"));
+    const wellKnownDir = path.join(bunnyDir, "dist", ".well-known");
+    const packageJson = JSON.parse(
+      await readFile(path.join(process.cwd(), "package.json"), "utf8")
+    );
+    await mkdir(wellKnownDir);
+    await writeFile(
+      path.join(wellKnownDir, "openapi.json"),
+      JSON.stringify(
+        await generateOpenAPISchema(api, {
+          info: {
+            title: packageJson.name,
+            version: packageJson.version,
+          },
+        })
+      )
+    );
+
+    if (options.standalone) {
+      await writeFile(path.join(bunnyDir, "server.js"), generateServer());
+    }
   });

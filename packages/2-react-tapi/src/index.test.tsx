@@ -6,7 +6,7 @@ import {
   TResponse,
 } from "@farbenmeer/tapi/server";
 import { act, render, screen } from "@testing-library/react";
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { Suspense } from "react";
 import { z } from "zod/v4";
 import { useQuery } from ".";

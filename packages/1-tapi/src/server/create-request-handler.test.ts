@@ -1,9 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import {
-  compilePathRegex,
-  createRequestHandler,
-} from "./create-request-handler";
-import { api } from "./define-api.test";
+import { describe, expect, test } from "vitest";
+import { compilePathRegex } from "./create-request-handler";
 
 describe("compilePathRegex", () => {
   test("match a simple route", () => {
@@ -20,9 +16,9 @@ describe("compilePathRegex", () => {
     expect(pattern.test("/routes/abc")).toBe(true);
     expect(pattern.test("/routes/")).toBe(false);
     expect(pattern.test("/routes")).toBe(false);
-    expect("/routes/123".match(pattern)).toEqual(["/routes/123", "123"]);
-    expect("/routes/123".match(pattern)?.groups).toEqual({ id: "123" });
+    const match = "/routes/123".match(pattern);
+    expect(match?.[0]).toEqual("/routes/123");
+    expect(match?.[1]).toEqual("123");
+    expect(match?.groups).toEqual({ id: "123" });
   });
 });
-
-export const requestHandler = createRequestHandler(api, { basePath: "/api" });

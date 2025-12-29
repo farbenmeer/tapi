@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, mock, test } from "bun:test";
+import { beforeEach, describe, expect, vi, test } from "vitest";
 import { createFetchClient } from "./create-fetch-client";
-import { requestHandler } from "../server/create-request-handler.test";
-import type { api } from "../server/define-api.test";
+import type { api } from "../server/define-api.mock";
+import { requestHandler } from "../server/request-handler.mock";
 
 describe("createFetchClient", () => {
-  const fetch = mock((url: string, init: RequestInit) => {
+  const fetch = vi.fn((url: string, init: RequestInit) => {
     return requestHandler(new Request(url, init));
   });
   let client = createFetchClient<typeof api.routes>("https://example.com/api", {
@@ -62,7 +62,7 @@ describe("createFetchClient", () => {
   });
 
   test("subscribe to query", async () => {
-    const cb = mock();
+    const cb = vi.fn();
     const promise = client.books.get();
     const unsubscribe = promise.subscribe(cb);
     expect(cb).toHaveBeenCalledTimes(0);
@@ -76,7 +76,7 @@ describe("createFetchClient", () => {
   });
 
   test("tag-based revalidation", async () => {
-    const cb = mock();
+    const cb = vi.fn();
     const promise = client.movies[1]!.get({ test: "asdf" });
     promise.subscribe(cb);
     const data = await promise;

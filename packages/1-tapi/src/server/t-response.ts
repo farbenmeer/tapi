@@ -1,5 +1,3 @@
-import type { HeadersInit } from "bun";
-
 interface TResponseInit extends ResponseInit {
   tags?: string[];
 }

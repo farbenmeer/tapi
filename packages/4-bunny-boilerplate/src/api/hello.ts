@@ -1,5 +1,4 @@
 import { defineHandler, TResponse } from "@farbenmeer/bunny/server";
-//import { auth } from "../lib/auth";
 
 export const GET = defineHandler(
   {
