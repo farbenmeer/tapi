@@ -10,6 +10,7 @@ import {
 import path from "node:path";
 import { promisify } from "node:util";
 import ownPackageJson from "../../package.json" with { type: "json" };
+import { exit } from "node:process";
 
 const $ = promisify(exec);
 
@@ -18,6 +19,8 @@ export const init = new Command()
   .description("Initialize a new project")
   .argument("[name]", "Name of the project")
   .action(async (name) => {
+    console.error("sorry, WIP...")
+    exit(1)
     console.info("Initializing project...");
     if (name) {
       const dirPath = path.join(process.cwd(), name);

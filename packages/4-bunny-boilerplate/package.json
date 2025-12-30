@@ -6,8 +6,6 @@
   "files": [
     "src",
     ".gitignore",
-    "drizzle.config.ts",
-    "bunfig.toml",
     "Dockerfile",
     "tsconfig.json"
   ],
