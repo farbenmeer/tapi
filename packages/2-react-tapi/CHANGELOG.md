@@ -1,5 +1,11 @@
 # @farbenmeer/react-tapi
 
+## 1.0.1
+
+### Patch Changes
+
+- 4152e14: Lacy is a direct dependency of react-tapi
+
 ## 1.0.0
 
 ### Minor Changes
