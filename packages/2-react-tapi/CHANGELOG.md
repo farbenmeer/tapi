@@ -1,5 +1,14 @@
 # @farbenmeer/react-tapi
 
+## 0.1.6
+
+### Patch Changes
+
+- c343771: useQuery returns a lacy promise
+- Updated dependencies [8a287b3]
+- Updated dependencies [c696188]
+  - @farbenmeer/tapi@0.1.10
+
 ## 0.1.5
 
 ### Patch Changes

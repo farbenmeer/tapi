@@ -1,5 +1,12 @@
 # @farbenmeer/tapi
 
+## 0.1.10
+
+### Patch Changes
+
+- 8a287b3: Add generateOpenAPISchema method to TAPI and serve it as /openapi.json from bunny
+- c696188: fix GetRoute type
+
 ## 0.1.9
 
 ### Patch Changes
