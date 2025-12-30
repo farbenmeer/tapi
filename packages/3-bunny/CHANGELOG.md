@@ -1,5 +1,18 @@
 # @farbenmeer/bunny
 
+## 0.2.0
+
+### Minor Changes
+
+- bb41e24: move to pnpm
+
+### Patch Changes
+
+- Updated dependencies [bb41e24]
+  - @farbenmeer/router@0.2.0
+  - @farbenmeer/tapi@0.2.0
+  - @farbenmeer/react-tapi@1.0.0
+
 ## 0.1.5
 
 ### Patch Changes
