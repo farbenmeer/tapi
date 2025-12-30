@@ -22,8 +22,10 @@
     "release": "pnpm run build && pnpm publish",
     "test": "vitest"
   },
+  "dependencies": {
+    "@farbenmeer/lacy": "workspace:^"
+  },
   "devDependencies": {
-    "@farbenmeer/lacy": "workspace:^",
     "@farbenmeer/tapi": "workspace:^",
     "@happy-dom/global-registrator": "^20.0.0",
     "@testing-library/dom": "^10.4.1",
