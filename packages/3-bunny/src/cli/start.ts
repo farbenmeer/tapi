@@ -9,7 +9,7 @@ export const start = new Command()
   .action(async (options) => {
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
     process.env.NODE_ENV = "production";
-    const { api } = await import(path.join(bunnyDir, "api.js"));
+    const { api } = await import(path.join(bunnyDir, "api.cjs"));
 
     startBunnyServer({
       api,
