@@ -10,6 +10,10 @@
   "main": "dist/index.js",
   "private": false,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farbenmeer/tapi.git"
+  },
   "files": [
     "dist",
     "boilerplate"
@@ -30,7 +34,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit false",
-    "pack:boilerplate": "bun --cwd=\"../4-bunny-boilerplate\" pm pack --filename=\"packages/3-bunny/boilerplate.tar.gz\"",
+    "pack:boilerplate": "pnpm --dir=\"../4-bunny-boilerplate\" pack --out=\"../3-bunny/boilerplate.tar.gz\"",
     "cli": "node dist/cli.js",
     "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish"
   },

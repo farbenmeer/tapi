@@ -10,6 +10,10 @@
   "main": "dist/index.js",
   "private": false,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farbenmeer/tapi.git"
+  },
   "files": [
     "dist"
   ],
