@@ -1,5 +1,12 @@
 # @farbenmeer/bunny
 
+## 0.2.3
+
+### Patch Changes
+
+- 2792981: resolve config from default export
+- bc4244e: fix api import path in start script
+
 ## 0.2.2
 
 ### Patch Changes
