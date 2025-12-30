@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.2.1
+
+### Patch Changes
+
+- cb0e855: add config file to pass vite config options
+
 ## 0.2.0
 
 ### Minor Changes
