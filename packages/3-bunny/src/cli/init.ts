@@ -1,17 +1,15 @@
 import { Command } from "commander";
+import { exec } from "node:child_process";
 import {
-  access,
-  constants,
-  cp,
-  mkdir,
-  readdir,
-  readFile,
-  stat,
+    access,
+    constants,
+    mkdir,
+    readdir,
+    readFile
 } from "node:fs/promises";
 import path from "node:path";
-import { exec } from "node:child_process";
 import { promisify } from "node:util";
-import ownPackageJson from "../../package.json" with {type: "json"};
+import ownPackageJson from "../../package.json" with { type: "json" };
 
 const $ = promisify(exec);
 

@@ -9,9 +9,9 @@ import { act, render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { Suspense } from "react";
 import { z } from "zod/v4";
-import { useQuery } from ".";
+import { useLacy } from "./use-lacy";
 
-describe("useQuery", () => {
+describe("useLacy", () => {
   const api = defineApi()
     .route("/noQuery", {
       GET: defineHandler(
@@ -42,7 +42,7 @@ describe("useQuery", () => {
 
   test("Without Query", async () => {
     function Sut() {
-      const data = useQuery(client.noQuery.get());
+      const data = useLacy(client.noQuery.get());
       return <div>{data.then((data) => data.message)}</div>;
     }
 
@@ -59,7 +59,7 @@ describe("useQuery", () => {
 
   test("With Query", async () => {
     function Sut() {
-      const data = useQuery(client.withQuery.get({ q: "test" }));
+      const data = useLacy(client.withQuery.get({ q: "test" }));
       return <div>{data.then((data) => data.message)}</div>;
     }
 
@@ -82,7 +82,7 @@ describe("useQuery", () => {
         };
       }
       function Sut({ route }: Props) {
-        const data = useQuery(route.get());
+        const data = useLacy(route.get());
         return <div>{data.then((data) => data.message)}</div>;
       }
 
@@ -104,7 +104,7 @@ describe("useQuery", () => {
         };
       }
       function Sut({ route }: Props) {
-        const data = useQuery(route.get({ q: "test" }));
+        const data = useLacy(route.get({ q: "test" }));
         return <div>{data.message.then()}</div>;
       }
 

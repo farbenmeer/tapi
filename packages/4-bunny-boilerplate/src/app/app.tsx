@@ -1,10 +1,10 @@
-import { useQuery } from "@farbenmeer/bunny/client";
+import { useLacy } from "@farbenmeer/bunny/client";
 import { client } from "client";
 import logo from "logo.png";
 import { Suspense } from "react";
 
 export function App() {
-  const hello = useQuery(client.hello.get());
+  const hello = useLacy(client.hello.get());
 
   return (
     <div className="w-full h-screen flex flex-col items-center justify-center">
