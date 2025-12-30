@@ -36,7 +36,7 @@
     "build": "tsc --noEmit false",
     "pack:boilerplate": "pnpm --dir=\"../4-bunny-boilerplate\" pack --out=\"../3-bunny/boilerplate.tar.gz\"",
     "cli": "node dist/cli.js",
-    "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish"
+    "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish --no-git-checks"
   },
   "dependencies": {
     "@farbenmeer/react-tapi": "workspace:^",
