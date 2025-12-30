@@ -12,12 +12,14 @@ import { createServer } from "vite";
 import { fromResponse, toRequest } from "../node-http-adapter.js";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import { existsSync } from "node:fs";
+import { readConfig } from "./read-config.js";
 
 export const dev = new Command()
   .name("dev")
   .description("Bunny Development server")
   .option("--port <port>", "Port to listen on", "3000")
   .action(async ({ port }) => {
+    const config = await readConfig();
     const bunnyDir = path.join(process.cwd(), ".bunny/dev");
     if (existsSync(bunnyDir)) {
       await rm(bunnyDir, { recursive: true });
@@ -28,11 +30,13 @@ export const dev = new Command()
     const viteServer = await createServer({
       configFile: false,
       root: srcDir,
+      mode: "development",
+      ...config.vite,
       server: {
         middlewareMode: true,
+        ...config.vite?.server,
       },
-      mode: "development",
-      plugins: [viteTsconfigPaths()],
+      plugins: [...(config.vite?.plugins ?? []), viteTsconfigPaths()],
     });
 
     const app = connect();

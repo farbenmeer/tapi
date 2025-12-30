@@ -7,6 +7,7 @@ import * as vite from "vite";
 import { generateOpenAPISchema } from "@farbenmeer/tapi/server";
 import { existsSync } from "node:fs";
 import viteTsconfigPaths from "vite-tsconfig-paths";
+import { readConfig } from "./read-config.js";
 
 export const build = new Command()
   .name("build")
@@ -14,6 +15,7 @@ export const build = new Command()
   .option("--standalone", "Generate standalone server", false)
   .description("Bunny Production Build")
   .action(async (options) => {
+    const config = await readConfig();
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
     const srcDir = path.join(process.cwd(), "src");
     if (existsSync(bunnyDir)) {
@@ -24,16 +26,19 @@ export const build = new Command()
     await vite.build({
       configFile: false,
       root: srcDir,
+      mode: "production",
+      ...config.vite,
       build: {
         outDir: path.join(bunnyDir, "dist"),
         sourcemap: options.sourcemap,
+        emptyOutDir: false,
+        ...config.vite?.build,
         rollupOptions: {
           input: path.join(srcDir, "index.html"),
+          ...config.vite?.build?.rollupOptions,
         },
-        emptyOutDir: false,
       },
-      mode: "production",
-      plugins: [viteTsconfigPaths()],
+      plugins: [...(config.vite?.plugins ?? []), viteTsconfigPaths()],
     });
 
     await esbuild.build({
