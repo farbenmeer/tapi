@@ -1,5 +1,12 @@
 # @farbenmeer/bunny
 
+## 0.2.2
+
+### Patch Changes
+
+- 2949bad: use dynamic import instead of require in bunny start command
+- 9526ca0: fix \_\_dirname and incorrect api import in server.js
+
 ## 0.2.1
 
 ### Patch Changes
