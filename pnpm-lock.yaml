@@ -96,13 +96,13 @@ importers:
 
   packages/2-react-tapi:
     dependencies:
+      '@farbenmeer/lacy':
+        specifier: workspace:^
+        version: link:../1-lacy
       typescript:
         specifier: ^5
         version: 5.9.3
     devDependencies:
-      '@farbenmeer/lacy':
-        specifier: workspace:^
-        version: link:../1-lacy
       '@farbenmeer/tapi':
         specifier: workspace:^
         version: link:../1-tapi
