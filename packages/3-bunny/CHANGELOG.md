@@ -1,5 +1,16 @@
 # @farbenmeer/bunny
 
+## 0.1.5
+
+### Patch Changes
+
+- 8a287b3: Add generateOpenAPISchema method to TAPI and serve it as /openapi.json from bunny
+- Updated dependencies [8a287b3]
+- Updated dependencies [c696188]
+- Updated dependencies [c343771]
+  - @farbenmeer/tapi@0.1.10
+  - @farbenmeer/react-tapi@0.1.6
+
 ## 0.1.4
 
 ### Patch Changes
