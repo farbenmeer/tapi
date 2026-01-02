@@ -76,7 +76,12 @@ export function createRequestHandler(
 }
 
 export function compilePathRegex(path: string): RegExp {
-  return new RegExp(`^${path.replaceAll(/\[(\w+)\]/g, "(?<$1>\\w+)")}$`);
+  // Handle wildcards: *name captures as named group, * catches all without capturing
+  const pattern = path
+    .replaceAll(/\*(\w+)/g, "(?<$1>.+)") // *name -> named capture group
+    .replaceAll(/\*/g, ".+") // * -> match everything including /
+    .replaceAll(/:(\w+)/g, "(?<$1>\\w+)"); // :param -> named capture group
+  return new RegExp(`^${pattern}$`);
 }
 
 export async function prepareRequestWithoutBody<TBody = never>(

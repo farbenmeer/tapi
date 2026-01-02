@@ -8,7 +8,8 @@ The `@farbenmeer/router` package provides a very lightweight routing solution fo
 
 - **Declarative routing** with React components
 - **Nested routes** with parameter inheritance
-- **Path parameters** with bracket notation (`[id]`)
+- **Path parameters** with colon syntax (`:id`)
+- **Wildcard routes** for catch-all paths (`*` and `*name`)
 - **Immutable search parameters** for predictable state management
 - **Client-side navigation** with history management
 - **TypeScript support** for better development experience
@@ -38,7 +39,7 @@ function App() {
           <Route exact>
             <UsersList />
           </Route>
-          <Route path="[id]">
+          <Route path=":id">
             <UserProfile />
           </Route>
         </Route>
@@ -65,7 +66,8 @@ The root component that provides routing context to your application.
 ### [Route](./docs/Route.md)
 Conditionally renders content based on the current pathname.
 
-- Path matching with parameters (`/users/[id]`)
+- Path matching with parameters (`/users/:id`)
+- Wildcard matching (`/files/*` or `/files/*path`)
 - Exact matching option
 - Nested route support
 - Parameter inheritance from parent routes
@@ -109,7 +111,7 @@ const newParams = searchParams.set("filter", "active");
 Extract parameters from dynamic route segments.
 
 ```tsx
-// Route: /users/[id]/posts/[postId]
+// Route: /users/:id/posts/:postId
 const params = useParams(); // { id: "123", postId: "456" }
 ```
 
@@ -128,13 +130,13 @@ const activeTab = hash.slice(1) || "overview";
 Create hierarchical route structures with parameter inheritance:
 
 ```tsx
-<Route path="/organizations/[orgId]">
+<Route path="/organizations/:orgId">
   <OrganizationLayout />
 
-  <Route path="teams/[teamId]">
+  <Route path="teams/:teamId">
     <TeamLayout />
 
-    <Route path="members/[memberId]">
+    <Route path="members/:memberId">
       <MemberProfile />
     </Route>
   </Route>
@@ -143,13 +145,25 @@ Create hierarchical route structures with parameter inheritance:
 
 ### Path Parameters
 
-Define dynamic segments with bracket notation:
+Define dynamic segments with colon syntax:
 
 ```tsx
-<Route path="/users/[id]">          {/* /users/123 */}
-<Route path="/posts/[slug]">        {/* /posts/hello-world */}
-<Route path="/api/[version]">       {/* /api/v1 */}
+<Route path="/users/:id">          {/* /users/123 */}
+<Route path="/posts/:slug">        {/* /posts/hello-world */}
+<Route path="/api/:version">       {/* /api/v1 */}
 ```
+
+### Wildcard Routes
+
+Match arbitrary paths with wildcards:
+
+```tsx
+<Route path="/files/*">            {/* Matches /files/a, /files/a/b/c, etc. */}
+<Route path="/docs/*path">         {/* Matches and captures as params.path */}
+<Route path="/api/:version/*rest"> {/* Combines params with wildcards */}
+```
+
+The `*` wildcard matches everything including slashes, making it perfect for catch-all routes. Use `*name` to capture the matched path as a parameter accessible via `useParams()`.
 
 ### Immutable Search Parameters
 

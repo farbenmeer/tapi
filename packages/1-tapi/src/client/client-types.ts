@@ -15,7 +15,9 @@ type Rest<
 > = Path extends `/${Segment}/${infer Rest}` ? `/${Rest}` : never;
 
 export type Client<Routes extends Record<BasePath, MaybePromise<BaseRoute>>> = {
-  [segment in Segment<keyof Routes> as segment extends `[${string}]`
+  [segment in Segment<keyof Routes> as segment extends `:${string}`
+    ? string | number
+    : segment extends `*${string}`
     ? string | number
     : segment]: (Extract<keyof Routes, `/${segment}`> extends never
     ? {}

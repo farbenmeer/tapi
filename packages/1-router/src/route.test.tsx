@@ -239,7 +239,7 @@ describe("Route", () => {
     test("extracts single route parameter", () => {
       render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -253,7 +253,7 @@ describe("Route", () => {
         <Router
           location={{ pathname: "/users/123/posts/456", search: "", hash: "" }}
         >
-          <Route path="/users/[userId]/posts/[postId]">
+          <Route path="/users/:userId/posts/:postId">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -268,7 +268,7 @@ describe("Route", () => {
         <Router
           location={{ pathname: "/users/123/profile", search: "", hash: "" }}
         >
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <div>User Route</div>
             <Route path="profile">
               <ParamsDisplay />
@@ -346,7 +346,7 @@ describe("Route", () => {
     test("route with parameters and nested exact routes", () => {
       render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <div>User Profile</div>
             <Route exact path="">
               <div>User Overview</div>
@@ -372,9 +372,9 @@ describe("Route", () => {
             hash: "",
           }}
         >
-          <Route path="/orgs/[orgId]">
-            <Route path="teams/[teamId]">
-              <Route path="members/[memberId]">
+          <Route path="/orgs/:orgId">
+            <Route path="teams/:teamId">
+              <Route path="members/:memberId">
                 <ParamsDisplay />
               </Route>
             </Route>
@@ -400,4 +400,77 @@ describe("Route", () => {
       </div>
     );
   }
+
+  describe("wildcard routes", () => {
+    test("matches wildcard route", () => {
+      render(
+        <Router location={{ pathname: "/files/a/b/c", search: "", hash: "" }}>
+          <Route path="/files/*">
+            <div>Files</div>
+          </Route>
+        </Router>
+      );
+
+      expect(screen.getByText("Files")).toBeInTheDocument();
+    });
+
+    test("does not match wildcard without trailing path", () => {
+      render(
+        <Router location={{ pathname: "/files", search: "", hash: "" }}>
+          <Route path="/files/*">
+            <div>Files</div>
+          </Route>
+        </Router>
+      );
+
+      expect(screen.queryByText("Files")).not.toBeInTheDocument();
+    });
+
+    test("extracts named wildcard parameter", () => {
+      render(
+        <Router location={{ pathname: "/files/a/b/c", search: "", hash: "" }}>
+          <Route path="/files/*path">
+            <ParamsDisplay />
+          </Route>
+        </Router>
+      );
+
+      expect(screen.getByTestId("param-path")).toHaveTextContent("a/b/c");
+    });
+
+    test("combines regular params with wildcard", () => {
+      render(
+        <Router
+          location={{ pathname: "/api/v1/users/123", search: "", hash: "" }}
+        >
+          <Route path="/api/:version/*rest">
+            <ParamsDisplay />
+          </Route>
+        </Router>
+      );
+
+      expect(screen.getByTestId("param-version")).toHaveTextContent("v1");
+      expect(screen.getByTestId("param-rest")).toHaveTextContent("users/123");
+    });
+
+    test("wildcard matches deeply nested paths", () => {
+      render(
+        <Router
+          location={{
+            pathname: "/docs/guide/getting-started/installation",
+            search: "",
+            hash: "",
+          }}
+        >
+          <Route path="/docs/*path">
+            <ParamsDisplay />
+          </Route>
+        </Router>
+      );
+
+      expect(screen.getByTestId("param-path")).toHaveTextContent(
+        "guide/getting-started/installation"
+      );
+    });
+  });
 });

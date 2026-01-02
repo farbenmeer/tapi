@@ -9,7 +9,6 @@ Currently only supports GET and POST requests.
 
 ## Plans
 * Support more HTTP methods
-* Support wildcard paths (`/books/[...path]`)
 * Add function to automatically generate OpenAPI specs
 * Add support for server-clients for use on the server that call the handler functions directly instead of making a fetch request
 
@@ -32,7 +31,7 @@ import { defineApi } from "@farbenmeer/tapi/server"
 export const api = defineApi()
 ```
 
-Set up a route to handle the requests. This depends on your framework. For Next.js it would be `app/api/[...tap]/route.ts`:
+Set up a route to handle the requests. This depends on your framework. For Next.js it would be `app/api/[...tapi]/route.ts`:
 ```ts
 import { api } from "api"
 import { createRequestHandler } from "@farbenmeer/tapi/server"
@@ -141,7 +140,7 @@ import { defineApi } from "@farbenmeer/tapi/server"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
-  .route("/books/[id]", import("./api/book"))
+  .route("/books/:id", import("./api/book"))
 ```
 
 call the route on the client as
@@ -179,7 +178,7 @@ import { defineApi } from "@farbenmeer/tapi/server"
 
 export const api = defineApi()
   .route("/books", import("./api/books"))
-  .route("/books/[id]", import("./api/book"))
+  .route("/books/:id", import("./api/book"))
   .route("/search", import("./api/search"))
 ```
 
@@ -249,6 +248,39 @@ async function addBook(title: string) {
 
 addBook('TApi')
 ```
+
+## Wildcard Routes
+
+Use wildcards to match arbitrary paths:
+
+```ts
+// api/files.ts
+import { defineHandler, TResponse } from "@farbenmeer/tapi/server"
+import { z } from "zod/v4"
+
+export const GET = defineHandler({
+  authorize: () => true,
+  params: { path: z.string() }
+}, async (req) => {
+  const filePath = req.params().path
+  // filePath = "documents/report.pdf" for /api/files/documents/report.pdf
+  const file = await getFile(filePath)
+  return TResponse.json(file)
+})
+```
+
+Define the route in `api.ts`:
+```ts
+export const api = defineApi()
+  .route("/files/*path", import("./api/files"))
+```
+
+Call it from the client:
+```ts
+const file = await client.files["documents/report.pdf"].get()
+```
+
+**Note:** Wildcards (`*` or `*name`) match everything including slashes and must come at the end of the path. Use `*name` to capture the matched portion as a parameter.
 which is particularly useful with react forms:
 ```tsx
 <form action={client.books.post}>

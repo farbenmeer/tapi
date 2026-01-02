@@ -85,4 +85,18 @@ describe("createFetchClient", () => {
     await client.movies.post({}, { id: "3", title: "Movie 3" });
     expect(cb).toHaveBeenCalledTimes(1);
   });
+
+  test("wildcard route", async () => {
+    const response = await client.files["documents/report.pdf"]!.get();
+    expect(fetch).toHaveBeenCalledWith(
+      "https://example.com/api/files/documents/report.pdf",
+      {
+        method: "GET",
+      }
+    );
+    expect(response).toEqual({
+      path: "documents/report.pdf",
+      message: "Accessing file: documents/report.pdf",
+    });
+  });
 });

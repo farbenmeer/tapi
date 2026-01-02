@@ -9,7 +9,7 @@ import { useParams } from "@farbenmeer/router";
 
 function UserProfile() {
   const params = useParams();
-  const userId = params.id; // From route like /users/[id]
+  const userId = params.id; // From route like /users/:id
 
   return (
     <div>
@@ -23,7 +23,7 @@ function UserProfile() {
 ## Return Value
 
 - **Type**: `Record<string, string | string[]>`
-- **Description**: An object where keys are parameter names (from `[paramName]` in route paths) and values are the captured URL segments
+- **Description**: An object where keys are parameter names (from `:paramName` in route paths) and values are the captured URL segments
 - **Parameter Values**: Always strings, as they come from URL segments
 
 ## Parameter Extraction
@@ -31,7 +31,7 @@ function UserProfile() {
 ### Single Parameters
 
 ```tsx
-// Route: /users/[id]
+// Route: /users/:id
 // URL: /users/123
 function UserDetail() {
   const params = useParams();
@@ -44,7 +44,7 @@ function UserDetail() {
 ### Multiple Parameters
 
 ```tsx
-// Route: /users/[userId]/posts/[postId]
+// Route: /users/:userId/posts/:postId
 // URL: /users/123/posts/456
 function PostDetail() {
   const params = useParams();
@@ -62,7 +62,7 @@ function PostDetail() {
 ### Complex Parameter Names
 
 ```tsx
-// Route: /api/[version]/users/[userId]/documents/[documentId]
+// Route: /api/:version/users/:userId/documents/:documentId
 // URL: /api/v1/users/123/documents/doc-456
 function APIEndpoint() {
   const params = useParams();
@@ -78,9 +78,9 @@ function APIEndpoint() {
 In nested routes, child routes inherit parameters from their parent routes:
 
 ```tsx
-<Route path="/users/[id]">
+<Route path="/users/:id">
   <Route path="posts">
-    <Route path="[postId]">
+    <Route path=":postId">
       <PostEditor />
     </Route>
   </Route>

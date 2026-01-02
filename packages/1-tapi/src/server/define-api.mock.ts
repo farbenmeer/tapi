@@ -22,7 +22,7 @@ export const api = defineApi()
       async (req) => TResponse.json(await req.data())
     ),
   })
-  .route("/books/[id]", {
+  .route("/books/:id", {
     GET: defineHandler(
       {
         params: { id: z.string() },
@@ -36,7 +36,7 @@ export const api = defineApi()
         })
     ),
   })
-  .route("/movies/[id]", {
+  .route("/movies/:id", {
     GET: defineHandler(
       {
         params: { id: z.string() },
@@ -73,5 +73,18 @@ export const api = defineApi()
         },
       },
       async () => TResponse.json({ authorized: true })
+    ),
+  })
+  .route("/files/*path", {
+    GET: defineHandler(
+      {
+        params: { path: z.string() },
+        authorize: () => true,
+      },
+      async (req) =>
+        TResponse.json({
+          path: req.params().path,
+          message: `Accessing file: ${req.params().path}`,
+        })
     ),
   });

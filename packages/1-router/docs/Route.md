@@ -13,7 +13,7 @@ function App() {
       <Route path="/users">
         <UsersPage />
       </Route>
-      <Route path="/users/[id]">
+      <Route path="/users/:id">
         <UserDetailPage />
       </Route>
     </Router>
@@ -31,7 +31,8 @@ function App() {
 
 Path patterns support:
 - **Static segments**: `/users`, `/about`
-- **Parameters**: `/users/[id]`, `/posts/[slug]`
+- **Parameters**: `/users/:id`, `/posts/:slug`
+- **Wildcard paths**: `/files/*`, `/docs/*path`
 - **Nested paths**: Resolved relative to parent route context
 
 ```tsx
@@ -41,12 +42,12 @@ Path patterns support:
 </Route>
 
 // Path with parameter
-<Route path="/users/[id]">
+<Route path="/users/:id">
   <UserPage />
 </Route>
 
 // Nested relative path (resolves to parent path + "settings")
-<Route path="/users/[id]">
+<Route path="/users/:id">
   <Route path="settings">
     <UserSettings />
   </Route>
@@ -90,12 +91,20 @@ Path patterns support:
 Parameters are defined with square brackets and capture URL segments:
 
 ```tsx
-<Route path="/users/[id]">
+<Route path="/users/:id">
   {/* Access via useParams() hook */}
 </Route>
 
-<Route path="/posts/[year]/[month]/[slug]">
+<Route path="/posts/:year/:month/:slug">
   {/* Multiple parameters */}
+</Route>
+
+<Route path="/files/*">
+  {/* Wildcard - matches any trailing path */}
+</Route>
+
+<Route path="/docs/*path">
+  {/* Named wildcard - accessible via useParams() */}
 </Route>
 ```
 
@@ -108,7 +117,7 @@ Routes can be nested to create hierarchical routing structures:
 <Route path="/users">
   <UsersLayout />
 
-  <Route path="[id]">
+  <Route path=":id">
     <UserProfile />
 
     <Route path="settings">
@@ -129,8 +138,8 @@ Nested route paths are resolved relative to their parent:
 ```tsx
 <Route path="/api/v1">              {/* Full path: /api/v1 */}
   <Route path="users">              {/* Full path: /api/v1/users */}
-    <Route path="[id]">             {/* Full path: /api/v1/users/[id] */}
-      <Route path="posts">          {/* Full path: /api/v1/users/[id]/posts */}
+    <Route path=":id">              {/* Full path: /api/v1/users/:id */}
+      <Route path="posts">          {/* Full path: /api/v1/users/:id/posts */}
 ```
 
 ### Absolute Paths in Nested Routes
@@ -138,7 +147,7 @@ Nested route paths are resolved relative to their parent:
 Child routes can use absolute paths to ignore parent context:
 
 ```tsx
-<Route path="/groups/[groupId]">
+<Route path="/groups/:groupId">
   <Route path="/groups/admin/settings">             {/* Absolute path - matches only if groupId === "admin" */}
     <LoginPage />
   </Route>
@@ -154,7 +163,7 @@ Each Route component provides context to its children:
 Access this context using the `useParams()` hook:
 
 ```tsx
-<Route path="/users/[id]/posts/[postId]">
+<Route path="/users/:id/posts/:postId">
   <PostDetail />
 </Route>
 
@@ -186,13 +195,13 @@ function PostDetail() {
 
 ```tsx
 <Router>
-  <Route path="/users/[id]">
+  <Route path="/users/:id">
     <UserProfile />
   </Route>
-  <Route path="/posts/[slug]">
+  <Route path="/posts/:slug">
     <BlogPost />
   </Route>
-  <Route path="/categories/[category]/posts/[id]">
+  <Route path="/categories/:category/posts/:id">
     <CategoryPost />
   </Route>
 </Router>
@@ -229,7 +238,7 @@ function PostDetail() {
           <Route exact path="">
             <UsersList />
           </Route>
-          <Route path="[id]">
+          <Route path=":id">
             <UserDetail>
               <Route exact path="">
                 <UserOverview />
@@ -254,7 +263,7 @@ function PostDetail() {
 Routes without a path prop match any path within their parent context:
 
 ```tsx
-<Route path="/users/[id]">
+<Route path="/users/:id">
   <UserLayout />
 
   <Route>
@@ -272,7 +281,7 @@ Routes without a path prop match any path within their parent context:
 
 1. **Use exact matching** for leaf routes that shouldn't match child paths
 2. **Keep route hierarchies shallow** when possible for better performance
-3. **Use descriptive parameter names**: `[userId]` instead of `[id]` for clarity
+3. **Use descriptive parameter names**: `:userId` instead of `:id` for clarity
 4. **Group related routes** under common parent routes
 5. **Use layout routes** for shared UI components
 
@@ -295,13 +304,13 @@ Routes without a path prop match any path within their parent context:
 ### Optional Segments
 
 ```tsx
-// Handle both /posts and /posts/[id]
+// Handle both /posts and /posts/:id
 <Route path="/posts">
   <PostsLayout />
   <Route exact path="">
     <PostsList />
   </Route>
-  <Route path="[id]">
+  <Route path=":id">
     <PostDetail />
   </Route>
 </Route>
@@ -310,10 +319,51 @@ Routes without a path prop match any path within their parent context:
 ### Multiple Parameter Formats
 
 ```tsx
-<Route path="/blog/[year]/[month]/[slug]">  {/* /blog/2024/03/my-post */}
-<Route path="/users/[userId]">              {/* /users/123 */}
-<Route path="/files/[...path]">             {/* Currently not supported - would need custom implementation */}
+<Route path="/blog/:year/:month/:slug">     {/* /blog/2024/03/my-post */}
+<Route path="/users/:userId">               {/* /users/123 */}
+<Route path="/files/*path">                 {/* /files/a/b/c - wildcard captures everything */}
+<Route path="/api/:version/*rest">          {/* /api/v1/users/123 - combines params with wildcard */}
 ```
+
+### Wildcard Routes
+
+Wildcard routes match arbitrary paths including slashes:
+
+```tsx
+// Unnamed wildcard - matches but doesn't capture
+<Route path="/static/*">
+  <StaticFileHandler />
+</Route>
+
+// Named wildcard - captures matched path in params
+<Route path="/files/*path">
+  <FileViewer />
+</Route>
+
+function FileViewer() {
+  const params = useParams();
+  // params.path = "documents/report.pdf" for /files/documents/report.pdf
+  return <div>Viewing: {params.path}</div>;
+}
+
+// Combining parameters with wildcards
+<Route path="/api/:version/*rest">
+  <APIProxy />
+</Route>
+
+function APIProxy() {
+  const params = useParams();
+  // For /api/v1/users/123/posts
+  // params.version = "v1"
+  // params.rest = "users/123/posts"
+}
+```
+
+**Notes:**
+- Wildcards must come at the end of the path
+- `*` matches at least one character (won't match the exact base path)
+- `/files/*` matches `/files/a` but NOT `/files`
+- The matched path includes all slashes and segments
 
 ## Related Components
 

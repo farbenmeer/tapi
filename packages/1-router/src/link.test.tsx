@@ -238,7 +238,7 @@ describe("Link", () => {
         <Router
           location={{ pathname: "/users/123/profile", search: "", hash: "" }}
         >
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <Route path="profile">
               <Link href="edit">Edit Profile</Link>
             </Route>

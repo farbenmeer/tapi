@@ -100,7 +100,7 @@ Relative paths are resolved based on the current route context:
 <Link href="posts">Posts</Link>            // Navigates to /users/123/posts
 
 // In nested routes
-<Route path="/users/[id]">
+<Route path="/users/:id">
   <Route path="profile">
     {/* Current context: /users/123/profile */}
     <Link href="edit">Edit Profile</Link>   // Navigates to /users/123/profile/edit
@@ -196,7 +196,7 @@ function UserCard({ userId, username }) {
     <Link href="settings">Settings</Link>    {/* /dashboard/settings */}
   </nav>
 
-  <Route path="users/[id]">
+  <Route path="users/:id">
     <nav>
       <Link href="">Profile</Link>           {/* /dashboard/users/123 */}
       <Link href="edit">Edit</Link>          {/* /dashboard/users/123/edit */}

@@ -35,7 +35,7 @@ describe("useParams", () => {
     test("extracts single parameter", () => {
       render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -50,7 +50,7 @@ describe("useParams", () => {
         <Router
           location={{ pathname: "/users/123/posts/456", search: "", hash: "" }}
         >
-          <Route path="/users/[userId]/posts/[postId]">
+          <Route path="/users/:userId/posts/:postId">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -66,7 +66,7 @@ describe("useParams", () => {
         <Router
           location={{ pathname: "/products/abc123", search: "", hash: "" }}
         >
-          <Route path="/products/[slug]">
+          <Route path="/products/:slug">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -82,7 +82,7 @@ describe("useParams", () => {
         <Router
           location={{ pathname: "/users/123/profile", search: "", hash: "" }}
         >
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <Route path="profile">
               <ParamsDisplay />
             </Route>
@@ -99,8 +99,8 @@ describe("useParams", () => {
         <Router
           location={{ pathname: "/orgs/acme/teams/dev", search: "", hash: "" }}
         >
-          <Route path="/orgs/[orgId]">
-            <Route path="teams/[teamId]">
+          <Route path="/orgs/:orgId">
+            <Route path="teams/:teamId">
               <ParamsDisplay />
             </Route>
           </Route>
@@ -121,9 +121,9 @@ describe("useParams", () => {
             hash: "",
           }}
         >
-          <Route path="/api/v1/orgs/[orgId]">
-            <Route path="teams/[teamId]">
-              <Route path="members/[memberId]">
+          <Route path="/api/v1/orgs/:orgId">
+            <Route path="teams/:teamId">
+              <Route path="members/:memberId">
                 <ParamsDisplay />
               </Route>
             </Route>
@@ -142,7 +142,7 @@ describe("useParams", () => {
     test("handles numeric-looking parameters as strings", () => {
       render(
         <Router location={{ pathname: "/items/12345", search: "", hash: "" }}>
-          <Route path="/items/[id]">
+          <Route path="/items/:id">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -160,7 +160,7 @@ describe("useParams", () => {
             hash: "",
           }}
         >
-          <Route path="/resources/[uuid]">
+          <Route path="/resources/:uuid">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -176,7 +176,7 @@ describe("useParams", () => {
         <Router
           location={{ pathname: "/posts/my-blog-post", search: "", hash: "" }}
         >
-          <Route path="/posts/[slug]">
+          <Route path="/posts/:slug">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -193,12 +193,12 @@ describe("useParams", () => {
       function DualRouteTest() {
         return (
           <div>
-            <Route path="/users/[id]">
+            <Route path="/users/:id">
               <div data-testid="user-route">
                 <ParamsDisplay />
               </div>
             </Route>
-            <Route path="/posts/[slug]">
+            <Route path="/posts/:slug">
               <div data-testid="post-route">
                 <ParamsDisplay />
               </div>
@@ -229,7 +229,7 @@ describe("useParams", () => {
     test("handles empty parameter values", () => {
       render(
         <Router location={{ pathname: "/users/", search: "", hash: "" }}>
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -244,7 +244,7 @@ describe("useParams", () => {
         <Router
           location={{ pathname: "/users/123/settings", search: "", hash: "" }}
         >
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <Route path="settings">
               <ParamsDisplay />
             </Route>
@@ -273,7 +273,7 @@ describe("useParams", () => {
     test("updates when route parameters change", () => {
       const { rerender } = render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -283,7 +283,7 @@ describe("useParams", () => {
 
       rerender(
         <Router location={{ pathname: "/users/456", search: "", hash: "" }}>
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -295,10 +295,10 @@ describe("useParams", () => {
     test("updates when switching between routes with different parameters", () => {
       const { rerender } = render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
-          <Route path="/posts/[slug]">
+          <Route path="/posts/:slug">
             <ParamsDisplay />
           </Route>
         </Router>
@@ -311,10 +311,10 @@ describe("useParams", () => {
         <Router
           location={{ pathname: "/posts/hello-world", search: "", hash: "" }}
         >
-          <Route path="/users/[id]">
+          <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
-          <Route path="/posts/[slug]">
+          <Route path="/posts/:slug">
             <ParamsDisplay />
           </Route>
         </Router>
