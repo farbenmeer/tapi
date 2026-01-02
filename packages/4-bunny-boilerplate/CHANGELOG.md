@@ -1,5 +1,12 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.2.1
+
+### Patch Changes
+
+- 3196826: add instructions for setting up tailwind
+  - @farbenmeer/bunny@0.2.4
+
 ## 0.2.0
 
 ### Minor Changes
