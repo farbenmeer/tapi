@@ -1,0 +1,30 @@
+{
+  "name": "@farbenmeer/bunny-example-env-file",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "files": [
+    "src",
+    ".gitignore",
+    "Dockerfile",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "dev": "bunny dev",
+    "build": "bunny build",
+    "start": "bunny start"
+  },
+  "dependencies": {
+    "@farbenmeer/bunny": "workspace:^",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/react": "^19",
+    "@types/react-dom": "^19"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

@@ -1,12 +1,13 @@
+import { generateOpenAPISchema } from "@farbenmeer/tapi/server";
 import { Command } from "commander";
 import esbuild from "esbuild";
+import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { generateServer } from "./generate-server.js";
 import * as vite from "vite";
-import { generateOpenAPISchema } from "@farbenmeer/tapi/server";
-import { existsSync } from "node:fs";
 import viteTsconfigPaths from "vite-tsconfig-paths";
+import { generateServer } from "./generate-server.js";
+import { loadEnv } from "../load-env.js";
 import { readConfig } from "./read-config.js";
 
 export const build = new Command()
@@ -22,6 +23,8 @@ export const build = new Command()
       await rm(bunnyDir, { recursive: true, force: true });
     }
     await mkdir(bunnyDir, { recursive: true });
+
+    loadEnv("production");
 
     await vite.build({
       configFile: false,

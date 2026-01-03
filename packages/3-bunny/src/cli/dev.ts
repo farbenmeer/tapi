@@ -5,13 +5,14 @@ import {
 import { Command } from "commander";
 import connect from "connect";
 import esbuild from "esbuild";
+import { existsSync } from "node:fs";
 import { mkdir, readFile, rm } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { createServer } from "vite";
-import { fromResponse, toRequest } from "../node-http-adapter.js";
 import viteTsconfigPaths from "vite-tsconfig-paths";
-import { existsSync } from "node:fs";
+import { fromResponse, toRequest } from "../node-http-adapter.js";
+import { loadEnv } from "../load-env.js";
 import { readConfig } from "./read-config.js";
 
 export const dev = new Command()
@@ -26,6 +27,8 @@ export const dev = new Command()
     }
     await mkdir(bunnyDir, { recursive: true });
     const srcDir = path.join(process.cwd(), "src");
+
+    loadEnv("development");
 
     const viteServer = await createServer({
       configFile: false,

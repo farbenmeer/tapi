@@ -4,16 +4,26 @@ import connect from "connect";
 import serveStatic from "serve-static";
 import type { ApiDefinition } from "@farbenmeer/tapi/server";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
+import { loadEnv } from "./load-env.js";
 
 interface BunnyServerOptions {
   port: number;
-  api: ApiDefinition<any>;
+  api: () => Promise<{ api: ApiDefinition<any> }>;
   dist: string;
 }
 
-export function startBunnyServer({ port, api, dist }: BunnyServerOptions) {
+export async function startBunnyServer({
+  port,
+  api,
+  dist,
+}: BunnyServerOptions) {
+  loadEnv("production");
   const app = connect();
-  const apiRequestHandler = createRequestHandler(api, { basePath: "/api" });
+  const apiRequestHandler = api().then(({ api }) =>
+    createRequestHandler(api, {
+      basePath: "/api",
+    })
+  );
 
   app.use(async (req, res, next) => {
     if (!req.url) return next();
@@ -23,7 +33,9 @@ export function startBunnyServer({ port, api, dist }: BunnyServerOptions) {
 
     if (/^\/api(\/|$)/.test(url.pathname)) {
       const request = toRequest(req, url);
-      const response = await apiRequestHandler(request);
+      const response = await apiRequestHandler.then((handle) =>
+        handle(request)
+      );
       fromResponse(res, response);
       return;
     }
