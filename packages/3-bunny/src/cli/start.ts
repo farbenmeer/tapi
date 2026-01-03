@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import path from "node:path";
-import { startBunnyServer } from "../server.js";
+import { createBunnyApp } from "../server.js";
 
 export const start = new Command()
   .name("start")
@@ -10,9 +10,8 @@ export const start = new Command()
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
     process.env.NODE_ENV = "production";
 
-    startBunnyServer({
+    createBunnyApp({
       api: () => import(path.join(bunnyDir, "api.cjs")),
-      port: parseInt(options.port, 10),
       dist: path.join(bunnyDir, "dist"),
-    });
+    }).listen(parseInt(options.port, 10));
   });

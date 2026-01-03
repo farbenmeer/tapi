@@ -95,7 +95,8 @@ export const dev = new Command()
       if (/^\/api(\/|$)/.test(url.pathname)) {
         const request = toRequest(req, url);
         const response = await apiRequestHandler(request);
-        fromResponse(res, response);
+        await fromResponse(res, response);
+        res.end();
         return;
       }
       if (url.pathname === "/.well-known/openapi.json") {
@@ -109,6 +110,6 @@ export const dev = new Command()
 
     app.use(viteServer.middlewares);
 
-    http.createServer(app).listen(parseInt(port, 10));
+    app.listen(parseInt(port, 10));
     console.log(`Dev-Server started on port ${port}`);
   });

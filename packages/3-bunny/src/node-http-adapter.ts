@@ -29,7 +29,9 @@ export function toRequest(req: IncomingMessage, url: URL): Request {
   return request;
 }
 
-export function fromResponse(node: ServerResponse, web: Response) {
-  node.setHeaders(web.headers);
-  web.body?.pipeTo(stream.Writable.toWeb(node));
+export async function fromResponse(node: ServerResponse, web: Response) {
+  node.statusCode = web.status;
+  node.statusMessage = web.statusText;
+  web.headers.forEach((value, key) => node.setHeader(key, value));
+  await web.body?.pipeTo(stream.Writable.toWeb(node));
 }

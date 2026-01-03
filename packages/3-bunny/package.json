@@ -40,7 +40,8 @@
     "build": "tsc --noEmit false",
     "pack:boilerplate": "pnpm --dir=\"../4-bunny-boilerplate\" pack --out=\"../3-bunny/boilerplate.tar.gz\"",
     "cli": "node dist/cli.js",
-    "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish --no-git-checks"
+    "release": "pnpm run build && pnpm run pack:boilerplate && pnpm publish --no-git-checks",
+    "test": "vitest"
   },
   "dependencies": {
     "@farbenmeer/react-tapi": "workspace:^",
@@ -59,6 +60,8 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19",
     "@types/serve-static": "^2.2.0",
+    "node-mocks-http": "^1.17.2",
+    "vitest": "^4.0.16",
     "react": "^19.2.3",
     "react-dom": "^19"
   },

@@ -1,11 +1,10 @@
 export function generateServer() {
   return `
-import { startBunnyServer } from "@farbenmeer/bunny/server"
+import { createBunnyApp } from "@farbenmeer/bunny/server"
 
-startBunnyServer({
-  port: 3000,
+createBunnyApp({
   api: () => import("./api.cjs"),
   dist: import.meta.dirname + "/dist",
-});
+}).listen(3000);
 `;
 }
