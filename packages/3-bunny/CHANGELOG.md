@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.2.5
+
+### Patch Changes
+
+- 4652e09: correctly load env file
+
 ## 0.2.4
 
 ### Patch Changes
