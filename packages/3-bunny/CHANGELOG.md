@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.2.6
+
+### Patch Changes
+
+- 7d10e2f: fix incorrect response object conversion
+
 ## 0.2.5
 
 ### Patch Changes
