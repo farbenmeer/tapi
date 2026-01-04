@@ -35,5 +35,6 @@ jobs:
           cache: pnpm
 
       - run: pnpm install
+      - run: pnpx playwright install
       - run: pnpm run build
       - run: pnpm run test
