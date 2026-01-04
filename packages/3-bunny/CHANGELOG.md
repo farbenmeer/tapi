@@ -1,5 +1,14 @@
 # @farbenmeer/bunny
 
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [51a563d]
+- Updated dependencies [cd64f38]
+  - @farbenmeer/tapi@0.3.1
+  - @farbenmeer/router@0.4.0
+
 ## 0.2.6
 
 ### Patch Changes

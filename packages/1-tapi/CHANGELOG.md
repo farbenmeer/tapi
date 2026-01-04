@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.3.1
+
+### Patch Changes
+
+- 51a563d: await handler execution to handle errors
+
 ## 0.3.0
 
 ### Minor Changes
