@@ -1,5 +1,11 @@
 # @farbenmeer/router
 
+## 0.4.0
+
+### Minor Changes
+
+- cd64f38: add search getter to turn immutablesearchparams to search string
+
 ## 0.3.0
 
 ### Minor Changes
