@@ -16,4 +16,8 @@ export class ImmutableSearchParams extends URLSearchParams {
     newSearchParams.delete(key);
     return new ImmutableSearchParams(newSearchParams);
   }
+
+  get search(): string {
+    return this.size === 0 ? "" : "?" + this.toString();
+  }
 }
