@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { compilePathRegex } from "./create-request-handler.js";
+import {
+  compilePathRegex,
+  createRequestHandler,
+} from "./create-request-handler.js";
+import { defineApi } from "./define-api.js";
+import { defineHandler } from "./define-handler.js";
 
 describe("compilePathRegex", () => {
   test("match a simple route", () => {
@@ -47,5 +52,24 @@ describe("compilePathRegex", () => {
     expect(pattern.test("/api/v2/posts/456/comments")).toBe(true);
     const match = "/api/v1/users/123".match(pattern);
     expect(match?.groups).toEqual({ version: "v1", rest: "users/123" });
+  });
+});
+
+describe("createRequestHandler", () => {
+  test("returns 500 for arbitrary errors in handler", async () => {
+    const sut = createRequestHandler(
+      defineApi().route("/", {
+        GET: defineHandler(
+          {
+            authorize: () => true,
+          },
+          () => {
+            throw new Error("Unexpected error");
+          }
+        ),
+      })
+    );
+    const response = await sut(new Request("http://localhost:3000"));
+    expect(response.status).toBe(500);
   });
 });

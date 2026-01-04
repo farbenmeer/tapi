@@ -40,7 +40,7 @@ export function createRequestHandler(
                 params,
                 req
               );
-              return executeHandler(route.GET, treq);
+              return await executeHandler(route.GET, treq);
             } catch (error) {
               return handleError(error);
             }
@@ -58,7 +58,7 @@ export function createRequestHandler(
                 params,
                 req
               );
-              return executeHandler(route.POST, treq);
+              return await executeHandler(route.POST, treq);
             } catch (error) {
               return handleError(error);
             }
