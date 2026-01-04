@@ -30,7 +30,7 @@
     "declaration": true,
     "declarationMap": true,
 
-    "types": ["@testing-library/jest-dom"]
+    "types": ["@vitest/browser-playwright"]
   },
   "include": ["src"]
 }

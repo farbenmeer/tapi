@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
+import { render } from "vitest-browser-react";
 import { Router } from "./router";
 import { Route } from "./route";
 import { useParams } from "./use-params";
@@ -20,8 +20,8 @@ describe("useParams", () => {
   }
 
   describe("basic parameter extraction", () => {
-    test("returns empty object when no parameters", () => {
-      render(
+    test("returns empty object when no parameters", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/static", search: "", hash: "" }}>
           <Route path="/static">
             <ParamsDisplay />
@@ -29,11 +29,13 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("0");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("0");
     });
 
-    test("extracts single parameter", () => {
-      render(
+    test("extracts single parameter", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
           <Route path="/users/:id">
             <ParamsDisplay />
@@ -41,12 +43,16 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("1");
-      expect(screen.getByTestId("param-id")).toHaveTextContent("123");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("1");
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("123");
     });
 
-    test("extracts multiple parameters", () => {
-      render(
+    test("extracts multiple parameters", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/users/123/posts/456", search: "", hash: "" }}
         >
@@ -56,13 +62,19 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("2");
-      expect(screen.getByTestId("param-userId")).toHaveTextContent("123");
-      expect(screen.getByTestId("param-postId")).toHaveTextContent("456");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("2");
+      await expect
+        .element(screen.getByTestId("param-userId"))
+        .toHaveTextContent("123");
+      await expect
+        .element(screen.getByTestId("param-postId"))
+        .toHaveTextContent("456");
     });
 
-    test("handles alphanumeric parameters", () => {
-      render(
+    test("handles alphanumeric parameters", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/products/abc123", search: "", hash: "" }}
         >
@@ -72,13 +84,15 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-slug")).toHaveTextContent("abc123");
+      await expect
+        .element(screen.getByTestId("param-slug"))
+        .toHaveTextContent("abc123");
     });
   });
 
   describe("nested route parameters", () => {
-    test("inherits parameters from parent route", () => {
-      render(
+    test("inherits parameters from parent route", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/users/123/profile", search: "", hash: "" }}
         >
@@ -90,12 +104,16 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("1");
-      expect(screen.getByTestId("param-id")).toHaveTextContent("123");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("1");
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("123");
     });
 
-    test("combines parent and child parameters", () => {
-      render(
+    test("combines parent and child parameters", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/orgs/acme/teams/dev", search: "", hash: "" }}
         >
@@ -107,13 +125,19 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("2");
-      expect(screen.getByTestId("param-orgId")).toHaveTextContent("acme");
-      expect(screen.getByTestId("param-teamId")).toHaveTextContent("dev");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("2");
+      await expect
+        .element(screen.getByTestId("param-orgId"))
+        .toHaveTextContent("acme");
+      await expect
+        .element(screen.getByTestId("param-teamId"))
+        .toHaveTextContent("dev");
     });
 
-    test("works with deeply nested routes", () => {
-      render(
+    test("works with deeply nested routes", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/api/v1/orgs/acme/teams/dev/members/john",
@@ -131,16 +155,24 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("3");
-      expect(screen.getByTestId("param-orgId")).toHaveTextContent("acme");
-      expect(screen.getByTestId("param-teamId")).toHaveTextContent("dev");
-      expect(screen.getByTestId("param-memberId")).toHaveTextContent("john");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("3");
+      await expect
+        .element(screen.getByTestId("param-orgId"))
+        .toHaveTextContent("acme");
+      await expect
+        .element(screen.getByTestId("param-teamId"))
+        .toHaveTextContent("dev");
+      await expect
+        .element(screen.getByTestId("param-memberId"))
+        .toHaveTextContent("john");
     });
   });
 
   describe("parameter types and formats", () => {
-    test("handles numeric-looking parameters as strings", () => {
-      render(
+    test("handles numeric-looking parameters as strings", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/items/12345", search: "", hash: "" }}>
           <Route path="/items/:id">
             <ParamsDisplay />
@@ -148,11 +180,13 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-id")).toHaveTextContent("12345");
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("12345");
     });
 
-    test("handles UUID-style parameters", () => {
-      render(
+    test("handles UUID-style parameters", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/resources/550e8400-e29b-41d4-a716-446655440000",
@@ -166,13 +200,13 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-uuid")).toHaveTextContent(
-        "550e8400-e29b-41d4-a716-446655440000"
-      );
+      await expect
+        .element(screen.getByTestId("param-uuid"))
+        .toHaveTextContent("550e8400-e29b-41d4-a716-446655440000");
     });
 
-    test("handles hyphenated parameters", () => {
-      render(
+    test("handles hyphenated parameters", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/posts/my-blog-post", search: "", hash: "" }}
         >
@@ -182,14 +216,14 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-slug")).toHaveTextContent(
-        "my-blog-post"
-      );
+      await expect
+        .element(screen.getByTestId("param-slug"))
+        .toHaveTextContent("my-blog-post");
     });
   });
 
   describe("route context isolation", () => {
-    test("parameters are isolated between different route contexts", () => {
+    test("parameters are isolated between different route contexts", async () => {
       function DualRouteTest() {
         return (
           <div>
@@ -207,27 +241,30 @@ describe("useParams", () => {
         );
       }
 
-      render(
+      const screen = await render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
           <DualRouteTest />
         </Router>
       );
 
       const userRoute = screen.getByTestId("user-route");
-      const userParamsCount = userRoute.querySelector(
-        '[data-testid="params-count"]'
-      );
-      const userId = userRoute.querySelector('[data-testid="param-id"]');
+      const userParamsCount = userRoute
+        .element()
+        .querySelector('[data-testid="params-count"]');
+      const userId = userRoute
+        .element()
+        .querySelector('[data-testid="param-id"]');
 
-      expect(userParamsCount).toHaveTextContent("1");
-      expect(userId).toHaveTextContent("123");
-      expect(screen.queryByTestId("post-route")).not.toBeInTheDocument();
+      expect(userParamsCount?.textContent).toBe("1");
+      expect(userId?.textContent).toBe("123");
+      const container = screen.container;
+      expect(container.querySelector('[data-testid="post-route"]')).toBeNull();
     });
   });
 
   describe("edge cases", () => {
-    test("handles empty parameter values", () => {
-      render(
+    test("handles empty parameter values", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/users/", search: "", hash: "" }}>
           <Route path="/users/:id">
             <ParamsDisplay />
@@ -236,11 +273,14 @@ describe("useParams", () => {
       );
 
       // This should not match due to the regex pattern
-      expect(screen.queryByTestId("params-count")).not.toBeInTheDocument();
+      const container = screen.container;
+      expect(
+        container.querySelector('[data-testid="params-count"]')
+      ).toBeNull();
     });
 
-    test("handles route without parameters in nested context", () => {
-      render(
+    test("handles route without parameters in nested context", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/users/123/settings", search: "", hash: "" }}
         >
@@ -252,12 +292,16 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("1");
-      expect(screen.getByTestId("param-id")).toHaveTextContent("123");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("1");
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("123");
     });
 
-    test("works at root route level", () => {
-      render(
+    test("works at root route level", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/">
             <ParamsDisplay />
@@ -265,13 +309,15 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("params-count")).toHaveTextContent("0");
+      await expect
+        .element(screen.getByTestId("params-count"))
+        .toHaveTextContent("0");
     });
   });
 
   describe("parameter reactivity", () => {
-    test("updates when route parameters change", () => {
-      const { rerender } = render(
+    test("updates when route parameters change", async () => {
+      const { rerender, getByTestId } = await render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
           <Route path="/users/:id">
             <ParamsDisplay />
@@ -279,9 +325,9 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-id")).toHaveTextContent("123");
+      await expect.element(getByTestId("param-id")).toHaveTextContent("123");
 
-      rerender(
+      await rerender(
         <Router location={{ pathname: "/users/456", search: "", hash: "" }}>
           <Route path="/users/:id">
             <ParamsDisplay />
@@ -289,11 +335,11 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-id")).toHaveTextContent("456");
+      await expect.element(getByTestId("param-id")).toHaveTextContent("456");
     });
 
-    test("updates when switching between routes with different parameters", () => {
-      const { rerender } = render(
+    test("updates when switching between routes with different parameters", async () => {
+      const { rerender, getByTestId, container } = await render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
           <Route path="/users/:id">
             <ParamsDisplay />
@@ -304,10 +350,10 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-id")).toHaveTextContent("123");
-      expect(screen.queryByTestId("param-slug")).not.toBeInTheDocument();
+      await expect.element(getByTestId("param-id")).toHaveTextContent("123");
+      expect(container.querySelector('[data-testid="param-slug"]')).toBeNull();
 
-      rerender(
+      await rerender(
         <Router
           location={{ pathname: "/posts/hello-world", search: "", hash: "" }}
         >
@@ -320,8 +366,10 @@ describe("useParams", () => {
         </Router>
       );
 
-      expect(screen.queryByTestId("param-id")).not.toBeInTheDocument();
-      expect(screen.getByTestId("param-slug")).toHaveTextContent("hello-world");
+      expect(container.querySelector('[data-testid="param-id"]')).toBeNull();
+      await expect
+        .element(getByTestId("param-slug"))
+        .toHaveTextContent("hello-world");
     });
   });
 });

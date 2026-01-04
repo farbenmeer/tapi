@@ -1,65 +1,67 @@
-import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
+import { render } from "vitest-browser-react";
 import { Router } from "./router";
 import { Route } from "./route";
 import { useParams } from "./use-params";
 
 describe("Route", () => {
   describe("basic routing", () => {
-    test("renders home route by default", () => {
-      render(
+    test("renders home route by default", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/">Home</Route>
         </Router>
       );
 
-      expect(screen.getByText("Home")).toBeInTheDocument();
+      await expect.element(screen.getByText("Home")).toBeInTheDocument();
     });
 
-    test("does not render route when path is not active", () => {
-      render(
+    test("does not render route when path is not active", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/test">Test Route</Route>
         </Router>
       );
 
-      expect(screen.queryByText("Test Route")).not.toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Test Route");
     });
 
-    test("renders route when its path is active", () => {
-      render(
+    test("renders route when its path is active", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/test", search: "", hash: "" }}>
           <Route path="/test">Test Route</Route>
         </Router>
       );
 
-      expect(screen.queryByText("Test Route")).toBeInTheDocument();
+      await expect.element(screen.getByText("Test Route")).toBeInTheDocument();
     });
 
-    test("renders route when a subpath is active", () => {
-      render(
+    test("renders route when a subpath is active", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/test/asdf", search: "", hash: "" }}>
           <Route path="/test">Test Route</Route>
         </Router>
       );
 
-      expect(screen.queryByText("Test Route")).toBeInTheDocument();
+      await expect.element(screen.getByText("Test Route")).toBeInTheDocument();
     });
 
-    test("does not render route when path segment contains extra characters", () => {
-      render(
+    test("does not render route when path segment contains extra characters", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/testasdf", search: "", hash: "" }}>
           <Route path="/test">Test Route</Route>
         </Router>
       );
 
-      expect(screen.queryByText("Test Route")).not.toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Test Route");
     });
   });
 
   describe("exact matching", () => {
-    test("renders exact route when path matches exactly", () => {
-      render(
+    test("renders exact route when path matches exactly", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/test", search: "", hash: "" }}>
           <Route exact path="/test">
             Test Route
@@ -67,11 +69,11 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.queryByText("Test Route")).toBeInTheDocument();
+      await expect.element(screen.getByText("Test Route")).toBeInTheDocument();
     });
 
-    test("does not render exact route when path does not match exactly", () => {
-      render(
+    test("does not render exact route when path does not match exactly", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/test/asdf", search: "", hash: "" }}>
           <Route exact path="/test">
             Test Route
@@ -79,11 +81,12 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.queryByText("Test Route")).not.toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Test Route");
     });
 
-    test("renders exact route with trailing slash", () => {
-      render(
+    test("renders exact route with trailing slash", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/test/", search: "", hash: "" }}>
           <Route exact path="/test">
             Test Route
@@ -91,13 +94,13 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Test Route")).toBeInTheDocument();
+      await expect.element(screen.getByText("Test Route")).toBeInTheDocument();
     });
   });
 
   describe("nested routes", () => {
-    test("renders nested routes with relative paths", () => {
-      render(
+    test("renders nested routes with relative paths", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/parent/child", search: "", hash: "" }}>
           <Route path="/parent">
             <div>Parent</div>
@@ -108,12 +111,12 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Parent")).toBeInTheDocument();
-      expect(screen.getByText("Child")).toBeInTheDocument();
+      await expect.element(screen.getByText("Parent")).toBeInTheDocument();
+      await expect.element(screen.getByText("Child")).toBeInTheDocument();
     });
 
-    test("renders deeply nested routes", () => {
-      render(
+    test("renders deeply nested routes", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/parent/child/grandchild",
@@ -133,13 +136,16 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Parent")).toBeInTheDocument();
-      expect(screen.getByText("Child")).toBeInTheDocument();
-      expect(screen.getByText("Grandchild")).toBeInTheDocument();
+      await expect.element(screen.getByText("Parent")).toBeInTheDocument();
+      await expect.element(screen.getByText("Grandchild")).toBeInTheDocument();
+      // Check that both "Child" and "Grandchild" are in the document
+      const container = screen.container;
+      expect(container.textContent).toContain("Child");
+      expect(container.textContent).toContain("Grandchild");
     });
 
-    test("does not render child route when parent doesn't match", () => {
-      render(
+    test("does not render child route when parent doesn't match", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/other", search: "", hash: "" }}>
           <Route path="/parent">
             <div>Parent Route</div>
@@ -150,12 +156,13 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.queryByText("Parent Route")).not.toBeInTheDocument();
-      expect(screen.queryByText("Child Route")).not.toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Parent Route");
+      expect(container.textContent).not.toContain("Child Route");
     });
 
-    test("renders parent but not child when child path doesn't match", () => {
-      render(
+    test("renders parent but not child when child path doesn't match", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/parent/other", search: "", hash: "" }}>
           <Route path="/parent">
             <div>Parent Route</div>
@@ -166,12 +173,15 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Parent Route")).toBeInTheDocument();
-      expect(screen.queryByText("Child Route")).not.toBeInTheDocument();
+      await expect
+        .element(screen.getByText("Parent Route"))
+        .toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Child Route");
     });
 
-    test("handles multiple nested routes at same level", () => {
-      render(
+    test("handles multiple nested routes at same level", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/parent/second", search: "", hash: "" }}>
           <Route path="/parent">
             <div>Parent Route</div>
@@ -188,14 +198,19 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Parent Route")).toBeInTheDocument();
-      expect(screen.queryByText("First Child")).not.toBeInTheDocument();
-      expect(screen.getByText("Second Child")).toBeInTheDocument();
-      expect(screen.queryByText("Third Child")).not.toBeInTheDocument();
+      await expect
+        .element(screen.getByText("Parent Route"))
+        .toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("First Child");
+      await expect
+        .element(screen.getByText("Second Child"))
+        .toBeInTheDocument();
+      expect(container.textContent).not.toContain("Third Child");
     });
 
-    test("supports absolute paths in nested routes", () => {
-      render(
+    test("supports absolute paths in nested routes", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/parent/absolute", search: "", hash: "" }}
         >
@@ -208,12 +223,16 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Parent Route")).toBeInTheDocument();
-      expect(screen.getByText("Absolute Route")).toBeInTheDocument();
+      await expect
+        .element(screen.getByText("Parent Route"))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByText("Absolute Route"))
+        .toBeInTheDocument();
     });
 
-    test("nested exact routes work correctly", () => {
-      render(
+    test("nested exact routes work correctly", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/parent/child/extra", search: "", hash: "" }}
         >
@@ -229,15 +248,18 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Parent Route")).toBeInTheDocument();
-      expect(screen.queryByText("Exact Child")).not.toBeInTheDocument();
-      expect(screen.getByText("Child Extra")).toBeInTheDocument();
+      await expect
+        .element(screen.getByText("Parent Route"))
+        .toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Exact Child");
+      await expect.element(screen.getByText("Child Extra")).toBeInTheDocument();
     });
   });
 
   describe("route parameters", () => {
-    test("extracts single route parameter", () => {
-      render(
+    test("extracts single route parameter", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
           <Route path="/users/:id">
             <ParamsDisplay />
@@ -245,11 +267,13 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-id")).toHaveTextContent("123");
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("123");
     });
 
-    test("extracts multiple route parameters", () => {
-      render(
+    test("extracts multiple route parameters", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/users/123/posts/456", search: "", hash: "" }}
         >
@@ -259,12 +283,16 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-userId")).toHaveTextContent("123");
-      expect(screen.getByTestId("param-postId")).toHaveTextContent("456");
+      await expect
+        .element(screen.getByTestId("param-userId"))
+        .toHaveTextContent("123");
+      await expect
+        .element(screen.getByTestId("param-postId"))
+        .toHaveTextContent("456");
     });
 
-    test("parameters work in nested routes", () => {
-      render(
+    test("parameters work in nested routes", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/users/123/profile", search: "", hash: "" }}
         >
@@ -277,14 +305,16 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("User Route")).toBeInTheDocument();
-      expect(screen.getByTestId("param-id")).toHaveTextContent("123");
+      await expect.element(screen.getByText("User Route")).toBeInTheDocument();
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("123");
     });
   });
 
   describe("route without path prop", () => {
-    test("renders route without path when parent matches", () => {
-      render(
+    test("renders route without path when parent matches", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/parent", search: "", hash: "" }}>
           <Route path="/parent">
             <div>Parent Route</div>
@@ -295,12 +325,16 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Parent Route")).toBeInTheDocument();
-      expect(screen.getByText("Default Child Route")).toBeInTheDocument();
+      await expect
+        .element(screen.getByText("Parent Route"))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByText("Default Child Route"))
+        .toBeInTheDocument();
     });
 
-    test("does not render route without path when parent doesn't match", () => {
-      render(
+    test("does not render route without path when parent doesn't match", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/other", search: "", hash: "" }}>
           <Route path="/parent">
             <div>Parent Route</div>
@@ -311,14 +345,15 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.queryByText("Parent Route")).not.toBeInTheDocument();
-      expect(screen.queryByText("Default Child Route")).not.toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Parent Route");
+      expect(container.textContent).not.toContain("Default Child Route");
     });
   });
 
   describe("complex nested scenarios", () => {
-    test("mixed relative and absolute paths in deep nesting", () => {
-      render(
+    test("mixed relative and absolute paths in deep nesting", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/app/dashboard/settings",
@@ -338,13 +373,13 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("App Layout")).toBeInTheDocument();
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
-      expect(screen.getByText("Settings")).toBeInTheDocument();
+      await expect.element(screen.getByText("App Layout")).toBeInTheDocument();
+      await expect.element(screen.getByText("Dashboard")).toBeInTheDocument();
+      await expect.element(screen.getByText("Settings")).toBeInTheDocument();
     });
 
-    test("route with parameters and nested exact routes", () => {
-      render(
+    test("route with parameters and nested exact routes", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
           <Route path="/users/:id">
             <div>User Profile</div>
@@ -358,13 +393,18 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("User Profile")).toBeInTheDocument();
-      expect(screen.getByText("User Overview")).toBeInTheDocument();
-      expect(screen.queryByText("Edit User")).not.toBeInTheDocument();
+      await expect
+        .element(screen.getByText("User Profile"))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByText("User Overview"))
+        .toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Edit User");
     });
 
-    test("multiple levels of parameters", () => {
-      render(
+    test("multiple levels of parameters", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/orgs/acme/teams/dev/members/john",
@@ -382,9 +422,15 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-orgId")).toHaveTextContent("acme");
-      expect(screen.getByTestId("param-teamId")).toHaveTextContent("dev");
-      expect(screen.getByTestId("param-memberId")).toHaveTextContent("john");
+      await expect
+        .element(screen.getByTestId("param-orgId"))
+        .toHaveTextContent("acme");
+      await expect
+        .element(screen.getByTestId("param-teamId"))
+        .toHaveTextContent("dev");
+      await expect
+        .element(screen.getByTestId("param-memberId"))
+        .toHaveTextContent("john");
     });
   });
 
@@ -402,8 +448,8 @@ describe("Route", () => {
   }
 
   describe("wildcard routes", () => {
-    test("matches wildcard route", () => {
-      render(
+    test("matches wildcard route", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/files/a/b/c", search: "", hash: "" }}>
           <Route path="/files/*">
             <div>Files</div>
@@ -411,11 +457,11 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByText("Files")).toBeInTheDocument();
+      await expect.element(screen.getByText("Files")).toBeInTheDocument();
     });
 
-    test("does not match wildcard without trailing path", () => {
-      render(
+    test("does not match wildcard without trailing path", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/files", search: "", hash: "" }}>
           <Route path="/files/*">
             <div>Files</div>
@@ -423,11 +469,12 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.queryByText("Files")).not.toBeInTheDocument();
+      const container = screen.container;
+      expect(container.textContent).not.toContain("Files");
     });
 
-    test("extracts named wildcard parameter", () => {
-      render(
+    test("extracts named wildcard parameter", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/files/a/b/c", search: "", hash: "" }}>
           <Route path="/files/*path">
             <ParamsDisplay />
@@ -435,11 +482,13 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-path")).toHaveTextContent("a/b/c");
+      await expect
+        .element(screen.getByTestId("param-path"))
+        .toHaveTextContent("a/b/c");
     });
 
-    test("combines regular params with wildcard", () => {
-      render(
+    test("combines regular params with wildcard", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/api/v1/users/123", search: "", hash: "" }}
         >
@@ -449,12 +498,16 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-version")).toHaveTextContent("v1");
-      expect(screen.getByTestId("param-rest")).toHaveTextContent("users/123");
+      await expect
+        .element(screen.getByTestId("param-version"))
+        .toHaveTextContent("v1");
+      await expect
+        .element(screen.getByTestId("param-rest"))
+        .toHaveTextContent("users/123");
     });
 
-    test("wildcard matches deeply nested paths", () => {
-      render(
+    test("wildcard matches deeply nested paths", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/docs/guide/getting-started/installation",
@@ -468,9 +521,9 @@ describe("Route", () => {
         </Router>
       );
 
-      expect(screen.getByTestId("param-path")).toHaveTextContent(
-        "guide/getting-started/installation"
-      );
+      await expect
+        .element(screen.getByTestId("param-path"))
+        .toHaveTextContent("guide/getting-started/installation");
     });
   });
 });

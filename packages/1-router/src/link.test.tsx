@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, vi, test } from "vitest";
+import { describe, expect, vi, test, afterEach } from "vitest";
+import { render } from "vitest-browser-react";
 import { Link } from "./link";
 import { Route } from "./route";
 import { Router } from "./router";
@@ -15,8 +15,8 @@ describe("Link", () => {
   });
 
   describe("basic functionality", () => {
-    test("renders as anchor element", () => {
-      render(
+    test("renders as anchor element", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/">
             <Link href="/test">Test Link</Link>
@@ -25,13 +25,13 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toBeInTheDocument();
-      expect(link.tagName).toBe("A");
-      expect(link).toHaveTextContent("Test Link");
+      await expect.element(link).toBeInTheDocument();
+      expect(link.element().tagName).toBe("A");
+      await expect.element(link).toHaveTextContent("Test Link");
     });
 
-    test("sets correct href attribute", () => {
-      render(
+    test("sets correct href attribute", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/">
             <Link href="/test">Test Link</Link>
@@ -40,11 +40,11 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/test");
+      await expect.element(link).toHaveAttribute("href", "/test");
     });
 
-    test("passes through HTML props", () => {
-      render(
+    test("passes through HTML props", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/">
             <Link
@@ -60,14 +60,14 @@ describe("Link", () => {
       );
 
       const link = screen.getByTestId("custom-link");
-      expect(link).toHaveClass("custom-class");
-      expect(link).toHaveAttribute("id", "test-id");
+      await expect.element(link).toHaveClass("custom-class");
+      await expect.element(link).toHaveAttribute("id", "test-id");
     });
   });
 
   describe("href resolution", () => {
-    test("handles absolute paths", () => {
-      render(
+    test("handles absolute paths", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/current", search: "", hash: "" }}>
           <Route path="/current">
             <Link href="/absolute">Absolute Link</Link>
@@ -76,11 +76,11 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/absolute");
+      await expect.element(link).toHaveAttribute("href", "/absolute");
     });
 
-    test("handles relative paths from root route", () => {
-      render(
+    test("handles relative paths from root route", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/">
             <Link href="relative">Relative Link</Link>
@@ -89,11 +89,11 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/relative");
+      await expect.element(link).toHaveAttribute("href", "/relative");
     });
 
-    test("handles relative paths from nested route", () => {
-      render(
+    test("handles relative paths from nested route", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/parent/child", search: "", hash: "" }}>
           <Route path="/parent">
             <Route path="child">
@@ -104,12 +104,13 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      console.log(link.getAttribute("href"));
-      expect(link).toHaveAttribute("href", "/parent/child/sibling");
+      await expect
+        .element(link)
+        .toHaveAttribute("href", "/parent/child/sibling");
     });
 
-    test("handles query string paths", () => {
-      render(
+    test("handles query string paths", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/current", search: "", hash: "" }}>
           <Route path="/current">
             <Link href="?query=value">Query Link</Link>
@@ -118,13 +119,15 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/current?query=value");
+      await expect
+        .element(link)
+        .toHaveAttribute("href", "/current?query=value");
     });
   });
 
   describe("navigation behavior", () => {
-    test("prevents default click behavior for internal links", () => {
-      render(
+    test("prevents default click behavior for internal links", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/", search: "", hash: "" }}
           history={mockHistory}
@@ -136,13 +139,13 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      fireEvent.click(link);
+      await link.click();
 
       expect(mockHistory.pushState).toHaveBeenCalledWith(null, "", "/test");
     });
 
-    test("calls router.push for regular navigation", () => {
-      render(
+    test("calls router.push for regular navigation", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/", search: "", hash: "" }}
           history={mockHistory}
@@ -154,13 +157,13 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      fireEvent.click(link);
+      await link.click();
 
       expect(mockHistory.pushState).toHaveBeenCalledWith(null, "", "/new-page");
     });
 
-    test("calls router.replace when replace prop is true", () => {
-      render(
+    test("calls router.replace when replace prop is true", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/", search: "", hash: "" }}
           history={mockHistory}
@@ -174,7 +177,7 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      fireEvent.click(link);
+      await link.click();
 
       expect(mockHistory.pushState).not.toHaveBeenCalled();
       expect(mockHistory.replaceState).toHaveBeenCalledWith(
@@ -184,10 +187,10 @@ describe("Link", () => {
       );
     });
 
-    test("calls custom onClick handler before navigation", () => {
+    test("calls custom onClick handler before navigation", async () => {
       const handleClick = vi.fn(() => {});
 
-      render(
+      const screen = await render(
         <Router
           location={{ pathname: "/", search: "", hash: "" }}
           history={mockHistory}
@@ -201,18 +204,18 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      fireEvent.click(link);
+      await link.click();
 
       expect(handleClick).toHaveBeenCalled();
       expect(mockHistory.pushState).toHaveBeenCalledWith(null, "", "/test");
     });
 
-    test("does not navigate if custom onClick prevents default", () => {
+    test("does not navigate if custom onClick prevents default", async () => {
       const handleClick = (event: React.MouseEvent) => {
         event.preventDefault();
       };
 
-      render(
+      const screen = await render(
         <Router
           location={{ pathname: "/", search: "", hash: "" }}
           history={mockHistory}
@@ -226,15 +229,15 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      fireEvent.click(link);
+      await link.click();
 
       expect(mockHistory.pushState).not.toHaveBeenCalled();
     });
   });
 
   describe("nested route context", () => {
-    test("resolves relative paths based on parent route context", () => {
-      render(
+    test("resolves relative paths based on parent route context", async () => {
+      const screen = await render(
         <Router
           location={{ pathname: "/users/123/profile", search: "", hash: "" }}
         >
@@ -247,11 +250,13 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/users/123/profile/edit");
+      await expect
+        .element(link)
+        .toHaveAttribute("href", "/users/123/profile/edit");
     });
 
-    test("works with deeply nested routes", () => {
-      render(
+    test("works with deeply nested routes", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/app/dashboard/settings/profile",
@@ -272,14 +277,16 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute(
-        "href",
-        "/app/dashboard/settings/profile/notifications"
-      );
+      await expect
+        .element(link)
+        .toHaveAttribute(
+          "href",
+          "/app/dashboard/settings/profile/notifications"
+        );
     });
 
-    test("absolute paths ignore parent route context", () => {
-      render(
+    test("absolute paths ignore parent route context", async () => {
+      const screen = await render(
         <Router
           location={{
             pathname: "/deep/nested/route",
@@ -298,13 +305,13 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/absolute");
+      await expect.element(link).toHaveAttribute("href", "/absolute");
     });
   });
 
   describe("complex href scenarios", () => {
-    test("handles relative path with query parameters", () => {
-      render(
+    test("handles relative path with query parameters", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/users", search: "", hash: "" }}>
           <Route path="/users">
             <Link href="create?type=admin">Create Admin</Link>
@@ -313,11 +320,13 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/users/create?type=admin");
+      await expect
+        .element(link)
+        .toHaveAttribute("href", "/users/create?type=admin");
     });
 
-    test("handles query parameters on current page", () => {
-      render(
+    test("handles query parameters on current page", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/search", search: "?q=test", hash: "" }}>
           <Route path="/search">
             <Link href="?q=new-query">New Search</Link>
@@ -326,11 +335,11 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/search?q=new-query");
+      await expect.element(link).toHaveAttribute("href", "/search?q=new-query");
     });
 
-    test("handles hash fragments", () => {
-      render(
+    test("handles hash fragments", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/docs", search: "", hash: "" }}>
           <Route path="/docs">
             <Link href="api#methods">API Methods</Link>
@@ -339,11 +348,11 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/docs/api#methods");
+      await expect.element(link).toHaveAttribute("href", "/docs/api#methods");
     });
 
-    test("handles complex URLs with all components", () => {
-      render(
+    test("handles complex URLs with all components", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/base", search: "", hash: "" }}>
           <Route path="/base">
             <Link href="path/to/resource?param1=value1&param2=value2#section">
@@ -354,16 +363,18 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute(
-        "href",
-        "/base/path/to/resource?param1=value1&param2=value2#section"
-      );
+      await expect
+        .element(link)
+        .toHaveAttribute(
+          "href",
+          "/base/path/to/resource?param1=value1&param2=value2#section"
+        );
     });
   });
 
   describe("edge cases", () => {
-    test("handles empty href", () => {
-      render(
+    test("handles empty href", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/current", search: "", hash: "" }}>
           <Route path="/current">
             <Link href="">Empty Link</Link>
@@ -372,11 +383,11 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/current");
+      await expect.element(link).toHaveAttribute("href", "/current");
     });
 
-    test("works in route without explicit path", () => {
-      render(
+    test("works in route without explicit path", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/parent", search: "", hash: "" }}>
           <Route path="/parent">
             <Route>
@@ -387,11 +398,11 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/parent/child");
+      await expect.element(link).toHaveAttribute("href", "/parent/child");
     });
 
-    test("handles root route correctly", () => {
-      render(
+    test("handles root route correctly", async () => {
+      const screen = await render(
         <Router location={{ pathname: "/", search: "", hash: "" }}>
           <Route path="/">
             <Link href="home">Home Link</Link>
@@ -400,7 +411,7 @@ describe("Link", () => {
       );
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/home");
+      await expect.element(link).toHaveAttribute("href", "/home");
     });
   });
 });
