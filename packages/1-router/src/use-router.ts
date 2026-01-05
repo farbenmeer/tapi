@@ -1,4 +1,4 @@
-import { ContextType, use, useMemo } from "react";
+import { type ContextType, use, useMemo } from "react";
 import {
   PathnameContext,
   RouteContext,
