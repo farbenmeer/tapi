@@ -112,13 +112,15 @@ export async function prepareRequestWithoutBody<TBody = never>(
     }
     return params;
   };
-  treq.auth = await handler.schema.authorize(
+  const auth = await handler.schema.authorize(
     treq as TRequest<never, any, any, never>
   );
 
-  if (!treq.auth) {
+  if (!auth) {
     throw new HttpError(401, "Unauthorized");
   }
+
+  treq.auth = () => auth;
 
   return treq;
 }
