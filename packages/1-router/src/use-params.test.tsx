@@ -3,6 +3,8 @@ import { render } from "vitest-browser-react";
 import { Router } from "./router";
 import { Route } from "./route";
 import { useParams } from "./use-params";
+import { mockHistory } from "./mock-history";
+import { Link } from "./link";
 
 describe("useParams", () => {
   function ParamsDisplay() {
@@ -317,58 +319,57 @@ describe("useParams", () => {
 
   describe("parameter reactivity", () => {
     test("updates when route parameters change", async () => {
-      const { rerender, getByTestId } = await render(
-        <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
+      const { history, location } = mockHistory("/users/123");
+
+      const screen = await render(
+        <Router location={location} history={history}>
           <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
+          <Link href="/users/456">To User 456</Link>
         </Router>
       );
 
-      await expect.element(getByTestId("param-id")).toHaveTextContent("123");
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("123");
 
-      await rerender(
-        <Router location={{ pathname: "/users/456", search: "", hash: "" }}>
-          <Route path="/users/:id">
-            <ParamsDisplay />
-          </Route>
-        </Router>
-      );
+      await screen.getByText("To User 456").click();
 
-      await expect.element(getByTestId("param-id")).toHaveTextContent("456");
+      await expect
+        .element(screen.getByTestId("param-id"))
+        .toHaveTextContent("456");
     });
 
     test("updates when switching between routes with different parameters", async () => {
-      const { rerender, getByTestId, container } = await render(
-        <Router location={{ pathname: "/users/123", search: "", hash: "" }}>
+      const { history, location } = mockHistory("/users/123");
+
+      const screen = await render(
+        <Router location={location} history={history}>
           <Route path="/users/:id">
             <ParamsDisplay />
           </Route>
           <Route path="/posts/:slug">
             <ParamsDisplay />
           </Route>
+          <Link href="/posts/hello-world">Go to post</Link>
         </Router>
       );
 
-      await expect.element(getByTestId("param-id")).toHaveTextContent("123");
-      expect(container.querySelector('[data-testid="param-slug"]')).toBeNull();
-
-      await rerender(
-        <Router
-          location={{ pathname: "/posts/hello-world", search: "", hash: "" }}
-        >
-          <Route path="/users/:id">
-            <ParamsDisplay />
-          </Route>
-          <Route path="/posts/:slug">
-            <ParamsDisplay />
-          </Route>
-        </Router>
-      );
-
-      expect(container.querySelector('[data-testid="param-id"]')).toBeNull();
       await expect
-        .element(getByTestId("param-slug"))
+        .element(screen.getByTestId("param-id"), { timeout: 100 })
+        .toHaveTextContent("123");
+      expect(
+        screen.container.querySelector('[data-testid="param-slug"]')
+      ).toBeNull();
+
+      await screen.getByText("Go to post").click({ timeout: 100 });
+
+      expect(
+        screen.container.querySelector('[data-testid="param-id"]')
+      ).toBeNull();
+      await expect
+        .element(screen.getByTestId("param-slug"), { timeout: 100 })
         .toHaveTextContent("hello-world");
     });
   });
