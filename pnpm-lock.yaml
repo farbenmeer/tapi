@@ -107,7 +107,7 @@ importers:
         version: 5.9.3
       zod-openapi:
         specifier: ^5.4.0
-        version: 5.4.5(zod@4.3.5)
+        version: 5.4.6(zod@4.3.5)
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
@@ -1839,8 +1839,8 @@ packages:
     engines: {node: '>= 14.6'}
     hasBin: true
 
-  zod-openapi@5.4.5:
-    resolution: {integrity: sha512-DVLBNsnggh8k/Yq7qp+NeQCH6JuLIyGzUQWA1wN5+7DpQJSwC7WYR/2lE6uQDmGcS/X6l4tUyYFpeG4nk3nOpA==}
+  zod-openapi@5.4.6:
+    resolution: {integrity: sha512-P2jsOOBAq/6hCwUsMCjUATZ8szkMsV5VAwZENfyxp2Hc/XPJQpVwAgevWZc65xZauCwWB9LAn7zYeiCJFAEL+A==}
     engines: {node: '>=20'}
     peerDependencies:
       zod: ^3.25.74 || ^4.0.0
@@ -3299,7 +3299,7 @@ snapshots:
   yaml@2.8.2:
     optional: true
 
-  zod-openapi@5.4.5(zod@4.3.5):
+  zod-openapi@5.4.6(zod@4.3.5):
     dependencies:
       zod: 4.3.5
 
