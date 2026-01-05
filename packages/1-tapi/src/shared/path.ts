@@ -18,7 +18,11 @@ type ReadUntil<Path> = Path extends `${infer Match}/${infer Rest}`
   ? [Match]
   : [];
 
-type RemovePrefixes<Key> = Key extends `*${infer Name}` ? Name : Key;
+type RemovePrefixes<Key> = Key extends "*"
+  ? never
+  : Key extends `*${infer Name}`
+  ? Name
+  : Key;
 
 export type StrictParams<Pathname> = Pathname extends
   | `${string}:${string}`

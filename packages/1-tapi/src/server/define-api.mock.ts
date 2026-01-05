@@ -87,4 +87,12 @@ export const api = defineApi()
           message: `Accessing file: ${req.params().path}`,
         })
     ),
+  })
+  .route("/wildcard/*", {
+    GET: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async (req) => TResponse.json({ pathname: req.url })
+    ),
   });
