@@ -7,12 +7,11 @@ import connect from "connect";
 import esbuild from "esbuild";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm } from "node:fs/promises";
-import http from "node:http";
 import path from "node:path";
 import { createServer } from "vite";
 import viteTsconfigPaths from "vite-tsconfig-paths";
-import { fromResponse, toRequest } from "../node-http-adapter.js";
 import { loadEnv } from "../load-env.js";
+import { fromResponse, toRequest } from "../node-http-adapter.js";
 import { readConfig } from "./read-config.js";
 
 export const dev = new Command()
@@ -95,6 +94,15 @@ export const dev = new Command()
       if (/^\/api(\/|$)/.test(url.pathname)) {
         const request = toRequest(req, url);
         const response = await apiRequestHandler(request);
+        if (response.status < 300) {
+          console.info(
+            `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+          );
+        } else {
+          console.error(
+            `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+          );
+        }
         await fromResponse(res, response);
         res.end();
         return;

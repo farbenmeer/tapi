@@ -31,6 +31,15 @@ export function createBunnyApp({ api, dist }: BunnyServerOptions) {
       const response = await apiRequestHandler.then((handle) =>
         handle(request)
       );
+      if (response.status < 300) {
+        console.info(
+          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+        );
+      } else {
+        console.error(
+          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+        );
+      }
       await fromResponse(res, response);
       res.end();
       return;
