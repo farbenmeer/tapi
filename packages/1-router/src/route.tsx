@@ -72,6 +72,9 @@ function buildFullPath(parentPath: string, path?: string) {
   }
 
   if (path) {
+    if (parentPath === "/") {
+      return "/" + path;
+    }
     return parentPath + "/" + path;
   }
 

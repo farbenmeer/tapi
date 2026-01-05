@@ -1,8 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { render } from "vitest-browser-react";
-import { Router } from "./router";
 import { Route } from "./route";
 import { useParams } from "./use-params";
+import { Router } from "./router";
+import { mockHistory } from "./mock-history";
+import { usePathname } from "./use-pathname";
 
 describe("Route", () => {
   describe("basic routing", () => {
@@ -524,6 +526,29 @@ describe("Route", () => {
       await expect
         .element(screen.getByTestId("param-path"))
         .toHaveTextContent("guide/getting-started/installation");
+    });
+  });
+
+  describe("with mock history", () => {
+    test("render simple route", async () => {
+      const { location, history } = mockHistory("/test");
+
+      function Sut() {
+        const pathname = usePathname();
+        return <div data-testid="sut">{pathname}</div>;
+      }
+
+      const screen = await render(
+        <Router location={location} history={history}>
+          <Route path="test">
+            <Sut />
+          </Route>
+        </Router>
+      );
+
+      await expect
+        .element(screen.getByTestId("sut"))
+        .toHaveTextContent("/test");
     });
   });
 });

@@ -6,9 +6,12 @@ import { useRouter } from "./use-router";
 import { usePathname } from "./use-pathname";
 import { useSearchParams } from "./use-search-params";
 import { Route } from "./route";
+import { mockHistory } from "./mock-history";
 
 describe("useRouter", () => {
   test("should change url when router.push is called", async () => {
+    const { location, history } = mockHistory();
+
     function Sut() {
       const router = useRouter();
       const pathname = usePathname();
@@ -20,7 +23,7 @@ describe("useRouter", () => {
       return <div data-testid="sut">{pathname}</div>;
     }
     const screen = await render(
-      <Router>
+      <Router history={history} location={location}>
         <Sut />
       </Router>
     );
@@ -29,6 +32,8 @@ describe("useRouter", () => {
   });
 
   test("should change url when router.push is called with a query parameter", async () => {
+    const { location, history } = mockHistory();
+
     function Sut() {
       const router = useRouter();
       const searchParams = useSearchParams();
@@ -40,7 +45,7 @@ describe("useRouter", () => {
       return <div data-testid="sut">{searchParams.toString()}</div>;
     }
     const screen = await render(
-      <Router>
+      <Router history={history} location={location}>
         <Sut />
       </Router>
     );
@@ -49,15 +54,7 @@ describe("useRouter", () => {
   });
 
   test("should merge with parent url when relative pathname is used", async () => {
-    function Redirect() {
-      const router = useRouter();
-
-      useEffect(() => {
-        router.push("parent");
-      }, []);
-
-      return null;
-    }
+    const { location, history } = mockHistory("/parent");
 
     function Sut() {
       const router = useRouter();
@@ -71,8 +68,7 @@ describe("useRouter", () => {
     }
 
     const screen = await render(
-      <Router>
-        <Redirect />
+      <Router location={location} history={history}>
         <Route path="parent">
           <Sut />
         </Route>
