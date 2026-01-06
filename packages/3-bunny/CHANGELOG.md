@@ -1,5 +1,13 @@
 # @farbenmeer/bunny
 
+## 0.3.1
+
+### Patch Changes
+
+- 07ba32a: gracefully handle closed stream
+- b365ce2: flush headers before sending response body
+- 47801fd: return error from error hook
+
 ## 0.3.0
 
 ### Minor Changes
