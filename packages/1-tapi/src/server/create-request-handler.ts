@@ -203,16 +203,24 @@ function handleError(error: unknown) {
   if (error instanceof ZodError) {
     return new Response(JSON.stringify(error.issues), {
       status: 400,
-      statusText: "Bad Request",
       headers: {
         "Content-Type": "application/json+zodissues",
       },
     });
   }
   if (error instanceof HttpError) {
-    return new Response(error.message, {
-      status: error.status,
-    });
+    return new Response(
+      JSON.stringify({
+        message: error.message,
+        data: error.data,
+      }),
+      {
+        status: error.status,
+        headers: {
+          "Content-Type": "application/json+httperror",
+        },
+      }
+    );
   }
   return new Response("Internal Server Error", { status: 500 });
 }

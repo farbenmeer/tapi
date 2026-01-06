@@ -51,6 +51,11 @@ export const dev = new Command()
       );
       apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
+        hooks: {
+          error: (error) => {
+            console.error(error);
+          },
+        },
       });
       const packageJson = JSON.parse(
         await readFile(path.join(process.cwd(), "package.json"), "utf8")
