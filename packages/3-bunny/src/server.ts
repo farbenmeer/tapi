@@ -17,6 +17,12 @@ export function createBunnyApp({ api, dist }: BunnyServerOptions) {
   const apiRequestHandler = api().then(({ api }) =>
     createRequestHandler(api, {
       basePath: "/api",
+      hooks: {
+        error: (error) => {
+          console.error(error);
+          return error;
+        },
+      },
     })
   );
 

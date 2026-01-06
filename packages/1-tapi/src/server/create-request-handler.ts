@@ -9,6 +9,9 @@ import type { MaybePromise } from "../shared/maybe-promise.js";
 
 interface Options {
   basePath?: string;
+  hooks?: {
+    error?: (error: unknown) => MaybePromise<unknown>;
+  };
 }
 
 export function createRequestHandler(
@@ -42,7 +45,9 @@ export function createRequestHandler(
               );
               return await executeHandler(route.GET, treq);
             } catch (error) {
-              return handleError(error);
+              return handleError(
+                options.hooks?.error ? await options.hooks.error(error) : error
+              );
             }
           }
           case "POST":
@@ -60,7 +65,9 @@ export function createRequestHandler(
               );
               return await executeHandler(route.POST, treq);
             } catch (error) {
-              return handleError(error);
+              return handleError(
+                options.hooks?.error ? await options.hooks?.error(error) : error
+              );
             }
           default:
             return new Response("Not Found", {
@@ -194,7 +201,13 @@ export async function executeHandler<Body>(
 
 function handleError(error: unknown) {
   if (error instanceof ZodError) {
-    return new Response(error.message, { status: 400 });
+    return new Response(JSON.stringify(error.issues), {
+      status: 400,
+      statusText: "Bad Request",
+      headers: {
+        "Content-Type": "application/json+zodissues",
+      },
+    });
   }
   if (error instanceof HttpError) {
     return new Response(error.message, {
