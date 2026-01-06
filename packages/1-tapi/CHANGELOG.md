@@ -1,5 +1,15 @@
 # @farbenmeer/tapi
 
+## 0.5.0
+
+### Minor Changes
+
+- b4f73d8: basic error handling
+
+### Patch Changes
+
+- 03c9103: export HttpError from client package
+
 ## 0.4.0
 
 ### Minor Changes

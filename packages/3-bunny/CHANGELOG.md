@@ -1,5 +1,18 @@
 # @farbenmeer/bunny
 
+## 0.3.0
+
+### Minor Changes
+
+- b4f73d8: basic error handling
+
+### Patch Changes
+
+- Updated dependencies [b4f73d8]
+- Updated dependencies [03c9103]
+  - @farbenmeer/tapi@0.5.0
+  - @farbenmeer/react-tapi@4.0.0
+
 ## 0.2.9
 
 ### Patch Changes
