@@ -363,7 +363,7 @@ describe("useParams", () => {
         screen.container.querySelector('[data-testid="param-slug"]')
       ).toBeNull();
 
-      await screen.getByText("Go to post").click({ timeout: 100 });
+      await screen.getByText("Go to post").click();
 
       expect(
         screen.container.querySelector('[data-testid="param-id"]')
