@@ -99,4 +99,12 @@ describe("createFetchClient", () => {
       message: "Accessing file: documents/report.pdf",
     });
   });
+
+  test("as form action", async () => {
+    const formData = new FormData();
+    formData.set("id", "3");
+    formData.set("title", "Movie 3");
+    const response = await client.movies.post({})(formData);
+    expect(response).toEqual({ id: "3", title: "Movie 3" });
+  });
 });

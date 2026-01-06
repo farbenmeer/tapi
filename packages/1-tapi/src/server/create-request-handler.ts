@@ -174,8 +174,6 @@ function collectData(input: Iterable<[string, any]>) {
       } else {
         params[key] = [params[key], value];
       }
-    } else if (key.endsWith("[]")) {
-      params[key] = [value];
     } else {
       params[key] = value;
     }

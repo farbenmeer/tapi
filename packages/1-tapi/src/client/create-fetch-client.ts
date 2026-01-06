@@ -153,6 +153,11 @@ function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
           const url =
             searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
 
+          if (typeof args[1] === "undefined") {
+            return (formData: FormData) =>
+              methods.mutate(lastProp.toUpperCase(), url, formData, undefined);
+          }
+
           return methods.mutate(lastProp.toUpperCase(), url, args[1], args[2]);
         }
         default:

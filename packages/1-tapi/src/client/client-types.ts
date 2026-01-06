@@ -64,15 +64,17 @@ export type RouteWithoutBody<
       req?: RequestInit
     ) => Promise<ResponseType<Handler>>;
 
+type PostMethod<Q, B, R> = <Body extends B | undefined = undefined>(
+  query: Q,
+  body?: Body,
+  req?: RequestInit
+) => Body extends undefined ? (formData: FormData) => Promise<R> : Promise<R>;
+
 export type RouteWithBody<
   Handler extends BaseHandler<any, any, any, unknown> | undefined
 > = Handler extends undefined
   ? never
-  : (
-      query: QueryType<Handler> | FormData,
-      body: BodyType<Handler> | FormData,
-      req?: RequestInit
-    ) => Promise<ResponseType<Handler>>;
+  : PostMethod<QueryType<Handler>, BodyType<Handler>, ResponseType<Handler>>;
 
 type QueryType<Handler extends { schema: { __q?: any } } | undefined> =
   NonNullable<NonNullable<Handler>["schema"]["__q"]>;
