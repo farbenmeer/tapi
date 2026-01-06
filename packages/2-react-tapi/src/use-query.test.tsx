@@ -1,6 +1,7 @@
-import type { GetRoute } from "@farbenmeer/tapi/client";
+import { createFetchClient, type GetRoute } from "@farbenmeer/tapi/client";
 import {
   createLocalClient,
+  createRequestHandler,
   defineApi,
   defineHandler,
   TResponse,
@@ -117,6 +118,63 @@ describe("useQuery", () => {
       );
 
       expect(screen.getByText("Query: test")).toBeInTheDocument();
+    });
+  });
+
+  describe("reactivity", () => {
+    test("updates on revalidation", async () => {
+      const things: string[] = [];
+
+      const api = defineApi().route("/things", {
+        GET: defineHandler(
+          {
+            authorize: () => true,
+          },
+          async () => {
+            return TResponse.json(things, { tags: ["things"] });
+          }
+        ),
+        POST: defineHandler(
+          {
+            authorize: () => true,
+            body: z.object({
+              thing: z.string(),
+            }),
+          },
+          async (req) => {
+            const { thing } = await req.data();
+            things.push(thing);
+            return TResponse.json(null, { tags: ["things"] });
+          }
+        ),
+      });
+
+      const handler = createRequestHandler(api);
+
+      const client = createFetchClient<typeof api.routes>(
+        "http://localhost:3000",
+        {
+          async fetch(url, init) {
+            return handler(new Request(url, init));
+          },
+        }
+      );
+
+      function Sut() {
+        const data = useQuery(client.things.get());
+
+        return <div data-testid="sut">{JSON.stringify(data)}</div>;
+      }
+
+      const screen = await act(() => render(<Sut />));
+
+      expect(screen.getByTestId("sut")).toHaveTextContent("[]");
+
+      await act(async () => {
+        await client.things.post({}, { thing: "test" });
+      });
+
+      expect(screen.getByTestId("sut")).toHaveTextContent('["test"]');
     });
   });
 });
