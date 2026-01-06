@@ -1,5 +1,12 @@
 # @farbenmeer/tapi
 
+## 0.3.2
+
+### Patch Changes
+
+- f3153f2: unnamed wilcard parameters are not required params
+- 9907a33: req.auth is a function and NonNullable
+
 ## 0.3.1
 
 ### Patch Changes

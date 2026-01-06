@@ -1,5 +1,16 @@
 # @farbenmeer/router
 
+## 0.5.0
+
+### Minor Changes
+
+- afa6f78: relative routing for router.push
+
+### Patch Changes
+
+- 0d17bce: fix useParams generic type
+- bc09780: fix relative paths on root parent
+
 ## 0.4.0
 
 ### Minor Changes
