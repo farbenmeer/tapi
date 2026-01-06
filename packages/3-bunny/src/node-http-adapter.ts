@@ -33,5 +33,8 @@ export async function fromResponse(node: ServerResponse, web: Response) {
   node.statusCode = web.status;
   node.statusMessage = web.statusText;
   web.headers.forEach((value, key) => node.setHeader(key, value));
+  if (node.closed) {
+    console.warn("Response was closed before it was fully written");
+  }
   await web.body?.pipeTo(stream.Writable.toWeb(node));
 }
