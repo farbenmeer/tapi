@@ -1,5 +1,18 @@
 # @farbenmeer/bunny
 
+## 0.2.8
+
+### Patch Changes
+
+- e91cbcd: request logs
+- Updated dependencies [f3153f2]
+- Updated dependencies [9907a33]
+- Updated dependencies [0d17bce]
+- Updated dependencies [afa6f78]
+- Updated dependencies [bc09780]
+  - @farbenmeer/tapi@0.3.2
+  - @farbenmeer/router@0.5.0
+
 ## 0.2.7
 
 ### Patch Changes
