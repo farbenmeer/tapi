@@ -5,6 +5,8 @@ import {
 } from "./create-request-handler.js";
 import { defineApi } from "./define-api.js";
 import { defineHandler } from "./define-handler.js";
+import z from "zod";
+import { TResponse } from "./t-response.js";
 
 describe("compilePathRegex", () => {
   test("match a simple route", () => {
@@ -71,5 +73,45 @@ describe("createRequestHandler", () => {
     );
     const response = await sut(new Request("http://localhost:3000"));
     expect(response.status).toBe(500);
+  });
+
+  test("returns 400 and zod issues for validation errors", async () => {
+    const sut = createRequestHandler(
+      defineApi().route("/", {
+        POST: defineHandler(
+          {
+            authorize: () => true,
+            body: z.object({
+              foo: z.string(),
+            }),
+          },
+          async (req) => {
+            await req.data();
+            return new TResponse();
+          }
+        ),
+      })
+    );
+    const response = await sut(
+      new Request("http://localhost:3000", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      })
+    );
+    expect(response.status).toBe(400);
+    expect(response.headers.get("Content-Type")).toBe(
+      "application/json+zodissues"
+    );
+    expect(await response.json()).toEqual([
+      {
+        code: "invalid_type",
+        expected: "string",
+        message: "Invalid input: expected string, received undefined",
+        path: ["foo"],
+      },
+    ]);
   });
 });

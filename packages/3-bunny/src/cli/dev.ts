@@ -54,6 +54,7 @@ export const dev = new Command()
         hooks: {
           error: (error) => {
             console.error(error);
+            return error;
           },
         },
       });
