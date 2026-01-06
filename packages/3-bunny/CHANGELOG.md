@@ -1,5 +1,14 @@
 # @farbenmeer/bunny
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [7f687af]
+- Updated dependencies [7f687af]
+  - @farbenmeer/tapi@0.4.0
+  - @farbenmeer/react-tapi@3.0.0
+
 ## 0.2.8
 
 ### Patch Changes

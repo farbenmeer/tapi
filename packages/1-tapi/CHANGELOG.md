@@ -1,5 +1,15 @@
 # @farbenmeer/tapi
 
+## 0.4.0
+
+### Minor Changes
+
+- 7f687af: formData parsing will no longer transform fields ending with brackets to an array automatically
+
+### Patch Changes
+
+- 7f687af: fix formData style post method calls
+
 ## 0.3.2
 
 ### Patch Changes
