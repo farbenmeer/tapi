@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.6.1
+
+### Patch Changes
+
+- af307a9: memoize the full observablePromise instead of just the dataPromise
+
 ## 0.6.0
 
 ### Minor Changes
