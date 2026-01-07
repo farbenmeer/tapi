@@ -47,7 +47,6 @@ export function createBunnyApp({ api, dist }: BunnyServerOptions) {
         );
       }
       await fromResponse(res, response);
-      res.end();
       return;
     }
 

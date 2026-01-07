@@ -110,7 +110,6 @@ export const dev = new Command()
           );
         }
         await fromResponse(res, response);
-        res.end();
         return;
       }
       if (url.pathname === "/.well-known/openapi.json") {

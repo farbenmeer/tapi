@@ -30,14 +30,20 @@ export function toRequest(req: IncomingMessage, url: URL): Request {
 }
 
 export async function fromResponse(node: ServerResponse, web: Response) {
-  node.statusCode = web.status;
-  node.statusMessage = web.statusText;
-  web.headers.forEach((value, key) => node.appendHeader(key, value));
-  if (node.closed) {
-    console.warn("Response was closed before it was fully written");
-  }
-  if (web.body) {
-    node.flushHeaders();
-    await web.body?.pipeTo(stream.Writable.toWeb(node));
+  try {
+    node.statusCode = web.status;
+    node.statusMessage = web.statusText;
+    web.headers.forEach((value, key) => node.appendHeader(key, value));
+    if (node.closed) {
+      console.warn("Response was closed before it was fully written");
+      return;
+    }
+    if (web.body) {
+      node.flushHeaders();
+      await web.body?.pipeTo(stream.Writable.toWeb(node));
+      node.end();
+    }
+  } catch (error) {
+    console.error(`Bunny: Error writing response: ${error}`);
   }
 }
