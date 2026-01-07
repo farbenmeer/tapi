@@ -3,6 +3,11 @@ export class PubSub {
     string,
     Set<(data: Promise<unknown>) => void>
   >();
+  private onClear: (url: string) => void;
+
+  constructor({ onClear }: { onClear: (url: string) => void }) {
+    this.onClear = onClear;
+  }
 
   subscribe(url: string, callback: (data: Promise<unknown>) => void) {
     let urlSubscriptions = this.subscriptions.get(url);
@@ -15,6 +20,7 @@ export class PubSub {
       urlSubscriptions.delete(callback);
       if (urlSubscriptions.size === 0) {
         this.subscriptions.delete(url);
+        this.onClear(url);
       }
     };
   }

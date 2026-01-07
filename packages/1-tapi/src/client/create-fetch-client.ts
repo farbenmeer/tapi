@@ -16,9 +16,13 @@ export function createFetchClient<
   Routes extends Record<BasePath, MaybePromise<BaseRoute>>
 >(apiUrl: string, options: Options = {}) {
   const tagManager = new TagManager();
-  const subscriptionManager = new PubSub();
-  const fetch = options.fetch ?? globalFetch;
   const cache = new Map<string, Promise<unknown>>();
+  const subscriptionManager = new PubSub({
+    onClear(url) {
+      cache.delete(url);
+    },
+  });
+  const fetch = options.fetch ?? globalFetch;
 
   function load(url: string, init: RequestInit = {}) {
     const cached = cache.get(url);

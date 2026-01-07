@@ -15,17 +15,16 @@ export function useQuery<T>(
     typeof query === "function" ? query : () => query,
     [query]
   );
-  const [data, setData] = React.useState<Promise<T>>(observable);
+  const [data, setData] = React.useState<T>();
 
   React.useEffect(() => {
     const unsubscribe = observable.subscribe((next) => {
       startTransition(async () => {
-        await next;
-        setData(next);
+        setData(await next);
       });
     });
     return unsubscribe;
   }, [observable]);
 
-  return React.use(data);
+  return data ?? React.use(observable);
 }
