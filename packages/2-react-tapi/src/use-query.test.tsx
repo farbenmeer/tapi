@@ -175,6 +175,12 @@ describe("useQuery", () => {
       });
 
       expect(screen.getByTestId("sut")).toHaveTextContent('["test"]');
+
+      await act(async () => {
+        await client.things.post({ thing: "foo" });
+      });
+
+      expect(screen.getByTestId("sut")).toHaveTextContent('["test","foo"]');
     });
   });
 });
