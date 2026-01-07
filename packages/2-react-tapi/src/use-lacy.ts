@@ -16,10 +16,14 @@ export function useLacy<T>(
 ) {
   const optionsRef = React.useRef(options);
   optionsRef.current = options;
-  const [data, setData] = React.useState<Promise<T>>(query);
+  const observable = React.useMemo(
+    typeof query === "function" ? query : () => query,
+    [query]
+  );
+  const [data, setData] = React.useState<Promise<T>>(observable);
 
   React.useEffect(() => {
-    const unsubscribe = (data as ObservablePromise<T>).subscribe((next) => {
+    const unsubscribe = observable.subscribe((next) => {
       const {
         startTransition = React.startTransition,
         onError,
@@ -44,7 +48,7 @@ export function useLacy<T>(
       });
     });
     return unsubscribe;
-  }, []);
+  }, [observable]);
 
   return React.useMemo(() => lacy(data), [data]);
 }

@@ -11,17 +11,21 @@ export function useQuery<T>(
   query: ObservablePromise<T> | (() => ObservablePromise<T>),
   { startTransition = React.startTransition }: Options = {}
 ) {
-  const [data, setData] = React.useState<Promise<T>>(query);
+  const observable = React.useMemo(
+    typeof query === "function" ? query : () => query,
+    [query]
+  );
+  const [data, setData] = React.useState<Promise<T>>(observable);
 
   React.useEffect(() => {
-    const unsubscribe = (data as ObservablePromise<T>).subscribe((next) => {
+    const unsubscribe = observable.subscribe((next) => {
       startTransition(async () => {
         await next;
         setData(next);
       });
     });
     return unsubscribe;
-  }, []);
+  }, [observable]);
 
   return React.use(data);
 }

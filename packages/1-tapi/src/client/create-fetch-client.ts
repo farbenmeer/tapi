@@ -32,9 +32,14 @@ export function createFetchClient<
       tagManager.add(url, res.headers.get("X-TAPI-Tags")?.split(" ") ?? []);
     });
     const dataPromise = responsePromise.then(handleResponse);
-    cache.set(url, dataPromise);
+    const observablePromise: Promise<unknown> & Observable<unknown> =
+      Object.assign(dataPromise, {
+        subscribe: (callback: (data: Promise<unknown>) => void) =>
+          subscriptionManager.subscribe(url, callback),
+      });
+    cache.set(url, observablePromise);
     subscriptionManager.publish(url, dataPromise);
-    return dataPromise;
+    return observablePromise;
   }
 
   function revalidate(url: string) {
@@ -86,8 +91,6 @@ export function createFetchClient<
           revalidate,
           load,
           mutate,
-          subscribe: (url, callback) =>
-            subscriptionManager.subscribe(url, callback),
         },
         apiUrl,
         prop
@@ -105,10 +108,6 @@ interface ProxyMethods {
     data: FormData | unknown,
     init?: RequestInit
   ): Promise<unknown>;
-  subscribe(
-    url: string,
-    callback: (data: Promise<unknown>) => void
-  ): () => void;
 }
 
 function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
@@ -129,12 +128,8 @@ function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
           const url =
             searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
 
-          const promise = methods.load(url, args[1]);
-          return Object.assign(promise, {
-            subscribe(callback: (data: Promise<unknown>) => void) {
-              return methods.subscribe(url, callback);
-            },
-          }) satisfies Promise<unknown> & Observable<unknown>;
+          const observablePromise = methods.load(url, args[1]);
+          return observablePromise;
         }
         case "delete": {
           const searchParams = new URLSearchParams(args[0]);

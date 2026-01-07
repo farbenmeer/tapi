@@ -10,7 +10,7 @@ export async function handleResponse(res: Response) {
     case 400:
       if (res.headers.get("Content-Type") === "application/json+zodissues") {
         const issues = await res.json();
-        return new ZodError(issues);
+        throw new ZodError(issues);
       }
 
     default:

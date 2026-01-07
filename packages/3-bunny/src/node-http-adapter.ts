@@ -41,8 +41,8 @@ export async function fromResponse(node: ServerResponse, web: Response) {
     if (web.body) {
       node.flushHeaders();
       await web.body?.pipeTo(stream.Writable.toWeb(node));
-      node.end();
     }
+    node.end();
   } catch (error) {
     console.error(`Bunny: Error writing response: ${error}`);
   }
