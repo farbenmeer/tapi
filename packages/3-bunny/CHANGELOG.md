@@ -1,5 +1,14 @@
 # @farbenmeer/bunny
 
+## 0.3.3
+
+### Patch Changes
+
+- 1ac57be: error handling for response transform
+- Updated dependencies [af307a9]
+  - @farbenmeer/react-tapi@5.0.1
+  - @farbenmeer/tapi@0.6.1
+
 ## 0.3.2
 
 ### Patch Changes

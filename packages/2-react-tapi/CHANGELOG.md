@@ -1,5 +1,13 @@
 # @farbenmeer/react-tapi
 
+## 5.0.1
+
+### Patch Changes
+
+- af307a9: memoize the full observablePromise instead of just the dataPromise
+- Updated dependencies [af307a9]
+  - @farbenmeer/tapi@0.6.1
+
 ## 5.0.0
 
 ### Patch Changes
