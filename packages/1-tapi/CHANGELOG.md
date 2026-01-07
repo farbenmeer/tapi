@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.6.2
+
+### Patch Changes
+
+- a2c3e5e: remove entries from cache that have no active subscription
+
 ## 0.6.1
 
 ### Patch Changes
