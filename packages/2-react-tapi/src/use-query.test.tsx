@@ -171,7 +171,7 @@ describe("useQuery", () => {
       expect(screen.getByTestId("sut")).toHaveTextContent("[]");
 
       await act(async () => {
-        await client.things.post({}, { thing: "test" });
+        await client.things.post({ thing: "test" });
       });
 
       expect(screen.getByTestId("sut")).toHaveTextContent('["test"]');

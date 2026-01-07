@@ -36,7 +36,9 @@ Set up a route to handle the requests. This depends on your framework. For Next.
 import { api } from "api"
 import { createRequestHandler } from "@farbenmeer/tapi/server"
 
-const handler = createRequestHandler(api)
+const handler = createRequestHandler(api, {
+  basePath: "/api"
+})
 
 export const GET = handler
 export const POST = handler
@@ -96,12 +98,12 @@ export const GET = defineHandler({
   }
 }, async (req) => {
   // req.auth now contains the data returned from authorize
-  const user = req.auth
+  const user = req.auth()
   return TResponse.json({ message: `Hello ${user.name}` })
 })
 ```
 
-The authorize function can return any data type, which will then be available as `req.auth` in your handler. This is useful for passing user information, permissions, or other authorization context to your route handlers.
+The authorize function can return any data type, which will then be available as `req.auth()` in your handler. This is useful for passing user information, permissions, or other authorization context to your route handlers.
 
 ## Using the client
 In your client-side javascript code, you can use the client to make requests to your API. For example:
@@ -217,7 +219,7 @@ and call it as either:
 import { client } from "client"
 
 async function addBook(title: string) {
-  const book = await client.books.post({}, { title })
+  const book = await client.books.post({ title })
   console.log(book)
 }
 
@@ -229,20 +231,9 @@ or with formData:
 import { client } from "client"
 
 async function addBook(title: string) {
-  const book = await client.books.post({}, new FormData({ title }))
-  console.log(book)
-}
-
-addBook('TApi')
-```
-
-
-or with formData without the query-parameter:
-```ts
-import { client } from "client"
-
-async function addBook(title: string) {
-  const book = await client.books.post(new FormData({ title }))
+  const formData = new FormData()
+  formData.set('title', title)
+  const book = await client.books.post(formData)
   console.log(book)
 }
 

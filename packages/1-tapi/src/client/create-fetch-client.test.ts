@@ -41,13 +41,10 @@ describe("createFetchClient", () => {
   });
 
   test("post book", async () => {
-    const response = await client.books.post(
-      {},
-      {
-        id: "3",
-        title: "Book 3",
-      }
-    );
+    const response = await client.books.post({
+      id: "3",
+      title: "Book 3",
+    });
     expect(fetch).toHaveBeenCalledWith("https://example.com/api/books", {
       method: "POST",
       headers: new Headers({
@@ -82,7 +79,7 @@ describe("createFetchClient", () => {
     const data = await promise;
     expect(data.id).toEqual("1");
     expect(cb).toHaveBeenCalledTimes(0);
-    await client.movies.post({}, { id: "3", title: "Movie 3" });
+    await client.movies.post({ id: "3", title: "Movie 3" });
     expect(cb).toHaveBeenCalledTimes(1);
   });
 
@@ -104,7 +101,7 @@ describe("createFetchClient", () => {
     const formData = new FormData();
     formData.set("id", "3");
     formData.set("title", "Movie 3");
-    const response = await client.movies.post({})(formData);
+    const response = await client.movies.post(formData);
     expect(response).toEqual({ id: "3", title: "Movie 3" });
   });
 });

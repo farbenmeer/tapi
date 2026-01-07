@@ -145,20 +145,12 @@ function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
         case "post":
         case "put":
         case "patch": {
-          if (args[0] instanceof FormData) {
-            return methods.mutate(lastProp.toUpperCase(), baseUrl, args[0]);
+          let url = baseUrl;
+          if (args[1]?.query) {
+            url += "?" + new URLSearchParams(args[1].query);
           }
 
-          const searchParams = new URLSearchParams(args[0]);
-          const url =
-            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
-
-          if (typeof args[1] === "undefined") {
-            return (formData: FormData) =>
-              methods.mutate(lastProp.toUpperCase(), url, formData, undefined);
-          }
-
-          return methods.mutate(lastProp.toUpperCase(), url, args[1], args[2]);
+          return methods.mutate(lastProp.toUpperCase(), url, args[0], args[1]);
         }
         default:
           throw new Error(`Tapi: Unsupported method: ${lastProp}`);
