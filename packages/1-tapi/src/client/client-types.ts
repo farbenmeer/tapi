@@ -30,13 +30,16 @@ export type Client<Routes extends Record<BasePath, MaybePromise<BaseRoute>>> = {
 };
 
 type ClientRoute<Route extends MaybePromise<BaseRoute>> = {
-  get: GetRoute<Awaited<Route>["GET"]>;
+  get: RouteWithoutBody<Awaited<Route>["GET"]>;
   post: RouteWithBody<Awaited<Route>["POST"]>;
+  delete: RouteWithoutBody<Awaited<Route>["DELETE"]>;
+  put: RouteWithBody<Awaited<Route>["PUT"]>;
+  patch: RouteWithBody<Awaited<Route>["PATCH"]>;
   revalidate: () => Promise<void>;
 };
 
-export type GetRoute<
-  Handler extends BaseHandler<any, any, any, never> | undefined
+export type RouteWithoutBody<
+  Handler extends BaseHandler<any, any, any, undefined> | undefined
 > = Handler extends undefined
   ? never
   : keyof QueryType<Handler> extends never
@@ -52,17 +55,6 @@ export type GetRoute<
 export type Observable<T> = {
   subscribe(callback: (value: Promise<T>) => void): () => void;
 };
-
-export type RouteWithoutBody<
-  Handler extends BaseHandler<any, any, any, never> | undefined
-> = Handler extends undefined
-  ? never
-  : keyof QueryType<Handler> extends never
-  ? (query?: {}, req?: RequestInit) => Promise<ResponseType<Handler>>
-  : (
-      query: QueryType<Handler>,
-      req?: RequestInit
-    ) => Promise<ResponseType<Handler>>;
 
 export type RouteWithBody<
   Handler extends BaseHandler<any, any, any, unknown> | undefined

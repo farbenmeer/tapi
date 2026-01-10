@@ -25,12 +25,18 @@ export async function handleResponse(res: Response) {
 async function parseBody(res: Response) {
   const contentType = res.headers.get("Content-Type");
 
-  switch (contentType) {
-    case "application/json":
-      return await res.json();
-    case "text/plain":
-      return await res.text();
-    default:
-      throw new Error(`Tapi: Unsupported content type: ${contentType}`);
+  if (contentType?.startsWith("application/json")) {
+    return await res.json();
   }
+
+  if (contentType?.startsWith("text/plain")) {
+    return await res.text();
+  }
+
+  const contentLength = res.headers.get("Content-Length");
+  if (contentLength === "0") {
+    return undefined;
+  }
+
+  throw new Error(`Tapi: Unsupported content type: ${contentType}`);
 }

@@ -15,7 +15,15 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
     GetQuery extends Record<string, unknown> = never,
     PostResponse = never,
     PostQuery extends Record<string, unknown> = never,
-    PostBody = never
+    PostBody = never,
+    DeleteResponse = never,
+    DeleteQuery extends Record<string, unknown> = never,
+    PutResponse = never,
+    PutQuery extends Record<string, unknown> = never,
+    PutBody = never,
+    PatchResponse = never,
+    PatchQuery extends Record<string, unknown> = never,
+    PatchBody = never
   >(
     path: Path,
     route: MaybePromise<
@@ -25,7 +33,15 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
         GetQuery,
         PostResponse,
         PostQuery,
-        PostBody
+        PostBody,
+        DeleteResponse,
+        DeleteQuery,
+        PutResponse,
+        PutQuery,
+        PutBody,
+        PatchResponse,
+        PatchQuery,
+        PatchBody
       >
     >
   ) {
@@ -39,7 +55,15 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
             GetQuery,
             PostResponse,
             PostQuery,
-            PostBody
+            PostBody,
+            DeleteResponse,
+            DeleteQuery,
+            PutResponse,
+            PutQuery,
+            PutBody,
+            PatchResponse,
+            PatchQuery,
+            PatchBody
           >
         >;
       }

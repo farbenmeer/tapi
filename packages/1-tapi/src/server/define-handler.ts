@@ -6,7 +6,7 @@ export function defineHandler<
   AuthData,
   Params extends Record<string, string> = {},
   Query extends Record<string, unknown> = {},
-  Body = never
+  Body = undefined
 >(
   schema: Schema<Response, AuthData, Params, Query, Body>,
   handler: HandlerFn<Response, AuthData, Params, Query, Body>
