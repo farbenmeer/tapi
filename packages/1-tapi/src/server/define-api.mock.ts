@@ -95,4 +95,36 @@ export const api = defineApi()
       },
       async (req) => TResponse.json({ pathname: req.url })
     ),
+  })
+  .route("/method", {
+    GET: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => TResponse.json({ method: "GET" })
+    ),
+    POST: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => TResponse.json({ method: "POST" })
+    ),
+    PUT: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => TResponse.json({ method: "PUT" })
+    ),
+    PATCH: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => TResponse.json({ method: "PATCH" })
+    ),
+    DELETE: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => TResponse.json({ method: "DELETE" })
+    ),
   });

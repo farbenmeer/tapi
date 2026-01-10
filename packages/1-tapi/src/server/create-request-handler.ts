@@ -34,16 +34,18 @@ export function createRequestHandler(
       if (match) {
         const params = match.groups || {};
         switch (req.method) {
-          case "GET": {
-            if (!route.GET) return new Response("Not Found", { status: 404 });
+          case "GET":
+          case "DELETE": {
+            const handler = route[req.method];
+            if (!handler) return new Response("Not Found", { status: 404 });
             try {
               const treq = await prepareRequestWithoutBody(
-                route.GET,
+                handler,
                 url,
                 params,
                 req
               );
-              return await executeHandler(route.GET, treq);
+              return await executeHandler(handler, treq);
             } catch (error) {
               return handleError(
                 options.hooks?.error ? await options.hooks.error(error) : error
@@ -51,24 +53,28 @@ export function createRequestHandler(
             }
           }
           case "POST":
-            if (!route.POST)
+          case "PUT":
+          case "PATCH": {
+            const handler = route[req.method];
+            if (!handler)
               return new Response("Not Found", {
                 status: 404,
                 statusText: "Not Found",
               });
             try {
               const treq = await prepareRequestWithBody(
-                route.POST,
+                handler,
                 url,
                 params,
                 req
               );
-              return await executeHandler(route.POST, treq);
+              return await executeHandler(handler, treq);
             } catch (error) {
               return handleError(
                 options.hooks?.error ? await options.hooks?.error(error) : error
               );
             }
+          }
           default:
             return new Response("Not Found", {
               status: 404,
