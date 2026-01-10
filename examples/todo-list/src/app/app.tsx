@@ -1,6 +1,5 @@
-import { useLacy, useQuery } from "@farbenmeer/bunny/client";
+import { useQuery } from "@farbenmeer/bunny/client";
 import { client } from "client";
-import { Suspense } from "react";
 
 export function App() {
   const todos = useQuery(client.todos.get());
