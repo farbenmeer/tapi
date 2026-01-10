@@ -36,3 +36,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Bunny database file and build output
 db.sqlite
 .bunny
+
+todos.sqlite
