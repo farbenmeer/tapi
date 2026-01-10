@@ -39,6 +39,7 @@ export const dev = new Command()
         ...config.vite?.server,
       },
       plugins: [...(config.vite?.plugins ?? []), viteTsconfigPaths()],
+      clearScreen: false,
     });
 
     const app = connect();
@@ -47,7 +48,7 @@ export const dev = new Command()
     let openAPISchema: string;
     async function reload() {
       const { api } = await import(
-        path.resolve(bunnyDir, `api.cjs?ts=${Date.now()}`)
+        path.resolve(bunnyDir, `api.cjs`) + "?ts=" + Date.now()
       );
       apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
@@ -82,7 +83,14 @@ export const dev = new Command()
         {
           name: "bunny-hot-reload",
           setup(build) {
-            build.onEnd(async () => {
+            build.onEnd(async (result) => {
+              console.log("Bunny: Hot-Reload Server");
+              result.warnings.forEach((warning) => {
+                console.warn("Bunny Server:", warning);
+              });
+              result.errors.forEach((error) => {
+                console.error("Bunny Server:", error);
+              });
               await reload();
             });
           },
