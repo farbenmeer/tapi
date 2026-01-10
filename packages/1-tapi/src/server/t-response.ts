@@ -5,14 +5,23 @@ interface TResponseInit extends ResponseInit {
 export class TResponse<T = any> extends Response {
   public data?: T;
 
-  static override json<T>(data: T, init?: TResponseInit): TResponse<T> {
-    const headers = new Headers(init?.headers as HeadersInit);
-    headers.set("Content-Type", "application/json");
-    if (init?.tags) {
-      headers.set("X-TAPI-Tags", init.tags.join(" "));
+  constructor(body: BodyInit | null = null, init: TResponseInit = {}) {
+    const { tags, ...rawInit } = init;
+    super(body, rawInit);
+    if (tags) {
+      this.headers.append("X-TAPI-Tags", tags?.join(" "));
     }
-    const res = new TResponse(JSON.stringify(data), { ...init, headers });
+  }
+
+  static override json<T>(data: T, init?: TResponseInit): TResponse<T> {
+    const res = new TResponse(JSON.stringify(data), init);
     res.data = data;
+    return res;
+  }
+
+  static void(init?: TResponseInit): TResponse<void> {
+    const res = new TResponse(null, init);
+    res.data = undefined;
     return res;
   }
 }

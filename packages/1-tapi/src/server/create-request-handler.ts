@@ -201,7 +201,7 @@ export async function executeHandler<Body>(
 
 function handleError(error: unknown) {
   if (error instanceof ZodError) {
-    return new Response(JSON.stringify(error.issues), {
+    return Response.json(error.issues, {
       status: 400,
       headers: {
         "Content-Type": "application/json+zodissues",
@@ -209,11 +209,11 @@ function handleError(error: unknown) {
     });
   }
   if (error instanceof HttpError) {
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         message: error.message,
         data: error.data,
-      }),
+      },
       {
         status: error.status,
         headers: {
