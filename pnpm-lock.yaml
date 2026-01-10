@@ -40,6 +40,37 @@ importers:
         specifier: ^19
         version: 19.2.3(@types/react@19.2.7)
 
+  examples/todo-list:
+    dependencies:
+      '@farbenmeer/bunny':
+        specifier: workspace:^
+        version: link:../../packages/3-bunny
+      react:
+        specifier: ^19
+        version: 19.2.3
+      react-dom:
+        specifier: ^19
+        version: 19.2.3(react@19.2.3)
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      zod:
+        specifier: ^4
+        version: 4.3.5
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.0.3
+      '@types/react':
+        specifier: ^19
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.7)
+      tailwindcss:
+        specifier: ^4
+        version: 4.1.18
+
   packages/1-lacy:
     dependencies:
       typescript:
