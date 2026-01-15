@@ -1,5 +1,16 @@
 # @farbenmeer/react-tapi
 
+## 6.0.0
+
+### Patch Changes
+
+- a2c3e5e: remove entries from cache that have no active subscription
+- a2c3e5e: do not flicker loading state on subscription updates in useQuery
+- Updated dependencies [9e51fd3]
+- Updated dependencies [29cdbe7]
+- Updated dependencies [a2c3e5e]
+  - @farbenmeer/tapi@0.7.0
+
 ## 5.0.1
 
 ### Patch Changes
