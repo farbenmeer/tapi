@@ -26,6 +26,7 @@ describe("Switch", () => {
         <Router location={{ pathname: "/bar", search: "", hash: "" }}>
           <Route path="/foo">Foo</Route>
           <Route path="/bar">Bar</Route>
+          <Route path="/bar">Baz</Route>
         </Router>
       );
 
