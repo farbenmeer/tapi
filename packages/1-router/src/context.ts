@@ -17,11 +17,13 @@ export const RouterContext = createContext<{
   replace: () => {},
 });
 
-export const RouteContext = createContext<{
+export interface RouteContextValue {
   path: string;
   params: Record<string, string | string[]>;
   matchedPathname: string;
-}>({
+}
+
+export const RouteContext = createContext<RouteContextValue>({
   path: "/",
   params: {},
   matchedPathname: "/",
