@@ -1,5 +1,16 @@
 # @farbenmeer/tapi
 
+## 0.7.0
+
+### Minor Changes
+
+- 29cdbe7: patch, put, delete methods
+
+### Patch Changes
+
+- 9e51fd3: add explicit void response feature to TResponse api
+- a2c3e5e: remove entries from cache that have no active subscription
+
 ## 0.6.1
 
 ### Patch Changes

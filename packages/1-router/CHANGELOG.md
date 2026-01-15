@@ -1,5 +1,11 @@
 # @farbenmeer/router
 
+## 0.6.0
+
+### Minor Changes
+
+- 7a48760: add switch component
+
 ## 0.5.0
 
 ### Minor Changes
