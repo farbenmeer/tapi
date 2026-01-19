@@ -1,17 +1,21 @@
 export * from "@farbenmeer/tapi/server";
-import { createRequestHandler } from "@farbenmeer/tapi/server";
+import type { ApiDefinition } from "@farbenmeer/tapi/server";
+import {
+  createRequestHandler,
+  generateOpenAPISchema,
+} from "@farbenmeer/tapi/server";
 import connect from "connect";
 import serveStatic from "serve-static";
-import type { ApiDefinition } from "@farbenmeer/tapi/server";
-import { fromResponse, toRequest } from "./node-http-adapter.js";
 import { loadEnv } from "./load-env.js";
+import { fromResponse, toRequest } from "./node-http-adapter.js";
 
 interface BunnyServerOptions {
   api: () => Promise<{ api: ApiDefinition<any> }>;
   dist: string;
+  apiInfo: { title: string; version: string };
 }
 
-export function createBunnyApp({ api, dist }: BunnyServerOptions) {
+export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
   loadEnv("production");
   const app = connect();
   const apiRequestHandler = api().then(({ api }) =>
@@ -25,6 +29,7 @@ export function createBunnyApp({ api, dist }: BunnyServerOptions) {
       },
     })
   );
+  let openApiJson: string | undefined;
 
   app.use(async (req, res, next) => {
     if (!req.url) return next();
@@ -47,6 +52,20 @@ export function createBunnyApp({ api, dist }: BunnyServerOptions) {
         );
       }
       await fromResponse(res, response);
+      return;
+    }
+
+    if (url.pathname === "/.well-known/openapi.json") {
+      if (!openApiJson) {
+        openApiJson = JSON.stringify(
+          await generateOpenAPISchema((await api()).api, {
+            info: apiInfo,
+          })
+        );
+      }
+      res.setHeader("Content-Type", "application/json");
+      res.write(openApiJson);
+      res.end();
       return;
     }
 

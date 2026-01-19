@@ -1,10 +1,17 @@
-export function generateServer() {
+export function generateServer(
+  apiPath: string,
+  apiInfo: { title: string; version: string }
+) {
   return `
-import { createBunnyApp } from "@farbenmeer/bunny/server"
+const { createBunnyApp } = require("@farbenmeer/bunny/server")
 
 createBunnyApp({
-  api: () => import("./api.cjs"),
-  dist: import.meta.dirname + "/dist",
+  api: () => import("${apiPath}"),
+  dist: __dirname + "/dist",
+  apiInfo: {
+    title: "${apiInfo.title}",
+    version: "${apiInfo.version}",
+  }
 }).listen(3000);
 `;
 }

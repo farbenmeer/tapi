@@ -44,13 +44,15 @@ export const dev = new Command()
 
     const app = connect();
 
-    let apiRequestHandler: (req: Request) => Promise<Response>;
-    let openAPISchema: string;
-    async function reload() {
-      const { api } = await import(
-        path.resolve(bunnyDir, `api.cjs`) + "?ts=" + Date.now()
-      );
-      apiRequestHandler = createRequestHandler(api, {
+    const tapi: {
+      apiRequestHandler?: (req: Request) => Promise<Response>;
+      openAPISchema?: string;
+    } = {};
+
+    async function reload(entryPoint: string) {
+      console.log("Loading", entryPoint);
+      const { api } = await import(entryPoint);
+      tapi.apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
         hooks: {
           error: (error) => {
@@ -68,7 +70,7 @@ export const dev = new Command()
           version: packageJson.version,
         },
       });
-      openAPISchema = JSON.stringify(schema);
+      tapi.openAPISchema = JSON.stringify(schema);
     }
 
     const esbuildContext = await esbuild.context({
@@ -78,7 +80,9 @@ export const dev = new Command()
       outdir: bunnyDir,
       platform: "node",
       target: "node24",
+      entryNames: "[name]-[hash]",
       outExtension: { ".js": ".cjs" },
+      metafile: true,
       plugins: [
         {
           name: "bunny-hot-reload",
@@ -91,7 +95,19 @@ export const dev = new Command()
               result.errors.forEach((error) => {
                 console.error("Bunny Server:", error);
               });
-              await reload();
+              if (!result.metafile) throw new Error("Metafile not found");
+              const entryPoint = Object.keys(result.metafile?.outputs)[0];
+              if (!entryPoint) throw new Error("Entry point not found");
+              const apiMeta = result.metafile?.outputs[entryPoint];
+              if (!apiMeta) throw new Error("Api Metadata not found");
+              console.log("Bunny: Built API");
+              console.log("User Modules:", Object.keys(apiMeta.inputs));
+              console.log(
+                "Output Size:",
+                Math.round(apiMeta.bytes / 1000),
+                "kiB"
+              );
+              await reload(path.join(process.cwd(), entryPoint));
             });
           },
         },
@@ -107,7 +123,7 @@ export const dev = new Command()
       const url = new URL(req.url, `http://${host}`);
       if (/^\/api(\/|$)/.test(url.pathname)) {
         const request = toRequest(req, url);
-        const response = await apiRequestHandler(request);
+        const response = await tapi.apiRequestHandler!(request);
         if (response.status < 300) {
           console.info(
             `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
@@ -122,7 +138,7 @@ export const dev = new Command()
       }
       if (url.pathname === "/.well-known/openapi.json") {
         res.setHeader("Content-Type", "application/json");
-        res.write(openAPISchema);
+        res.write(tapi.openAPISchema);
         res.end();
         return;
       }

@@ -34,7 +34,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 
 # Bunny database file and build output
-db.sqlite
 .bunny
 
-todos.sqlite
+# State
+db/
