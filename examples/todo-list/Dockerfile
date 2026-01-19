@@ -7,7 +7,7 @@ ENV NODE_ENV=production
 FROM base AS builder
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm run --filter "@farbenmeer/bunny-example-todo-list^" build
+RUN pnpm run --filter "@farbenmeer/bunny-example-todo-list^..." build
 RUN pnpm run --filter "@farbenmeer/bunny-example-todo-list" build --standalone
 
 # copy standalone build to final runner image
