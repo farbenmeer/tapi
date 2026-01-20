@@ -1,21 +1,17 @@
-# use the official Bun image
-# see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM node:24-alpine AS base
+FROM node:24-slim AS base
 WORKDIR /usr/src/app
+RUN corepack enable
 ENV NODE_ENV=production
 
-# install dependencies into temp directory
-# this will cache them and speed up future builds
+# install dependencies into temp image
 FROM base AS builder
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-
 COPY . .
+RUN pnpm install --frozen-lockfile
 RUN pnpm run build --standalone
 
-# copy production dependencies and source code into final image
+# copy standalone build to final runner image
 FROM base AS runner
-COPY --from=builder /usr/src/app/.bunny/prod .
+COPY --from=builder .bunny/prod .
 
 # run the app
 USER node
