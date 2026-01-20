@@ -51,6 +51,7 @@
     "connect": "^3.7.0",
     "esbuild": "^0.27.2",
     "serve-static": "^2.2.1",
+    "tar": "^7.5.4",
     "vite": "^7.3.0",
     "vite-tsconfig-paths": "^6.0.3"
   },
@@ -61,9 +62,9 @@
     "@types/react-dom": "^19",
     "@types/serve-static": "^2.2.0",
     "node-mocks-http": "^1.17.2",
-    "vitest": "^4.0.16",
     "react": "^19.2.3",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "vitest": "^4.0.16"
   },
   "peerDependencies": {
     "react": "^19.2.3",

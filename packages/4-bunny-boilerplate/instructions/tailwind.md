@@ -1,6 +1,6 @@
 # Tailwind CSS Setup for Bunny
 
-To setup tailwindcss with bunny:
+To setup [tailwindcss](https://tailwindcss.com/) with bunny:
 
 * Add `@tailwindcss/vite` as a dev dependency
 
