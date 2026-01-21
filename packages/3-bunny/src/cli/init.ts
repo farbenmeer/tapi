@@ -19,7 +19,8 @@ export const init = new Command()
   .name("init")
   .description("Initialize a new project")
   .argument("[name]", "Name of the project")
-  .action(async (name) => {
+  .option("--use <packageManager>", "Package manager to use")
+  .action(async (name, options) => {
     console.info("Initializing project...");
     if (name) {
       const dirPath = path.join(process.cwd(), name);
@@ -57,7 +58,10 @@ export const init = new Command()
     console.info("Extracted:", await readdir(process.cwd()));
 
     const pm =
-      process.env.npm_config_user_agent?.match(/^(pnpm|yarn|npm|bun)/)?.[1] ??
+      (options.use ||
+        process.env.npm_config_user_agent?.match(
+          /^(pnpm|yarn|npm|bun)/
+        )?.[1]) ??
       "npm";
 
     const packageJson = JSON.parse(
@@ -71,6 +75,20 @@ export const init = new Command()
       path.join(process.cwd(), "package.json"),
       JSON.stringify(packageJson, null, 2)
     );
+
+    let dockerfile = await readFile(
+      path.join(process.cwd(), "Dockerfile"),
+      "utf8"
+    );
+
+    dockerfile = dockerfile
+      .replace(
+        /\{\{INSTALL_COMMAND\}\}/g,
+        pm === "npm" ? "npm ci" : `${pm} install --frozen-lockfile`
+      )
+      .replace(/\{\{BUILD_COMMAND\}\}/g, `${pm} run build --standalone`);
+
+    await writeFile(path.join(process.cwd(), "Dockerfile"), dockerfile);
 
     const result = await $(`${pm} install`);
     console.log(result.stdout);
