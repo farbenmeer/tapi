@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.3.5
+
+### Patch Changes
+
+- b62f7cc: include boilerplate archive in bunny package
+
 ## 0.3.4
 
 ### Patch Changes
