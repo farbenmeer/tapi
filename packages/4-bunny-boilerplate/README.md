@@ -28,13 +28,27 @@ The development server is optimized for quick iteration and provides excellent d
 
 ## Adding Tools and Features
 
-The `instructions/` folder contains markdown guides for adding popular tools and features to your project:
+Instead of reimplementing functionality or providing scaffolding options for every tool, Bunny includes the
+`instructions/` folder, which contains markdown guides for adding popular tools and features to your project.
 
-- **Tailwind CSS**: Step-by-step instructions for setting up Tailwind for styling
-- **Better Auth**: Integration guide for adding authentication to your application
-- And more...
+While it is easy enough to follow these instructions manually, they are also designed to be used with AI agents. Just point the AI agent of your choice at one of the markdown files.
 
-These instruction files provide detailed setup steps and best practices for integrating additional functionality into your Bunny project. The easiest way to add tools is to tell your AI Agent of choice to follow one of the instruction files.
+The following list has been last updated on 2026-02-01.
+
+The currently recommended set of tools is
+
+### Styling
+* [Tailwind CSS](./instructions/tailwind.md) which does not need further introduction
+
+### Database
+* [Drizzle ORM](./instructions/drizzle-orm.md) which seems like a sensible choice and fits neatly into the no-magic-just-code approach that makes Bunny so powerful.
+
+### Authentication
+* [better-auth](./instructions/better-auth.md) which just seems to be best-in-class right now and easily fits with TApi's approach of building on plain web `Request`/`Response` objects for request handlers.
+
+### Routing
+* [@farbenmeer/router](./instructions/farbenmeer-router.md) which is a minimalistic client-side-only react router designed for Bunny.
+
 
 ## Building for Production
 
