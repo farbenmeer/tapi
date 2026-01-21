@@ -1,5 +1,16 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.2.3
+
+### Patch Changes
+
+- 5eead39: add instructions for better-auth and drizzle setup
+- 5eead39: re-enable init command
+- Updated dependencies [f810bca]
+- Updated dependencies [f810bca]
+- Updated dependencies [5eead39]
+  - @farbenmeer/bunny@0.3.4
+
 ## 0.2.2
 
 ### Patch Changes

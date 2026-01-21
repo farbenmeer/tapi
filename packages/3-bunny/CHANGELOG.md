@@ -1,5 +1,21 @@
 # @farbenmeer/bunny
 
+## 0.3.4
+
+### Patch Changes
+
+- f810bca: fix server HMR
+- f810bca: fix standalone build
+- 5eead39: re-enable init command
+- Updated dependencies [7a48760]
+- Updated dependencies [9e51fd3]
+- Updated dependencies [29cdbe7]
+- Updated dependencies [a2c3e5e]
+- Updated dependencies [a2c3e5e]
+  - @farbenmeer/router@0.6.0
+  - @farbenmeer/tapi@0.7.0
+  - @farbenmeer/react-tapi@6.0.0
+
 ## 0.3.3
 
 ### Patch Changes
