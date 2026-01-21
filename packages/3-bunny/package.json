@@ -16,7 +16,7 @@
   },
   "files": [
     "dist",
-    "boilerplate"
+    "boilerplate.tar.gz"
   ],
   "bin": {
     "bunny": "./cli.js",
