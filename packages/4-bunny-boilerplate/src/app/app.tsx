@@ -7,13 +7,13 @@ export function App() {
   const hello = useLacy(client.hello.get());
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold">Welcome to Bunny!</h1>
+    <div className="app-container">
+      <h1 className="app-title">Welcome to Bunny!</h1>
 
-      <img src={logo} alt="Logo" className="w-48 h-48 mb-8" />
+      <img src={logo} alt="Logo" className="app-logo" />
 
       <Suspense fallback={<div>Loading...</div>}>
-        <div>{hello.message.$}</div>
+        <div className="app-message">{hello.message.$}</div>
       </Suspense>
     </div>
   );
