@@ -6,17 +6,15 @@
     "email": "michel.smola@farbenmeer.de"
   },
   "type": "module",
-  "module": "dist/index.js",
-  "main": "dist/index.js",
   "private": false,
   "license": "MIT",
   "files": [
     "dist"
   ],
   "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "./pglite": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
@@ -35,6 +33,7 @@
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.0",
+    "@prisma/adapter-better-sqlite3": "^7.0.0",
     "pglite-prisma-adapter": "^0.6.1"
   },
   "peerDependencies": {
