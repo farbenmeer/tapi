@@ -34,11 +34,11 @@ datasource db {
 
 ```typescript
 import { PrismaClient } from "@prisma/client";
-import { createTestPGlite } from "@farbenmeer/prisma-test-db";
+import { createTestPGlite, TestPGliteInstance } from "@farbenmeer/prisma-test-db/pglite";
 import { describe, it, beforeEach, afterEach } from "vitest";
 
 describe("my tests", () => {
-  let testDb: Awaited<ReturnType<typeof createTestPGlite>>;
+  let testDb: TestPGliteInstance;
   let prisma: PrismaClient;
 
   beforeEach(async () => {
