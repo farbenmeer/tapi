@@ -1,0 +1,29 @@
+---
+title: farbenmeer OSS
+description: A collection of open-source projects at farbenmeer
+template: splash # Remove or comment out this line to display the site sidebar on this page.
+hero:
+  tagline: A collection of open-source projects at farbenmeer
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: Explore Packages
+      link: /#packages
+      icon: right-arrow
+    - text: Check it out on GitHub
+      link: https://github.com/farbenmeer/tapi
+      icon: external
+      variant: minimal
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+## Packages
+
+<CardGrid>
+    <LinkCard title="TApi" href="/tapi" description="Easy and Safe REST-Api's" />
+	<LinkCard title="Lacy" href="/lacy" description="Lazy evaluation for promises" />
+	<LinkCard title="Skeleton" href="/skeleton" description="Easy Skeleton-UIs with Lacy" />
+	<LinkCard title="Router" href="/router" description="The simplest react router" />
+	<LinkCard title="Bunny" href="/bunny" description="React and TApi as a framework" />
+</CardGrid>
