@@ -8,7 +8,9 @@ export function toRequest(req: IncomingMessage, url: URL): Request {
     const value = req.headers[key];
     if (value != null) {
       if (Array.isArray(value)) {
-        value.forEach((v) => headers.append(key, v));
+        value.forEach((v) => {
+          headers.append(key, v);
+        });
       } else {
         headers.append(key, value);
       }
@@ -33,7 +35,9 @@ export async function fromResponse(node: ServerResponse, web: Response) {
   try {
     node.statusCode = web.status;
     node.statusMessage = web.statusText;
-    web.headers.forEach((value, key) => node.appendHeader(key, value));
+    web.headers.forEach((value, key) => {
+      node.appendHeader(key, value);
+    });
     if (node.closed) {
       console.warn("Response was closed before it was fully written");
       return;

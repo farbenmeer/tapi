@@ -1,6 +1,7 @@
-export * from "@farbenmeer/tapi/client";
 export * from "@farbenmeer/react-tapi";
-import { StrictMode, Suspense, type ReactNode } from "react";
+export * from "@farbenmeer/tapi/client";
+
+import { type ReactNode, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 
 export function startBunnyClient(app: ReactNode) {
@@ -19,9 +20,23 @@ export function startBunnyClient(app: ReactNode) {
   );
 
   if (import.meta.hot) {
-    const root = (import.meta.hot.data.root ??= createRoot(elem));
+    if (!import.meta.hot.data.root) {
+      import.meta.hot.data.root = createRoot(elem);
+    }
+    const root = import.meta.hot.data.root;
     root.render(wrapped);
   } else {
     createRoot(elem).render(wrapped);
+  }
+
+  if (import.meta.env.PROD && "serviceWorker" in navigator) {
+    try {
+      navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
+      });
+      console.info("Bunny: Service worker registered");
+    } catch (error) {
+      console.error("Bunny: Failed to register service worker", error);
+    }
   }
 }

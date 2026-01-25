@@ -1,13 +1,15 @@
-import { Command } from "commander";
-import esbuild from "esbuild";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
+import { Command } from "commander";
+import esbuild from "esbuild";
 import * as vite from "vite";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import { loadEnv } from "../load-env.js";
+import type { BunnyManifest } from "../manifest.js";
 import { generateServer } from "./generate-server.js";
 import { readConfig } from "./read-config.js";
+import { randomUUID } from "node:crypto";
 
 export const build = new Command()
   .name("build")
@@ -18,6 +20,7 @@ export const build = new Command()
     const config = await readConfig();
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
     const srcDir = path.join(process.cwd(), "src");
+    const distDir = path.join(bunnyDir, "dist");
     if (existsSync(bunnyDir)) {
       await rm(bunnyDir, { recursive: true, force: true });
     }
@@ -25,13 +28,13 @@ export const build = new Command()
 
     loadEnv("production");
 
-    await vite.build({
+    const clientBuildOutput = await vite.build({
       configFile: false,
       root: srcDir,
       mode: "production",
       ...config.vite,
       build: {
-        outDir: path.join(bunnyDir, "dist"),
+        outDir: distDir,
         sourcemap: options.sourcemap,
         emptyOutDir: false,
         ...config.vite?.build,
@@ -98,4 +101,29 @@ export const build = new Command()
         console.log("Output Size:", Math.round(apiMeta.bytes / 1000), "kiB");
       }
     }
+
+    const buildId = randomUUID();
+    const clientFiles = Array.isArray(clientBuildOutput)
+      ? clientBuildOutput
+      : ([clientBuildOutput] as vite.Rollup.RollupOutput[]);
+    const manifest: BunnyManifest = {
+      buildId,
+      staticCachedFiles: clientFiles.flatMap((build) =>
+        build.output.map((file) => `/${file.fileName}`)
+      ),
+    };
+    await esbuild.build({
+      entryPoints: [path.resolve(import.meta.dirname, "../worker.js")],
+      bundle: true,
+      minify: true,
+      sourcemap: options.sourcemap,
+      platform: "browser",
+      target: "es2020",
+      outdir: path.join(bunnyDir, "dist"),
+      entryNames: "sw",
+      define: {
+        __BUNNY_MANIFEST: JSON.stringify(JSON.stringify(manifest)),
+      },
+    });
+    console.log("Bunny: Built Service Worker");
   });
