@@ -142,6 +142,19 @@ export const dev = new Command()
         res.end();
         return;
       }
+
+      if (url.pathname === "/sw.js") {
+        res.appendHeader("Cache-Control", "no-store");
+        res.write(`
+          self.addEventListener('install', async (event) => {
+            console.info("Remove Service Worker");
+            await self.skipWaiting();
+            self.registration.unregister();
+          });
+        `);
+        res.end();
+        return;
+      }
       next();
     });
 

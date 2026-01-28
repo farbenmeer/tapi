@@ -2,8 +2,8 @@ import { handleTapiRequest } from "@farbenmeer/tapi/worker";
 import type { BunnyManifest } from "./manifest";
 import { cacheStaticFiles } from "./worker/cache-static-files";
 import { cleanUpCaches } from "./worker/clean-up-caches";
-import { serveStaticFile } from "./worker/serve-static-files";
 import { API_CACHE_PREFIX } from "./worker/contants";
+import { serveStaticFile } from "./worker/serve-static-files";
 
 declare const self: ServiceWorkerGlobalScope;
 declare const __BUNNY_MANIFEST: string;
@@ -14,7 +14,7 @@ const apiPathPattern = /^\/api(\/|$)/;
 console.info("Bunny: Set up Worker", manifest.buildId);
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(cacheStaticFiles(manifest));
+  event.waitUntil(cacheStaticFiles(manifest).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
@@ -24,6 +24,11 @@ self.addEventListener("activate", (event) => {
 const staticFilePaths = new Set(manifest.staticCachedFiles);
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
+  // ignore requests for other origins
+  if (url.host !== self.location.host) return;
+  // ignore requests for service worker script
+  if (url.pathname === "/sw.js") return;
+
   console.info("Bunny Worker", event.request.method, url.pathname);
   if (staticFilePaths.has(url.pathname)) {
     event.respondWith(serveStaticFile(manifest, event.request));

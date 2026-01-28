@@ -29,14 +29,25 @@ export function startBunnyClient(app: ReactNode) {
     createRoot(elem).render(wrapped);
   }
 
-  if (import.meta.env.PROD && "serviceWorker" in navigator) {
-    try {
-      navigator.serviceWorker.register("/sw.js", {
-        scope: "/",
-      });
-      console.info("Bunny: Service worker registered");
-    } catch (error) {
-      console.error("Bunny: Failed to register service worker", error);
+  if (import.meta.env.PROD) {
+    if ("serviceWorker" in navigator) {
+      try {
+        navigator.serviceWorker.register("/sw.js", {
+          scope: "/",
+          updateViaCache: "none",
+        });
+        console.info("Bunny: Service worker registered");
+      } catch (error) {
+        console.error("Bunny: Failed to register service worker", error);
+      }
+    }
+  } else {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) =>
+        registrations.forEach((registration) => {
+          registration.unregister();
+        })
+      );
     }
   }
 }

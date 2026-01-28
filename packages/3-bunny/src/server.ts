@@ -69,6 +69,9 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
       return;
     }
 
+    if (url.pathname === "/__bunny/invalidations") {
+    }
+
     next();
   });
 
