@@ -1,5 +1,14 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.2.4
+
+### Patch Changes
+
+- 010665b: better docs for 3rd party tools
+- Updated dependencies [c79808c]
+- Updated dependencies [010665b]
+  - @farbenmeer/bunny@0.4.0
+
 ## 0.2.3
 
 ### Patch Changes

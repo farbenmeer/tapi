@@ -1,5 +1,12 @@
 # @farbenmeer/react-tapi
 
+## 7.0.0
+
+### Patch Changes
+
+- Updated dependencies [c79808c]
+  - @farbenmeer/tapi@0.8.0
+
 ## 6.0.0
 
 ### Patch Changes
