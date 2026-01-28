@@ -20,7 +20,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "release": "pnpm run build && pnpm publish",
-    "test": "vitest"
+    "test": "vitest",
+    "ci-setup": "playwright install --with-deps"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",

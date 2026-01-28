@@ -4,6 +4,7 @@
   "scripts": {
     "build": "pnpm run -r build",
     "release": "pnpm -r --no-bail release",
+    "ci-setup": "pnpm run -r --sequential ci-setup",
     "test": "pnpm run -r test"
   },
   "devDependencies": {
