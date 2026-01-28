@@ -1,5 +1,18 @@
 # @farbenmeer/bunny
 
+## 0.4.0
+
+### Minor Changes
+
+- c79808c: Service Worker caching
+
+### Patch Changes
+
+- 010665b: better docs for 3rd party tools
+- Updated dependencies [c79808c]
+  - @farbenmeer/tapi@0.8.0
+  - @farbenmeer/react-tapi@7.0.0
+
 ## 0.3.5
 
 ### Patch Changes
