@@ -21,7 +21,7 @@
     "build": "tsc -p tsconfig.build.json",
     "release": "pnpm run build && pnpm publish",
     "test": "vitest",
-    "ci-setup": "pnpx playwright install --with-deps"
+    "ci-setup": "pnpm exec playwright install --with-deps"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
