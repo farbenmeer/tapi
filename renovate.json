@@ -4,15 +4,16 @@
   "prConcurrentLimit": 5,
   "rebaseWhen": "conflicted",
   "minimumReleaseAge": "1 day",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "rebaseStalePrs": true,
+    "schedule": ["before 4am on monday"],
+    "groupName": "lockFileMaintenance",
+    "automerge": true
+  },
   "packageRules": [
     {
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest",
-        "lockFileMaintenance"
-      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     }
   ]
