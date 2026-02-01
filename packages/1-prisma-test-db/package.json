@@ -34,7 +34,7 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.3.0",
     "@prisma/adapter-better-sqlite3": "^7.0.0",
-    "pglite-prisma-adapter": "^0.6.1"
+    "pglite-prisma-adapter": "^0.7.0"
   },
   "peerDependencies": {
     "@prisma/client": ">=6.0.0",
