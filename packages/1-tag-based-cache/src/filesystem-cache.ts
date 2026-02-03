@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import type { CacheEntry, Cache, Subscription } from "./index";
+import type { CacheEntry, Cache, Subscription, Json } from "./index";
 import { existsSync } from "node:fs";
 
 const MIN_GC_TIMEOUT = 5 * 1000;
@@ -103,7 +103,7 @@ export class FilesystemCache implements Cache {
     return Promise.resolve();
   }
 
-  delete(tags: string[]): Promise<void> {
+  delete(tags: string[], meta?: Json): Promise<void> {
     this.db.exec("BEGIN;");
     const stmt = this.db.prepare(
       `
@@ -119,7 +119,7 @@ export class FilesystemCache implements Cache {
     this.db.exec("COMMIT;");
 
     for (const callback of this.subscribers) {
-      callback(tags);
+      callback(tags, meta);
     }
 
     return Promise.resolve();

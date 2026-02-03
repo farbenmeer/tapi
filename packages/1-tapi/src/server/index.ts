@@ -7,3 +7,4 @@ export { TResponse } from "./t-response.js";
 export type { TRequest } from "./t-request.js";
 export { generateOpenAPISchema } from "./openapi.js";
 export type { ApiDefinition } from "./define-api.js";
+export type { CookieStore } from "./cookie-store.js";

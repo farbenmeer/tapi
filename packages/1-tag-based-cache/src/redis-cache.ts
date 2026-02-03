@@ -1,5 +1,10 @@
 import { RESP_TYPES, type RedisClientType } from "@redis/client";
-import type { Cache, CacheEntry, Subscription } from "./index";
+import type { Cache, CacheEntry, Json, Subscription } from "./index";
+
+interface InvalidationMessage {
+  tags: string[];
+  meta?: Json;
+}
 
 export class RedisCache implements Cache {
   subscriptions = new Set<Subscription>();
@@ -57,7 +62,7 @@ export class RedisCache implements Cache {
     await Promise.all(promises);
   }
 
-  async delete(tags: string[]): Promise<void> {
+  async delete(tags: string[], meta?: Json): Promise<void> {
     const keys = await Promise.all(
       tags.map((tag) => this.redis.sMembers(`tag:${tag}`))
     );
@@ -74,16 +79,19 @@ export class RedisCache implements Cache {
       await this.redis.del(keysToDelete);
     }
 
-    await this.redis.publish("invalidate", JSON.stringify(tags));
+    await this.redis.publish(
+      "invalidate",
+      JSON.stringify({ tags, meta } satisfies InvalidationMessage)
+    );
   }
 
   async setupSubscription() {
     this.subscriber = this.redis.duplicate();
     await this.subscriber.connect();
     await this.subscriber.subscribe("invalidate", (message) => {
-      const tags = JSON.parse(message) as string[];
+      const { tags, meta } = JSON.parse(message) as InvalidationMessage;
       for (const callback of this.subscriptions) {
-        callback(tags);
+        callback(tags, meta);
       }
     });
   }

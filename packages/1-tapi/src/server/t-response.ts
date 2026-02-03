@@ -1,10 +1,12 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants.js";
+import { CookieStore } from "./cookie-store.js";
 
 interface TResponseInit extends ResponseInit {
   cache?: {
     tags?: string[];
     ttl?: number;
   };
+  cookies?: CookieStore;
 }
 
 export class TResponse<T = any> extends Response {
@@ -15,7 +17,7 @@ export class TResponse<T = any> extends Response {
   };
 
   constructor(body: BodyInit | null = null, init: TResponseInit = {}) {
-    const { cache, ...rawInit } = init;
+    const { cache, cookies, ...rawInit } = init;
     if (cache?.tags) {
       setHeader(rawInit, TAGS_HEADER, cache.tags.join(" "));
     }
@@ -25,6 +27,13 @@ export class TResponse<T = any> extends Response {
         EXPIRES_AT_HEADER,
         (Date.now() + cache.ttl * 1000).toFixed(0)
       );
+    }
+    if (cookies) {
+      init.headers =
+        init.headers instanceof Headers
+          ? init.headers
+          : new Headers(init.headers);
+      cookies.write(init.headers);
     }
     super(body, rawInit);
     this.cache = cache;
@@ -46,7 +55,8 @@ export class TResponse<T = any> extends Response {
 }
 
 function setHeader(init: TResponseInit, key: string, value: string) {
-  init.headers = new Headers(init.headers);
+  init.headers =
+    init.headers instanceof Headers ? init.headers : new Headers(init.headers);
   if (!init.headers.has(key)) {
     init.headers.set(key, value);
   }

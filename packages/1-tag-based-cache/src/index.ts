@@ -12,7 +12,7 @@ export interface CacheEntry {
 }
 
 export interface Subscription {
-  (tags: string[]): void;
+  (tags: string[], meta?: Json): void;
 }
 
 export interface Cache {
@@ -20,6 +20,6 @@ export interface Cache {
   set(
     input: CacheEntry & { key: string; ttl: number; tags: string[] }
   ): Promise<void>;
-  delete(tags: string[]): Promise<void>;
+  delete(tags: string[], meta?: { clientId?: string }): Promise<void>;
   subscribe(callback: Subscription): () => void;
 }
