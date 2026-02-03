@@ -104,4 +104,11 @@ describe("createFetchClient", () => {
     const response = await client.movies.post(formData);
     expect(response).toEqual({ id: "3", title: "Movie 3" });
   });
+
+  test("not found", async () => {
+    const promise = client.error["not-found"].get();
+    await expect(promise).rejects.toThrow();
+    const anotherPromise = client.error["not-found"].get();
+    expect(anotherPromise).toBe(promise);
+  });
 });

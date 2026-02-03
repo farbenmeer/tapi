@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // Environment setup & latest features
-    "lib": ["ESNext", "DOM", "WebWorker"],
+    "lib": ["ESNext", "DOM", "WebWorker", "DOM.AsyncIterable"],
     "target": "ESNext",
     "module": "Preserve",
     "moduleDetection": "force",

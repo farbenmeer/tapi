@@ -14,7 +14,9 @@ export const DELETE = defineHandler(
   async (req) => {
     db.prepare("DELETE FROM todos WHERE id = ?").run(req.params().id);
 
-    return TResponse.void({ tags: ["todos"] });
+    return TResponse.void({
+      cache: { tags: ["todos", `todo:${req.params().id}`] },
+    });
   }
 );
 
@@ -23,7 +25,7 @@ export const PATCH = defineHandler(
     params,
     authorize: () => true,
     body: z.object({
-      done: z.stringbool().optional(),
+      done: z.boolean(),
     }),
   },
   async (req) => {
@@ -33,6 +35,8 @@ export const PATCH = defineHandler(
       req.params().id
     );
 
-    return TResponse.void({ tags: ["todos"] });
+    return TResponse.void({
+      cache: { tags: ["todos", `todo:${req.params().id}`] },
+    });
   }
 );

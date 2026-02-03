@@ -7,6 +7,8 @@ interface Options {
   startTransition?: typeof React.startTransition;
 }
 
+const noValue = Symbol("ReactTApi:noValue");
+
 export function useQuery<T>(
   query: ObservablePromise<T> | (() => ObservablePromise<T>),
   { startTransition = React.startTransition }: Options = {}
@@ -15,7 +17,7 @@ export function useQuery<T>(
     typeof query === "function" ? query : () => query,
     [query]
   );
-  const [data, setData] = React.useState<T>();
+  const [data, setData] = React.useState<T | typeof noValue>(noValue);
 
   React.useEffect(() => {
     const unsubscribe = observable.subscribe((next) => {
@@ -26,5 +28,5 @@ export function useQuery<T>(
     return unsubscribe;
   }, [observable]);
 
-  return data ?? React.use(observable);
+  return data === noValue ? React.use(observable) : data;
 }

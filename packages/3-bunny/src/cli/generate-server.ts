@@ -4,6 +4,10 @@ export function generateServer(
 ) {
   return `
 const { createBunnyApp } = require("@farbenmeer/bunny/server")
+const { readFileSync } = require("fs")
+const path = require("path")
+
+const buildId = readFileSync(path.resolve(__dirname, "buildId.txt"), "utf-8")
 
 createBunnyApp({
   api: () => import("${apiPath}"),

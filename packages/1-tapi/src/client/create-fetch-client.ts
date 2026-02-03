@@ -1,4 +1,4 @@
-import { TAGS_HEADER } from "../shared/constants.js";
+import { INVALIDATION_POST_EVENT, TAGS_HEADER } from "../shared/constants.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
@@ -29,6 +29,26 @@ export function createFetchClient<
     maxOverdueTTL: options.maxOverdueTTL,
     hooks: options.hooks,
   });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", async (event) => {
+      if (
+        typeof event.data === "object" &&
+        event.data !== null &&
+        "type" in event.data &&
+        event.data.type === INVALIDATION_POST_EVENT
+      ) {
+        try {
+          await cache.revalidateTags(event.data.tags);
+        } catch (error) {
+          console.warn(
+            "TApi: Failed to revalidate tags: received invalid post message",
+            event.data
+          );
+        }
+      }
+    });
+  }
 
   function load(url: string, init: RequestInit = {}) {
     return cache.request(url, () =>

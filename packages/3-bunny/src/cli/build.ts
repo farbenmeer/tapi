@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Command } from "commander";
 import esbuild from "esbuild";
@@ -27,6 +27,9 @@ export const build = new Command()
     await mkdir(bunnyDir, { recursive: true });
 
     loadEnv("production");
+
+    const buildId = randomUUID();
+    await writeFile(path.join(bunnyDir, "buildId.txt"), buildId);
 
     const clientBuildOutput = await vite.build({
       configFile: false,
@@ -102,7 +105,6 @@ export const build = new Command()
       }
     }
 
-    const buildId = randomUUID();
     const clientFiles = Array.isArray(clientBuildOutput)
       ? clientBuildOutput
       : ([clientBuildOutput] as vite.Rollup.RollupOutput[]);

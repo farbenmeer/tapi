@@ -1,6 +1,6 @@
-import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants";
-import type { Observable } from "./client-types";
-import { handleResponse } from "./handle-response";
+import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants.js";
+import type { Observable } from "./client-types.js";
+import { handleResponse } from "./handle-response.js";
 
 type ObservablePromise = Promise<unknown> & Observable<unknown>;
 type Subscription = (data: Promise<unknown>) => void;
@@ -152,8 +152,15 @@ export class Cache {
           this.tagIndex.get(tag)?.delete(url);
         }
       } catch (error) {
+        if (!entry.current) {
+          // no current value, we are stuck with the rejected promise
+          entry.current = {
+            value: observable,
+            tags: new Set(),
+          };
+        }
+        // there is a current valid value, we'll keep that an drop the error
         entry.next = undefined;
-        // reload failed, keep current valid state intact and call error hook
         await this.hooks.error(error);
       } finally {
         if (entry.subscriptions.size === 0) {

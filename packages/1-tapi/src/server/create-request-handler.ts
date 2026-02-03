@@ -20,6 +20,7 @@ interface Options {
 }
 
 const DEFAULT_TTL = 60 * 60 * 24 * 14;
+const authUsed = Symbol("TApi.authUsed");
 
 const headersSchema = z
   .tuple([z.string(), z.string()])
@@ -98,22 +99,28 @@ export function createRequestHandler(
               const res = await executeHandler(handler, treq);
 
               if (res.cache) {
-                // cache fresh response according to cache options
-                try {
-                  const cloned = res.clone();
-                  options?.cache
-                    ?.set({
-                      key: req.url,
-                      data: Array.from(res.headers.entries()),
-                      attachment: new Uint8Array(await cloned.arrayBuffer()),
-                      ttl: res.cache.ttl ?? options.defaultTTL ?? DEFAULT_TTL,
-                      tags: res.cache.tags ?? [],
-                    })
-                    // catches errors while caching if cache.set is async (redis cache)
-                    .catch(errorHook);
-                } catch (error) {
-                  // catches errors while caching if cache.set is sync (in-memory cache)
-                  errorHook(error);
+                if ((treq as any)[authUsed] === true) {
+                  console.warn(
+                    "TApi: Response specifies cache option but request handler used auth information (called req.auth()): Response will not be cached"
+                  );
+                } else {
+                  // cache fresh response according to cache options
+                  try {
+                    const cloned = res.clone();
+                    options?.cache
+                      ?.set({
+                        key: req.url,
+                        data: Array.from(res.headers.entries()),
+                        attachment: new Uint8Array(await cloned.arrayBuffer()),
+                        ttl: res.cache.ttl ?? options.defaultTTL ?? DEFAULT_TTL,
+                        tags: res.cache.tags ?? [],
+                      })
+                      // catches errors while caching if cache.set is async (redis cache)
+                      .catch(errorHook);
+                  } catch (error) {
+                    // catches errors while caching if cache.set is sync (in-memory cache)
+                    errorHook(error);
+                  }
                 }
               }
               return res;
@@ -259,7 +266,10 @@ export async function prepareRequestWithoutBody<TBody = never>(
     throw new HttpError(401, "Unauthorized");
   }
 
-  treq.auth = () => auth;
+  treq.auth = () => {
+    (treq as any)[authUsed] = true;
+    auth;
+  };
 
   return treq;
 }

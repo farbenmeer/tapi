@@ -2,10 +2,9 @@ import {
   handleTapiRequest,
   listenForInvalidations,
 } from "@farbenmeer/tapi/worker";
+import { INVALIDATIONS_ROUTE } from "./constants";
 import type { BunnyManifest } from "./manifest";
 import { cacheStaticFiles } from "./worker/cache-static-files";
-import { cleanUpCaches } from "./worker/clean-up-caches";
-import { API_CACHE_PREFIX } from "./worker/contants";
 import { serveStaticFile } from "./worker/serve-static-files";
 
 declare const self: ServiceWorkerGlobalScope;
@@ -20,11 +19,8 @@ self.addEventListener("install", (event) => {
   event.waitUntil(cacheStaticFiles(manifest).then(() => self.skipWaiting()));
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(cleanUpCaches(manifest));
-});
-
 const staticFilePaths = new Set(manifest.staticCachedFiles);
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   // ignore requests for other origins
@@ -39,18 +35,16 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (apiPathPattern.test(url.pathname)) {
-    event.respondWith(
-      self.caches
-        .open(API_CACHE_PREFIX + manifest.buildId)
-        .then((cache) => handleTapiRequest(cache, event.request))
-    );
+    event.respondWith(handleTapiRequest(manifest.buildId, event.request));
     return;
   }
 
   event.respondWith(serveStaticFile(manifest, new URL("/index.html", url)));
 });
 
-self.caches
-  .open(API_CACHE_PREFIX + manifest.buildId)
-  .then((cache) => listenForInvalidations(cache, "/__bunny/invalidations"))
-  .catch((error) => console.error("Failed to listen for invalidations", error));
+listenForInvalidations({
+  buildId: manifest.buildId,
+  url: INVALIDATIONS_ROUTE,
+}).catch((error) =>
+  console.error("Bunny: Failed to listen for invalidations", error)
+);
