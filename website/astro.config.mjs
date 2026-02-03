@@ -53,7 +53,17 @@ export default defineConfig({
         },
         {
           label: "Bunny",
-          slug: "bunny",
+          items: [
+            { label: "Introduction", slug: "bunny" },
+            {
+              label: "Guides",
+              autogenerate: { directory: "bunny/guides" },
+            },
+            {
+              label: "Reference",
+              autogenerate: { directory: "bunny/reference" },
+            },
+          ],
         },
         {
           label: "Tag-Based Cache",
