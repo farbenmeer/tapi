@@ -131,7 +131,7 @@ describe("useQuery", () => {
             authorize: () => true,
           },
           async () => {
-            return TResponse.json(things, { tags: ["things"] });
+            return TResponse.json(things, { cache: { tags: ["things"] } });
           }
         ),
         POST: defineHandler(
@@ -144,7 +144,7 @@ describe("useQuery", () => {
           async (req) => {
             const { thing } = await req.data();
             things.push(thing);
-            return TResponse.json(null, { tags: ["things"] });
+            return TResponse.json(null, { cache: { tags: ["things"] } });
           }
         ),
       });
@@ -171,13 +171,13 @@ describe("useQuery", () => {
       expect(screen.getByTestId("sut")).toHaveTextContent("[]");
 
       await act(async () => {
-        await client.things.post({ thing: "test" });
+        await client.things.post({ thing: "test" }).revalidated;
       });
 
       expect(screen.getByTestId("sut")).toHaveTextContent('["test"]');
 
       await act(async () => {
-        await client.things.post({ thing: "foo" });
+        await client.things.post({ thing: "foo" }).revalidated;
       });
 
       expect(screen.getByTestId("sut")).toHaveTextContent('["test","foo"]');
