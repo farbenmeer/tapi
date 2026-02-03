@@ -147,11 +147,10 @@ importers:
         version: 2.0.5(@types/react-dom@19.2.3(@types/react@19.2.9))(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vitest@4.0.17)
 
   packages/1-tag-based-cache:
-    dependencies:
+    devDependencies:
       '@redis/client':
         specifier: ^5.10.0
         version: 5.10.0
-    devDependencies:
       '@types/node':
         specifier: ^25.0.3
         version: 25.1.0

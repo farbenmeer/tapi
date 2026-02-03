@@ -1,5 +1,7 @@
-import { RESP_TYPES, type RedisClientType } from "@redis/client";
+import type { RedisClientType } from "@redis/client";
 import type { Cache, CacheEntry, Json, Subscription } from "./index";
+
+const BLOB_STRING_TYPE = 36;
 
 interface InvalidationMessage {
   tags: string[];
@@ -17,7 +19,7 @@ export class RedisCache implements Cache {
     const attachment = (await this.redis
       .withCommandOptions({
         typeMapping: {
-          [RESP_TYPES.BLOB_STRING]: Buffer,
+          [BLOB_STRING_TYPE]: Buffer,
         },
       })
       .get(`attachment:${key}`)) as unknown as Buffer;
