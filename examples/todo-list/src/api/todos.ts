@@ -14,7 +14,7 @@ export const GET = defineHandler(
   },
   async () => {
     const todos = todo.array().parse(db.prepare("SELECT * FROM todos").all());
-    return TResponse.json(todos, { tags: ["todos"] });
+    return TResponse.json(todos, { cache: { tags: ["todos"] } });
   }
 );
 
@@ -28,6 +28,6 @@ export const POST = defineHandler(
   async (req) => {
     const { text } = await req.data();
     db.prepare("INSERT INTO todos (text, done) VALUES (?, ?)").run(text, 0);
-    return TResponse.void({ tags: ["todos"] });
+    return TResponse.void({ cache: { tags: ["todos"] } });
   }
 );

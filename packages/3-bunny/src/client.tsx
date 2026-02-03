@@ -41,13 +41,5 @@ export function startBunnyClient(app: ReactNode) {
         console.error("Bunny: Failed to register service worker", error);
       }
     }
-  } else {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) =>
-        registrations.forEach((registration) => {
-          registration.unregister();
-        })
-      );
-    }
   }
 }

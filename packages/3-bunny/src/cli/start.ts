@@ -14,12 +14,17 @@ export const start = new Command()
     );
     process.env.NODE_ENV = "production";
 
+    const buildId = await readFile(path.join(bunnyDir, "buildId.txt"), "utf-8");
+
+    console.info(`Starting Bunny Production Server\nBuild ${buildId}`);
+
     createBunnyApp({
       api: () => import(path.join(bunnyDir, "api.cjs")),
       dist: path.join(bunnyDir, "dist"),
       apiInfo: {
         title: packageJson.name,
         version: packageJson.version,
+        buildId,
       },
     }).listen(parseInt(options.port, 10));
   });

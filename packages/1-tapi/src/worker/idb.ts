@@ -16,3 +16,15 @@ export function openDB(
     };
   });
 }
+
+export function deleteDB(name: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const req = self.indexedDB.deleteDatabase(name);
+    req.onsuccess = () => {
+      resolve();
+    };
+    req.onerror = () => {
+      reject(new Error(`Failed to delete IndexedDB Database ${name}`));
+    };
+  });
+}

@@ -14,14 +14,16 @@ export function App() {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
-            <form action={client.todos[todo.id]!.patch}>
-              <input
-                name="done"
-                type="checkbox"
-                defaultChecked={todo.done}
-                onChange={(e) => e.currentTarget.form?.requestSubmit()}
-              />
-            </form>
+            <input
+              name="done"
+              type="checkbox"
+              checked={todo.done}
+              onChange={(e) =>
+                client.todos[todo.id]!.patch({
+                  done: e.currentTarget.checked,
+                })
+              }
+            />
             {todo.text}
             <form
               className="delete-form"

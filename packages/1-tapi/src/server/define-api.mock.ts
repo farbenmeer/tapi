@@ -2,6 +2,7 @@ import { z } from "zod/v4";
 import { defineApi } from "./define-api.js";
 import { defineHandler } from "./define-handler.js";
 import { TResponse } from "./t-response.js";
+import { HttpError } from "../shared/http-error.js";
 
 export const api = defineApi()
   .route("/books", {
@@ -129,5 +130,15 @@ export const api = defineApi()
         authorize: () => true,
       },
       async () => TResponse.json({ method: "DELETE" })
+    ),
+  })
+  .route("/error/not-found", {
+    GET: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => {
+        throw new HttpError(404, "Not Found");
+      }
     ),
   });

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import {
   compilePathRegex,
   createRequestHandler,
@@ -59,6 +59,7 @@ describe("compilePathRegex", () => {
 
 describe("createRequestHandler", () => {
   test("returns 500 for arbitrary errors in handler", async () => {
+    const errorHook = vi.fn();
     const sut = createRequestHandler(
       defineApi().route("/", {
         GET: defineHandler(
@@ -69,13 +70,16 @@ describe("createRequestHandler", () => {
             throw new Error("Unexpected error");
           }
         ),
-      })
+      }),
+      { hooks: { error: errorHook } }
     );
     const response = await sut(new Request("http://localhost:3000"));
     expect(response.status).toBe(500);
+    expect(errorHook).toHaveBeenCalled();
   });
 
   test("returns 400 and zod issues for validation errors", async () => {
+    const errorHook = vi.fn();
     const sut = createRequestHandler(
       defineApi().route("/", {
         POST: defineHandler(
@@ -90,7 +94,8 @@ describe("createRequestHandler", () => {
             return new TResponse();
           }
         ),
-      })
+      }),
+      { hooks: { error: errorHook } }
     );
     const response = await sut(
       new Request("http://localhost:3000", {
@@ -113,5 +118,6 @@ describe("createRequestHandler", () => {
         path: ["foo"],
       },
     ]);
+    expect(errorHook).toHaveBeenCalled();
   });
 });

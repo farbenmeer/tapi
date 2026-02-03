@@ -2,21 +2,25 @@ import type { ApiDefinition } from "@farbenmeer/tapi/server";
 import {
   createRequestHandler,
   generateOpenAPISchema,
+  NoCache,
+  streamRevalidatedTags,
 } from "@farbenmeer/tapi/server";
 import connect from "connect";
 import serveStatic from "serve-static";
+import { INVALIDATIONS_ROUTE } from "../constants.js";
 import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
 
 interface BunnyServerOptions {
   api: () => Promise<{ api: ApiDefinition<any> }>;
   dist: string;
-  apiInfo: { title: string; version: string };
+  apiInfo: { title: string; version: string; buildId: string };
 }
 
 export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
   loadEnv("production");
   const app = connect();
+  const cache = new NoCache();
   const apiRequestHandler = api().then(({ api }) =>
     createRequestHandler(api, {
       basePath: "/api",
@@ -25,6 +29,7 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
           console.error(error);
         },
       },
+      cache,
     })
   );
   let openApiJson: string | undefined;
@@ -67,7 +72,26 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
       return;
     }
 
-    if (url.pathname === "/__bunny/invalidations") {
+    if (url.pathname === INVALIDATIONS_ROUTE) {
+      const response = streamRevalidatedTags({
+        cache,
+        buildId: apiInfo.buildId,
+      });
+      console.info(`Bunny: Starting Invalidation Stream`);
+      response.headers.forEach((value, key) => {
+        res.appendHeader(key, value);
+      });
+      if (res.closed) {
+        return;
+      }
+      res.flushHeaders();
+      if (response.body) {
+        for await (const chunk of response.body) {
+          res.write(chunk);
+        }
+      }
+      console.info("Bunny: Closed Invalidation Stream");
+      return;
     }
 
     next();
