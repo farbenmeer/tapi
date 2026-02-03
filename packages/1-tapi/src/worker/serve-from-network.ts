@@ -1,4 +1,4 @@
-import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/contants";
+import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants";
 import { storeMetadata } from "./cache-meta";
 
 export async function serveFromNetwork(cache: Cache, req: Request) {

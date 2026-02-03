@@ -1,4 +1,4 @@
-import { TAGS_HEADER } from "../shared/contants";
+import { TAGS_HEADER } from "../shared/constants";
 import { invalidateTags } from "./cache-meta";
 
 export async function mutateAndInvalidate(cache: Cache, req: Request) {

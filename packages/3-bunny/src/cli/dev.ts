@@ -11,7 +11,7 @@ import path from "node:path";
 import { createServer } from "vite";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import { loadEnv } from "../load-env.js";
-import { fromResponse, toRequest } from "../node-http-adapter.js";
+import { fromResponse, toRequest } from "../server/node-http-adapter.js";
 import { readConfig } from "./read-config.js";
 
 export const dev = new Command()
@@ -57,7 +57,6 @@ export const dev = new Command()
         hooks: {
           error: (error) => {
             console.error(error);
-            return error;
           },
         },
       });

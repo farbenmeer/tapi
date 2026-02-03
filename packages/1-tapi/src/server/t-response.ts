@@ -1,16 +1,33 @@
+import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants.js";
+
 interface TResponseInit extends ResponseInit {
-  tags?: string[];
+  cache?: {
+    tags?: string[];
+    ttl?: number;
+  };
 }
 
 export class TResponse<T = any> extends Response {
   public data?: T;
+  public cache?: {
+    tags?: string[];
+    ttl?: number;
+  };
 
   constructor(body: BodyInit | null = null, init: TResponseInit = {}) {
-    const { tags, ...rawInit } = init;
-    super(body, rawInit);
-    if (tags) {
-      this.headers.append("X-TAPI-Tags", tags?.join(" "));
+    const { cache, ...rawInit } = init;
+    if (cache?.tags) {
+      setHeader(rawInit, TAGS_HEADER, cache.tags.join(" "));
     }
+    if (cache?.ttl) {
+      setHeader(
+        rawInit,
+        EXPIRES_AT_HEADER,
+        (Date.now() + cache.ttl * 1000).toFixed(0)
+      );
+    }
+    super(body, rawInit);
+    this.cache = cache;
   }
 
   static override json<T>(data: T, init: TResponseInit = {}): TResponse<T> {

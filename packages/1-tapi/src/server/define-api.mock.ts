@@ -50,7 +50,9 @@ export const api = defineApi()
             title: `Movie ${req.params().id}`,
           },
           {
-            tags: ["movies"],
+            cache: {
+              tags: ["movies"],
+            },
           }
         )
     ),
@@ -61,7 +63,8 @@ export const api = defineApi()
         body: z.object({ id: z.string(), title: z.string() }),
         authorize: () => true,
       },
-      async (req) => TResponse.json(await req.data(), { tags: ["movies"] })
+      async (req) =>
+        TResponse.json(await req.data(), { cache: { tags: ["movies"] } })
     ),
   })
   .route("/authorized", {
