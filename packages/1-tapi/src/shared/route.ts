@@ -19,6 +19,9 @@ export type Route<
   GET?: GetQuery extends never
     ? never
     : Handler<GetResponse, Params, GetQuery, undefined>;
+  HEAD?: GetQuery extends never
+    ? never
+    : Handler<undefined, Params, GetQuery, undefined>;
   POST?: PostQuery extends never
     ? never
     : Handler<PostResponse, Params, PostQuery, PostBody>;
@@ -35,6 +38,7 @@ export type Route<
 
 export type BaseRoute = {
   GET?: Handler<any, any, any, undefined>;
+  HEAD?: Handler<undefined, any, any, undefined>;
   POST?: Handler<any, any, any, any>;
   DELETE?: Handler<any, any, any, undefined>;
   PUT?: Handler<any, any, any, any>;

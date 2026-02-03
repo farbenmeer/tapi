@@ -30,15 +30,15 @@ export type Client<Routes extends Record<BasePath, MaybePromise<BaseRoute>>> = {
 };
 
 type ClientRoute<Route extends MaybePromise<BaseRoute>> = {
-  get: RouteWithoutBody<Awaited<Route>["GET"]>;
-  post: RouteWithBody<Awaited<Route>["POST"]>;
-  delete: RouteWithoutBody<Awaited<Route>["DELETE"]>;
-  put: RouteWithBody<Awaited<Route>["PUT"]>;
-  patch: RouteWithBody<Awaited<Route>["PATCH"]>;
+  get: QueryWithoutBody<Awaited<Route>["GET"]>;
+  post: MutationWithBody<Awaited<Route>["POST"]>;
+  delete: MutationWithoutBody<Awaited<Route>["DELETE"]>;
+  put: MutationWithBody<Awaited<Route>["PUT"]>;
+  patch: MutationWithBody<Awaited<Route>["PATCH"]>;
   revalidate: () => Promise<void>;
 };
 
-export type RouteWithoutBody<
+export type QueryWithoutBody<
   Handler extends BaseHandler<any, any, any, undefined> | undefined
 > = Handler extends undefined
   ? never
@@ -56,14 +56,32 @@ export type Observable<T> = {
   subscribe(callback: (value: Promise<T>) => void): () => void;
 };
 
-export type RouteWithBody<
+export type Revalidating = {
+  revalidated: Promise<void>;
+};
+
+export type MutationWithoutBody<
+  Handler extends BaseHandler<any, any, any, undefined> | undefined
+> = Handler extends undefined
+  ? never
+  : keyof QueryType<Handler> extends never
+  ? (
+      query?: {},
+      req?: RequestInit
+    ) => Promise<ResponseType<Handler>> & Revalidating
+  : (
+      query: QueryType<Handler>,
+      req?: RequestInit
+    ) => Promise<ResponseType<Handler>> & Revalidating;
+
+export type MutationWithBody<
   Handler extends BaseHandler<any, any, any, unknown> | undefined
 > = Handler extends undefined
   ? never
   : (
       body?: BodyType<Handler> | FormData,
       req?: RequestInit & { query?: QueryType<Handler> }
-    ) => Promise<ResponseType<Handler>>;
+    ) => Promise<ResponseType<Handler>> & Revalidating;
 
 type QueryType<Handler extends { schema: { __q?: any } } | undefined> =
   NonNullable<NonNullable<Handler>["schema"]["__q"]>;

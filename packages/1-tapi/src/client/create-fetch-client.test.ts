@@ -79,7 +79,7 @@ describe("createFetchClient", () => {
     const data = await promise;
     expect(data.id).toEqual("1");
     expect(cb).toHaveBeenCalledTimes(0);
-    await client.movies.post({ id: "3", title: "Movie 3" });
+    await client.movies.post({ id: "3", title: "Movie 3" }).revalidated;
     expect(cb).toHaveBeenCalledTimes(1);
   });
 

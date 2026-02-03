@@ -1,73 +1,61 @@
-import type { Client, Observable } from "./client-types.js";
-import { handleResponse } from "./handle-response.js";
+import { TAGS_HEADER } from "../shared/constants.js";
+import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
-import { TagManager } from "./tag-manager.js";
-import { PubSub } from "./pub-sub.js";
-import type { MaybePromise } from "../shared/maybe-promise.js";
+import { Cache } from "./cache.js";
+import type { Client, Revalidating } from "./client-types.js";
+import { handleResponse } from "./handle-response.js";
 
 const globalFetch = fetch;
 
+interface Hooks {
+  error?: (error: unknown) => void | Promise<void>;
+}
+
 interface Options {
   fetch?: (url: string, init: RequestInit) => Promise<Response>;
+  minTTL?: number;
+  maxOverdueTTL?: number;
+  hooks?: Hooks;
 }
 
 export function createFetchClient<
   Routes extends Record<BasePath, MaybePromise<BaseRoute>>
 >(apiUrl: string, options: Options = {}) {
-  const tagManager = new TagManager();
-  const cache = new Map<string, Promise<unknown>>();
-  const subscriptionManager = new PubSub({
-    onClear(url) {
-      cache.delete(url);
-    },
-  });
   const fetch = options.fetch ?? globalFetch;
 
+  const cache = new Cache({
+    minTTL: options.minTTL,
+    maxOverdueTTL: options.maxOverdueTTL,
+    hooks: options.hooks,
+  });
+
   function load(url: string, init: RequestInit = {}) {
-    const cached = cache.get(url);
-    if (cached) return cached;
-
-    const responsePromise = fetch(url, {
-      method: "GET",
-      ...init,
-    });
-    responsePromise.then((res) => {
-      tagManager.add(url, res.headers.get("X-TAPI-Tags")?.split(" ") ?? []);
-    });
-    const dataPromise = responsePromise.then(handleResponse);
-    const observablePromise: Promise<unknown> & Observable<unknown> =
-      Object.assign(dataPromise, {
-        subscribe: (callback: (data: Promise<unknown>) => void) =>
-          subscriptionManager.subscribe(url, callback),
-      });
-    cache.set(url, observablePromise);
-    subscriptionManager.publish(url, dataPromise);
-    return observablePromise;
+    return cache.request(url, () =>
+      fetch(url, {
+        method: "GET",
+        ...init,
+      })
+    );
   }
 
-  function revalidate(url: string) {
-    cache.delete(url);
-    if (subscriptionManager.has(url)) {
-      load(url);
-    } else {
-      tagManager?.remove(url);
-    }
+  async function revalidate(url: string) {
+    await cache.revalidateUrl(url);
   }
 
-  async function mutate(
+  function mutate(
     method: string,
     url: string,
     data?: FormData | unknown,
     init: RequestInit = {}
-  ) {
+  ): Promise<any> & Revalidating {
     const headers = new Headers(init.headers);
 
     if (!(data instanceof FormData) && !headers.has("Content-Type")) {
       headers.set("Content-Type", "application/json");
     }
 
-    const res = await fetch(url, {
+    const res = fetch(url, {
       method,
       body:
         typeof data === "undefined"
@@ -79,13 +67,21 @@ export function createFetchClient<
       headers,
     });
 
-    for (const url of tagManager.get(
-      res.headers.get("X-TAPI-Tags")?.split(" ") ?? []
-    )) {
-      revalidate(url);
-    }
+    const revalidationPromise = res.then((res) =>
+      cache.revalidateTags(res.headers.get(TAGS_HEADER)?.split(" ") ?? [])
+    );
 
-    return handleResponse(res);
+    return Object.assign(
+      res
+        .then((res) => handleResponse(res))
+        .catch(async (error) => {
+          await options?.hooks?.error?.(error);
+          throw error;
+        }),
+      {
+        revalidated: revalidationPromise,
+      }
+    );
   }
 
   return new Proxy(() => {}, {
@@ -111,7 +107,7 @@ interface ProxyMethods {
     url: string,
     data: FormData | unknown,
     init?: RequestInit
-  ): Promise<unknown>;
+  ): Promise<unknown> & Revalidating;
 }
 
 function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {

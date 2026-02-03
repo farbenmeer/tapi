@@ -1,4 +1,7 @@
-import { handleTapiRequest } from "@farbenmeer/tapi/worker";
+import {
+  handleTapiRequest,
+  listenForInvalidations,
+} from "@farbenmeer/tapi/worker";
 import type { BunnyManifest } from "./manifest";
 import { cacheStaticFiles } from "./worker/cache-static-files";
 import { cleanUpCaches } from "./worker/clean-up-caches";
@@ -46,3 +49,8 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(serveStaticFile(manifest, new URL("/index.html", url)));
 });
+
+self.caches
+  .open(API_CACHE_PREFIX + manifest.buildId)
+  .then((cache) => listenForInvalidations(cache, "/__bunny/invalidations"))
+  .catch((error) => console.error("Failed to listen for invalidations", error));

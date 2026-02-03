@@ -1,27 +1,48 @@
-import { z, ZodError } from "zod/v4";
-import type { ApiDefinition } from "./define-api.js";
-import type { Handler } from "./handler.js";
+import { ZodError, z } from "zod/v4";
 import { HttpError } from "../shared/http-error.js";
+import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
+import type { ApiDefinition } from "./define-api.js";
+import type { Handler } from "./handler.js";
+import { NoCache, type Cache } from "./cache.js";
 import type { TRequest } from "./t-request.js";
-import type { MaybePromise } from "../shared/maybe-promise.js";
 
 interface Options {
   basePath?: string;
   hooks?: {
-    error?: (error: unknown) => MaybePromise<unknown>;
+    error?: (error: unknown) => MaybePromise<void>;
   };
+  cache?: Cache;
+  defaultTTL?: number;
 }
+
+const DEFAULT_TTL = 60 * 60 * 24 * 14;
+
+const headersSchema = z
+  .tuple([z.string(), z.string()])
+  .array()
+  .optional()
+  .nullable();
 
 export function createRequestHandler(
   api: ApiDefinition<Record<BasePath, MaybePromise<BaseRoute>>>,
   options: Options = {}
 ) {
+  const cache = options.cache ?? new NoCache();
+  const errorHook =
+    options.hooks?.error ??
+    ((error) => {
+      console.error(error);
+      return error;
+    });
+
+  const basePath = options.basePath ?? "";
+
   const routes: { pattern: RegExp; route: MaybePromise<BaseRoute> }[] = [];
 
   for (const [path, route] of Object.entries(api.routes)) {
-    const pattern = compilePathRegex((options.basePath ?? "") + path);
+    const pattern = compilePathRegex(basePath + path);
     routes.push({ pattern, route });
   }
 
@@ -34,7 +55,74 @@ export function createRequestHandler(
       if (match) {
         const params = match.groups || {};
         switch (req.method) {
-          case "GET":
+          case "HEAD":
+          case "GET": {
+            try {
+              // get matching cache entry
+              const cached = await cache.get(req.url);
+
+              if (cached) {
+                // serve from cache
+                const body =
+                  req.method === "HEAD"
+                    ? null
+                    : new ReadableStream({
+                        start(controller) {
+                          controller.enqueue(cached.attachment);
+                          controller.close();
+                        },
+                      });
+                const headers = await headersSchema.parseAsync(cached.data);
+
+                return new Response(body, {
+                  headers: headers ?? undefined,
+                });
+              }
+            } catch (error) {
+              // caches errors while retrieving from cache
+              errorHook(error);
+            }
+
+            const handler = route[req.method];
+            if (!handler) return new Response("Not Found", { status: 404 });
+
+            try {
+              // execute handler, serve fresh response
+              const treq = await prepareRequestWithoutBody(
+                handler,
+                url,
+                params,
+                req
+              );
+              const res = await executeHandler(handler, treq);
+
+              if (res.cache) {
+                // cache fresh response according to cache options
+                try {
+                  const cloned = res.clone();
+                  cache
+                    .set({
+                      key: req.url,
+                      data: Array.from(res.headers.entries()),
+                      attachment: new Uint8Array(await cloned.arrayBuffer()),
+                      ttl: res.cache.ttl ?? options.defaultTTL ?? DEFAULT_TTL,
+                      tags: res.cache.tags ?? [],
+                    })
+                    // catches errors while caching if cache.set is async (redis cache)
+                    .catch(errorHook);
+                } catch (error) {
+                  // catches errors while caching if cache.set is sync (in-memory cache)
+                  errorHook(error);
+                }
+              }
+              return res;
+            } catch (error) {
+              // catches errors while actually handling the request
+              await errorHook(error);
+              return handleError(error);
+            }
+          }
+
           case "DELETE": {
             const handler = route[req.method];
             if (!handler) return new Response("Not Found", { status: 404 });
@@ -45,11 +133,18 @@ export function createRequestHandler(
                 params,
                 req
               );
-              return await executeHandler(handler, treq);
+              const res = await executeHandler(handler, treq);
+              if (res.cache?.tags) {
+                try {
+                  cache.delete(res.cache.tags).catch(errorHook);
+                } catch (error) {
+                  errorHook(error);
+                }
+              }
+              return res;
             } catch (error) {
-              return handleError(
-                options.hooks?.error ? await options.hooks.error(error) : error
-              );
+              await errorHook(error);
+              return handleError(error);
             }
           }
           case "POST":
@@ -68,11 +163,18 @@ export function createRequestHandler(
                 params,
                 req
               );
-              return await executeHandler(handler, treq);
+              const res = await executeHandler(handler, treq);
+              if (res.cache?.tags) {
+                try {
+                  cache.delete(res.cache.tags).catch(errorHook);
+                } catch (error) {
+                  errorHook(error);
+                }
+              }
+              return res;
             } catch (error) {
-              return handleError(
-                options.hooks?.error ? await options.hooks?.error(error) : error
-              );
+              await errorHook(error);
+              return handleError(error);
             }
           }
           default:

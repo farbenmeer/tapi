@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // Environment setup & latest features
-    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker", "DOM.AsyncIterable"],
     "target": "ESNext",
     "module": "Preserve",
     "jsx": "react-jsx",
