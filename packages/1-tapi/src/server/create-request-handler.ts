@@ -3,10 +3,12 @@ import { HttpError } from "../shared/http-error.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
+import { type Cache } from "./cache.js";
 import type { ApiDefinition } from "./define-api.js";
 import type { Handler } from "./handler.js";
-import { NoCache, type Cache } from "./cache.js";
 import type { TRequest } from "./t-request.js";
+import { CookieStore } from "./cookie-store.js";
+import { SESSION_COOKIE_NAME } from "../shared/constants.js";
 
 interface Options {
   basePath?: string;
@@ -29,7 +31,6 @@ export function createRequestHandler(
   api: ApiDefinition<Record<BasePath, MaybePromise<BaseRoute>>>,
   options: Options = {}
 ) {
-  const cache = options.cache ?? new NoCache();
   const errorHook =
     options.hooks?.error ??
     ((error) => {
@@ -59,7 +60,7 @@ export function createRequestHandler(
           case "GET": {
             try {
               // get matching cache entry
-              const cached = await cache.get(req.url);
+              const cached = await options?.cache?.get(req.url);
 
               if (cached) {
                 // serve from cache
@@ -100,8 +101,8 @@ export function createRequestHandler(
                 // cache fresh response according to cache options
                 try {
                   const cloned = res.clone();
-                  cache
-                    .set({
+                  options?.cache
+                    ?.set({
                       key: req.url,
                       data: Array.from(res.headers.entries()),
                       attachment: new Uint8Array(await cloned.arrayBuffer()),
@@ -136,7 +137,15 @@ export function createRequestHandler(
               const res = await executeHandler(handler, treq);
               if (res.cache?.tags) {
                 try {
-                  cache.delete(res.cache.tags).catch(errorHook);
+                  const clientId = await treq
+                    .cookies()
+                    .get(SESSION_COOKIE_NAME);
+                  options?.cache
+                    ?.delete(
+                      res.cache.tags,
+                      clientId ? { clientId: clientId.value } : undefined
+                    )
+                    .catch(errorHook);
                 } catch (error) {
                   errorHook(error);
                 }
@@ -166,7 +175,15 @@ export function createRequestHandler(
               const res = await executeHandler(handler, treq);
               if (res.cache?.tags) {
                 try {
-                  cache.delete(res.cache.tags).catch(errorHook);
+                  const clientId = await treq
+                    .cookies()
+                    .get(SESSION_COOKIE_NAME);
+                  options?.cache
+                    ?.delete(
+                      res.cache.tags,
+                      clientId ? { clientId: clientId.value } : undefined
+                    )
+                    .catch(errorHook);
                 } catch (error) {
                   errorHook(error);
                 }
@@ -217,6 +234,7 @@ export async function prepareRequestWithoutBody<TBody = never>(
       const schema = z.object(handler.schema.params);
       return schema.parse(decodedParams);
     }
+    treq.params = () => decodedParams;
     return decodedParams;
   };
   treq.query = () => {
@@ -225,7 +243,13 @@ export async function prepareRequestWithoutBody<TBody = never>(
       const schema = z.object(handler.schema.query);
       return schema.parse(params);
     }
+    treq.query = () => params;
     return params;
+  };
+  treq.cookies = () => {
+    const cookieStore = new CookieStore(req);
+    treq.cookies = () => cookieStore;
+    return cookieStore;
   };
   const auth = await handler.schema.authorize(
     treq as TRequest<never, any, any, never>

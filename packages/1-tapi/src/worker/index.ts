@@ -1,3 +1,4 @@
+import { TAGS_CONTENT_TYPE } from "../shared/constants";
 import { isMutation } from "../shared/is-mutation";
 import { getMetadata, invalidateTags } from "./cache-meta";
 import { mutateAndInvalidate } from "./mutate-and-invalidate";
@@ -67,8 +68,8 @@ export async function listenForInvalidations(cache: Cache, url: string) {
     return;
   }
 
-  const contentType = res.headers.get("content-type");
-  if (!res.ok || contentType !== "text/tapi-tags" || !res.body) {
+  const contentType = res.headers.get("Content-Type");
+  if (!res.ok || contentType !== TAGS_CONTENT_TYPE || !res.body) {
     console.error(
       "TApi: Failed to open invalidation stream. Unregistering service worker.",
       res.status,

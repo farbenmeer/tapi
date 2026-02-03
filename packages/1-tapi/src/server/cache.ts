@@ -11,14 +11,17 @@ export interface CacheEntry {
   attachment?: Uint8Array | null;
 }
 
-export type Subscription = (tags: string[]) => void;
+export type Subscription = (
+  tags: string[],
+  meta: { clientId?: string }
+) => void;
 
 export interface Cache {
   get(key: string): Promise<CacheEntry | null>;
   set(
     input: CacheEntry & { key: string; ttl: number; tags: string[] }
   ): Promise<void>;
-  delete(tags: string[]): Promise<void>;
+  delete(tags: string[], meta?: { clientId?: string }): Promise<void>;
   subscribe(callback: Subscription): () => void;
 }
 
@@ -39,9 +42,9 @@ export class NoCache implements Cache {
     return Promise.resolve();
   }
 
-  delete(tags: string[]): Promise<void> {
+  delete(tags: string[], meta?: { clientId?: string }): Promise<void> {
     for (const callback of this.subscribers) {
-      callback(tags);
+      callback(tags, meta ?? {});
     }
 
     return Promise.resolve();
