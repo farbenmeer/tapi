@@ -85,7 +85,7 @@ Performs a DELETE request.
 The client automatically caches in-flight GET requests. If you call `client.users.get()` multiple times while a request is pending, only one network call is made.
 
 ### Tag-Based Revalidation
-The client tracks cache tags sent by the server (via `X-TAPI-Tags` header in `TResponse`). When a mutation (POST/PUT/PATCH/DELETE) response includes tags that match cached GET requests, those GET requests are automatically invalidated and re-fetched if there are active subscribers.
+The client tracks cache tags sent by the server (via `X-TAPI-Tags` header in `TResponse`). Tags are specified on the server using `cache: { tags: [...] }` in the `TResponseInit` object. When a mutation (POST/PUT/PATCH/DELETE) response includes tags that match cached GET requests, those GET requests are automatically invalidated and re-fetched if there are active subscribers.
 
 ### Subscriptions
 The promise returned by `.get()` is augmented with a `.subscribe()` method. This is useful for integrating with React hooks or other state management libraries to listen for cache updates.

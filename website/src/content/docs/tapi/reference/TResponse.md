@@ -55,12 +55,12 @@ When e.G. your `POST /users` endpoint returns `TResponse.void()` you can use it 
 
 ## Cache Tags
 
-`TResponse` supports a custom cache invalidation system via tags. When providing the `init` object, you can pass a `tags` array. These tags are sent in the `X-TAPI-Tags` header and are used by the client-side `createFetchClient` to automatically invalidate cached queries when a mutation occurs.
+`TResponse` supports a custom cache invalidation system via tags. When providing the `init` object, you can pass a `cache` object with a `tags` array. These tags are sent in the `X-TAPI-Tags` header and are used by the client-side `createFetchClient` to automatically invalidate cached queries when a mutation occurs.
 
 ```ts
 // GET /books/1
 return TResponse.json(book, {
-  tags: [`book-${book.id}`, 'books-list']
+  cache: { tags: [`book-${book.id}`, 'books-list'] }
 });
 
 // POST /books/1/update
@@ -81,10 +81,18 @@ console.log(response.data.success); // true
 
 ## Interface
 
-The initialization object `TResponseInit` extends the standard `ResponseInit` to include the optional `tags` property.
+The initialization object `TResponseInit` extends the standard `ResponseInit` to include the optional `cache` property.
 
 ```ts
 interface TResponseInit extends ResponseInit {
-  tags?: string[];
+  cache?: {
+    tags?: string[];
+    ttl?: number;
+  };
 }
 ```
+
+- `cache.tags`: An array of string tags used for cache invalidation.
+- `cache.ttl`: Time-to-live in seconds for caching the response.
+
+When both `tags` and `ttl` are specified, the cache entry is invalidated by whichever comes first — the TTL expiring or a tag being revalidated.
