@@ -138,3 +138,47 @@ const data = await serverClient.hello.get();
 
 <h1>{data.message}</h1>
 ```
+
+## 6. Revalidation Stream
+
+To enable tag-based revalidation across all cache layers, set up a shared `PubSub` instance and a revalidation endpoint.
+
+First, update your route handler to use a `PubSub`:
+
+```ts
+// src/pages/api/[...tapi].ts
+import { PubSub, createRequestHandler } from "@farbenmeer/tapi/server";
+import { api } from "../../api";
+import type { APIRoute } from "astro";
+
+export const pubsub = new PubSub();
+
+const handler = createRequestHandler(api, {
+  basePath: "/api",
+  cache: pubsub,
+});
+
+export const ALL: APIRoute = ({ request }) => {
+  return handler(request);
+};
+```
+
+Then add a revalidation endpoint at `src/pages/api/revalidate.ts`:
+
+```ts
+// src/pages/api/revalidate.ts
+import { streamRevalidatedTags } from "@farbenmeer/tapi/server";
+import { pubsub } from "./[...tapi]";
+import type { APIRoute } from "astro";
+
+export const GET: APIRoute = () => {
+  return streamRevalidatedTags({
+    cache: pubsub,
+    buildId: import.meta.env.BUILD_ID,
+  });
+};
+```
+
+Set `BUILD_ID` to a value that changes on every deployment (e.g. a git commit hash) so the service worker cache is fresh after each deploy.
+
+For setting up a service worker that connects to this endpoint, see the [Service Worker guide](/tapi/guides/service-worker). For details on how the cache layers interact, see [Caching Strategies](/tapi/reference/caching).

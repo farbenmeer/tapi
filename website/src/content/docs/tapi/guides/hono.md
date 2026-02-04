@@ -114,3 +114,44 @@ main();
 ### Context Integration
 
 If you need to access Hono's `Context` (like environment variables in Cloudflare Workers) inside your TApi handlers, you currently need to pass them via a custom storage mechanism (like `AsyncLocalStorage`) or by extending the request object before passing it to `handler`, since TApi abstracts away the underlying framework's specific context object in favor of a standard `TRequest`.
+
+## 6. Revalidation Stream
+
+To enable tag-based revalidation across all cache layers, set up a shared `PubSub` instance and a revalidation endpoint.
+
+Update your Hono app to use a `PubSub` and add a `/api/revalidate` route:
+
+```ts
+// src/index.ts
+import { Hono } from "hono";
+import { PubSub, createRequestHandler, streamRevalidatedTags } from "@farbenmeer/tapi/server";
+import { api } from "./api";
+
+const app = new Hono();
+
+const pubsub = new PubSub();
+
+const handler = createRequestHandler(api, {
+  basePath: "/api",
+  cache: pubsub,
+});
+
+app.get("/api/revalidate", (c) => {
+  return streamRevalidatedTags({
+    cache: pubsub,
+    buildId: process.env.BUILD_ID!,
+  });
+});
+
+app.all("/api/*", (c) => {
+  return handler(c.req.raw);
+});
+
+export default app;
+```
+
+The revalidation route is registered before the catch-all so it doesn't get swallowed by the TApi handler.
+
+Set `BUILD_ID` to a value that changes on every deployment (e.g. a git commit hash) so the service worker cache is fresh after each deploy.
+
+For setting up a service worker that connects to this endpoint, see the [Service Worker guide](/tapi/guides/service-worker). For details on how the cache layers interact, see [Caching Strategies](/tapi/reference/caching).

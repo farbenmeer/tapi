@@ -25,7 +25,7 @@ export interface Cache {
   subscribe(callback: Subscription): () => void;
 }
 
-export class NoCache implements Cache {
+export class PubSub implements Cache {
   subscribers = new Set<Subscription>();
 
   async get(_key: string): Promise<CacheEntry | null> {

@@ -2,7 +2,7 @@ import type { ApiDefinition } from "@farbenmeer/tapi/server";
 import {
   createRequestHandler,
   generateOpenAPISchema,
-  NoCache,
+  PubSub,
   streamRevalidatedTags,
 } from "@farbenmeer/tapi/server";
 import connect from "connect";
@@ -20,7 +20,7 @@ interface BunnyServerOptions {
 export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
   loadEnv("production");
   const app = connect();
-  const cache = new NoCache();
+  const cache = new PubSub();
   const apiRequestHandler = api().then(({ api }) =>
     createRequestHandler(api, {
       basePath: "/api",
