@@ -1,5 +1,17 @@
 # @farbenmeer/react-tapi
 
+## 7.0.0
+
+### Minor Changes
+
+- 92afc95: distributed caching and invalidation
+
+### Patch Changes
+
+- Updated dependencies [c79808c]
+- Updated dependencies [92afc95]
+  - @farbenmeer/tapi@0.8.0
+
 ## 6.0.0
 
 ### Patch Changes

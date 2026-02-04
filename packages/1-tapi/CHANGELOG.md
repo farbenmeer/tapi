@@ -1,5 +1,12 @@
 # @farbenmeer/tapi
 
+## 0.8.0
+
+### Minor Changes
+
+- c79808c: Service Worker caching
+- 92afc95: distributed caching and invalidation
+
 ## 0.7.0
 
 ### Minor Changes
