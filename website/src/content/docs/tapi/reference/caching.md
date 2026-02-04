@@ -13,14 +13,19 @@ The three cache layers are:
 
 ### Revalidation table
 
-This table shows when data will be revalidated in each layer based on what response configuration (the `cache` property passed when initializing the `TResponse`):
+This table shows how each of the cache layers will handle a request for a resource depending on its revalidation state. There are three revalidation states:
 
-| Response Cache Config | Server-side Cache | Service Worker Cache | Client-side Cache |
+* No Config: This route does not use the `cache` config
+* Valid: This route specifies `cache.ttl`, `cache.tags` or both, none of the tags have been invalidated and the ttl has not expired since the last request was (successfully) handled.
+* Invalid: This route specifies `cache.ttl`, `cache.tags` or both and one of the tags has been invalidated or the ttl has expired since the last request was (successfully) handled.
+
+|                       | No Config | Valid | Invalid |
 |-----------------------|------------------|---------------------|-------------------|
-| None                  | No cache         | No cache            | Cache indefinitely |
-| `{ tags: ['foo'] }`   | `defaultTTL` or tag `foo` | `defaultTTL` or tag `foo` | `defaultTTL` or tag `foo` |
-| `{ ttl: 1337 }`       | 1337s     | 1337s        | 1337s      |
-| `{ ttl: 1337, tags: ['foo'] }` | 1337s or tag `foo` | 1337s or tag `foo` | 1337s or tag `foo` |
+| Server                  | nothing stored         | serve from cache            | call handler |
+| Worker   | network-first | cache-first | network-first |
+| Client       | serve from cache     |  serve from cache       | refresh      |
+
+where 'refresh' means that the client will _immediately_ request a fresh version of the resource as soon as it goes invalid (tag gets revalidated, expires or is manually revalidated by calling `revalidate()` on the resource). The fresh version will be cached and distributed to all subscribers on the resource (usually the views displaying the data to the user).
 
 ### Server-side Cache
 
