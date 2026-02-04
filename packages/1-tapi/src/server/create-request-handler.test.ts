@@ -120,4 +120,23 @@ describe("createRequestHandler", () => {
     ]);
     expect(errorHook).toHaveBeenCalled();
   });
+
+  test("auth data is available on the request object", async () => {
+    const errorHook = vi.fn();
+    const sut = createRequestHandler(
+      defineApi().route("/", {
+        GET: defineHandler(
+          {
+            authorize: () => "foo",
+          },
+          async (req) => {
+            return TResponse.json({ auth: req.auth() });
+          }
+        ),
+      }),
+      { hooks: { error: errorHook } }
+    );
+    const response = await sut(new Request("http://localhost:3000"));
+    expect(await response.json()).toEqual({ auth: "foo" });
+  });
 });

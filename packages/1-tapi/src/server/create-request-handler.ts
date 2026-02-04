@@ -268,7 +268,7 @@ export async function prepareRequestWithoutBody<TBody = never>(
 
   treq.auth = () => {
     (treq as any)[authUsed] = true;
-    auth;
+    return auth;
   };
 
   return treq;
