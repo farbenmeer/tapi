@@ -1,5 +1,22 @@
 # @farbenmeer/bunny
 
+## 0.4.0
+
+### Minor Changes
+
+- c79808c: Service Worker caching
+- 92afc95: distributed caching and invalidation
+
+### Patch Changes
+
+- 648fc37: bunny accepts cache-export from api.ts
+- 648fc37: move recipes into core bunny package and distribute them with recipes command
+- 010665b: better docs for 3rd party tools
+- Updated dependencies [c79808c]
+- Updated dependencies [92afc95]
+  - @farbenmeer/tapi@0.8.0
+  - @farbenmeer/react-tapi@7.0.0
+
 ## 0.3.5
 
 ### Patch Changes

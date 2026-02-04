@@ -1,5 +1,19 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.2.4
+
+### Patch Changes
+
+- 648fc37: bunny accepts cache-export from api.ts
+- 648fc37: move recipes into core bunny package and distribute them with recipes command
+- 010665b: better docs for 3rd party tools
+- Updated dependencies [648fc37]
+- Updated dependencies [c79808c]
+- Updated dependencies [92afc95]
+- Updated dependencies [648fc37]
+- Updated dependencies [010665b]
+  - @farbenmeer/bunny@0.4.0
+
 ## 0.2.3
 
 ### Patch Changes
