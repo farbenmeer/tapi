@@ -21,9 +21,14 @@ export function streamRevalidatedTags({ cache, buildId }: Options) {
       const textEncoder = new TextEncoder();
       // subscribe to tag invalidations
       unsubscribe = cache.subscribe((tags, meta) => {
-        console.log("revalidated", tags, meta);
         // ignore our own invalidations
-        if (meta.clientId === id) return;
+        if (
+          meta &&
+          typeof meta === "object" &&
+          "clientId" in meta &&
+          meta.clientId === id
+        )
+          return;
         // send tags to client
         controller.enqueue(textEncoder.encode(`${tags.join(" ")}\n`));
       });

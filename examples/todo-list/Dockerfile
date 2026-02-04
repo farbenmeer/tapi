@@ -20,4 +20,4 @@ RUN chown -R node:node db
 # run the app
 USER node
 EXPOSE 3000/tcp
-CMD [ "node", "server.js" ]
+CMD [ "node", "server.cjs" ]

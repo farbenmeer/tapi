@@ -12,6 +12,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import * as tar from "tar";
+import { copyRecipes } from "./recipes.js";
 
 const $ = promisify(exec);
 
@@ -93,6 +94,8 @@ export const init = new Command()
     const result = await $(`${pm} install`);
     console.log(result.stdout);
     console.error(result.stderr);
+
+    await copyRecipes();
 
     console.log("Project initialized successfully!");
   });

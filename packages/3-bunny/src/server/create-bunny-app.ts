@@ -10,9 +10,10 @@ import serveStatic from "serve-static";
 import { INVALIDATIONS_ROUTE } from "../constants.js";
 import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
+import type { Cache } from "@farbenmeer/tapi/server";
 
 interface BunnyServerOptions {
-  api: () => Promise<{ api: ApiDefinition<any> }>;
+  api: () => Promise<{ api: ApiDefinition<any>; cache?: Cache }>;
   dist: string;
   apiInfo: { title: string; version: string; buildId: string };
 }
@@ -20,8 +21,8 @@ interface BunnyServerOptions {
 export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
   loadEnv("production");
   const app = connect();
-  const cache = new PubSub();
-  const apiRequestHandler = api().then(({ api }) =>
+  const cache = api().then(({ cache = new PubSub() }) => cache);
+  const apiRequestHandler = api().then(async ({ api }) =>
     createRequestHandler(api, {
       basePath: "/api",
       hooks: {
@@ -29,7 +30,7 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
           console.error(error);
         },
       },
-      cache,
+      cache: await cache,
     })
   );
   let openApiJson: string | undefined;
@@ -74,7 +75,7 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
 
     if (url.pathname === INVALIDATIONS_ROUTE) {
       const response = streamRevalidatedTags({
-        cache,
+        cache: await cache,
         buildId: apiInfo.buildId,
       });
       console.info(`Bunny: Starting Invalidation Stream`);

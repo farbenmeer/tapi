@@ -26,10 +26,10 @@ The dev server provides a powerful development experience:
 
 The development server is optimized for quick iteration and provides excellent developer experience with minimal configuration.
 
-## Adding Tools and Features
+## Recipes
 
 Instead of reimplementing functionality or providing scaffolding options for every tool, Bunny includes the
-`instructions/` folder, which contains markdown guides for adding popular tools and features to your project.
+`recipes/` folder, which contains markdown guides for adding popular tools and features to your project.
 
 While it is easy enough to follow these instructions manually, they are also designed to be used with AI agents. Just point the AI agent of your choice at one of the markdown files.
 
@@ -38,17 +38,33 @@ The following list has been last updated on 2026-02-01.
 The currently recommended set of tools is
 
 ### Styling
-* [Tailwind CSS](./instructions/tailwind.md) which does not need further introduction
+* [Tailwind CSS](./recipes/tailwind.md) which does not need further introduction
 
 ### Database
-* [Drizzle ORM](./instructions/drizzle-orm.md) which seems like a sensible choice and fits neatly into the no-magic-just-code approach that makes Bunny so powerful.
+* [Drizzle ORM](./recipes/drizzle-orm.md) which seems like a sensible choice and fits neatly into the no-magic-just-code approach that makes Bunny so powerful.
 
 ### Authentication
-* [better-auth](./instructions/better-auth.md) which just seems to be best-in-class right now and easily fits with TApi's approach of building on plain web `Request`/`Response` objects for request handlers.
+* [better-auth](./recipes/better-auth.md) which just seems to be best-in-class right now and easily fits with TApi's approach of building on plain web `Request`/`Response` objects for request handlers.
 
 ### Routing
-* [@farbenmeer/router](./instructions/farbenmeer-router.md) which is a minimalistic client-side-only react router designed for Bunny.
+* [@farbenmeer/router](./recipes/farbenmeer-router.md) which is a minimalistic client-side-only react router designed for Bunny.
 
+## Updating Recipes
+To update your recipes to the latest instructions for your version of Bunny, simply run
+```bash
+bunny recipes
+```
+this command will copy the recipes (markdown files) into your project's `recipes` folder.
+
+to list available recipes, run
+```bash
+bunny recipes --list
+```
+
+to copy only a specific recipe, run
+```bash
+bunny recipes --only <recipe-name>
+```
 
 ## Building for Production
 

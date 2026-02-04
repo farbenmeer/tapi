@@ -60,6 +60,10 @@ export default defineConfig({
               autogenerate: { directory: "bunny/guides" },
             },
             {
+              label: "Conventions",
+              autogenerate: { directory: "bunny/conventions" },
+            },
+            {
               label: "Reference",
               autogenerate: { directory: "bunny/reference" },
             },

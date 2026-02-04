@@ -87,7 +87,7 @@ export const dev = new Command()
           name: "bunny-hot-reload",
           setup(build) {
             build.onEnd(async (result) => {
-              console.log("Bunny: Hot-Reload Server");
+              console.info("Bunny: Hot-Reload Server");
               result.warnings.forEach((warning) => {
                 console.warn("Bunny Server:", warning);
               });
@@ -99,9 +99,9 @@ export const dev = new Command()
               if (!entryPoint) throw new Error("Entry point not found");
               const apiMeta = result.metafile?.outputs[entryPoint];
               if (!apiMeta) throw new Error("Api Metadata not found");
-              console.log("Bunny: Built API");
-              console.log("User Modules:", Object.keys(apiMeta.inputs));
-              console.log(
+              console.info("Bunny: Built API");
+              console.info("User Modules:", Object.keys(apiMeta.inputs));
+              console.info(
                 "Output Size:",
                 Math.round(apiMeta.bytes / 1000),
                 "kiB"
@@ -160,5 +160,5 @@ export const dev = new Command()
     app.use(viteServer.middlewares);
 
     app.listen(parseInt(port, 10));
-    console.log(`Dev-Server started on port ${port}`);
+    console.info(`Dev-Server started on port ${port}`);
   });

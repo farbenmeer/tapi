@@ -5,6 +5,7 @@ import { init } from "./cli/init.js";
 import { dev } from "./cli/dev.js";
 import { build } from "./cli/build.js";
 import { start } from "./cli/start.js";
+import { recipes } from "./cli/recipes.js";
 
 const program = new Command();
 
@@ -15,6 +16,7 @@ program
   .addCommand(init)
   .addCommand(dev)
   .addCommand(build)
-  .addCommand(start);
+  .addCommand(start)
+  .addCommand(recipes);
 
 await program.parseAsync(process.argv);

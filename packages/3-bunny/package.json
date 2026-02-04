@@ -16,7 +16,8 @@
   },
   "files": [
     "dist",
-    "boilerplate.tar.gz"
+    "boilerplate.tar.gz",
+    "recipes"
   ],
   "bin": {
     "bunny": "./cli.js",

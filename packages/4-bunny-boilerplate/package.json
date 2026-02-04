@@ -7,13 +7,13 @@
     "src",
     ".gitignore",
     "Dockerfile",
-    "tsconfig.json",
-    "instructions"
+    "tsconfig.json"
   ],
   "scripts": {
     "dev": "bunny dev",
     "build": "bunny build",
-    "start": "bunny start"
+    "start": "bunny start",
+    "recipes": "bunny recipes"
   },
   "dependencies": {
     "@farbenmeer/bunny": "workspace:^",

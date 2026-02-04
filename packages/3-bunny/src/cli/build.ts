@@ -69,6 +69,7 @@ export const build = new Command()
         platform: "node",
         target: "node24",
         entryNames: "server",
+        outExtension: { ".js": ".cjs" },
         packages: "bundle",
         metafile: true,
       });

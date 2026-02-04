@@ -16,4 +16,4 @@ COPY --from=builder /usr/src/app/.bunny/prod .
 # run the app
 USER node
 EXPOSE 3000/tcp
-CMD [ "node", "server.js" ]
+CMD [ "node", "server.cjs" ]
