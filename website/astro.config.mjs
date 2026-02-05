@@ -31,7 +31,13 @@ export default defineConfig({
         },
         {
           label: "Lacy",
-          slug: "lacy",
+          items: [
+            { label: "Introduction", slug: "lacy" },
+            {
+              label: "Reference",
+              autogenerate: { directory: "lacy/reference" },
+            },
+          ],
         },
         {
           label: "Skeleton",
