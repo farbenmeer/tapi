@@ -14,7 +14,7 @@ export type Schema<
   __b?: Body;
   params?: { [key in keyof Params]: ZodType<Params[key], string> };
   query?: { [key in keyof Query]: ZodType<Query[key], string | string[]> };
-  body?: ZodType<Body>;
+  body?: ZodType<Body> | ((formData: FormData) => MaybePromise<Body>);
   response?: ZodType<Response>;
   authorize: (
     req: TRequest<never, Params, Query, never>

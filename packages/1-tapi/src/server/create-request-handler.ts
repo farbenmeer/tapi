@@ -291,6 +291,12 @@ export async function prepareRequestWithBody(
     if (contentType.startsWith("application/json")) {
       const data = await req.json();
       if (handler.schema.body) {
+        if (typeof handler.schema.body === "function") {
+          throw new HttpError(
+            400,
+            `Expected Form-Data Content-Type: multipart/form-data or application/x-www-form-urlencoded, received application/json`
+          );
+        }
         return handler.schema.body.parseAsync(data);
       }
       return data;
@@ -301,14 +307,16 @@ export async function prepareRequestWithBody(
       contentType.startsWith("application/x-www-form-urlencoded")
     ) {
       const formData = await req.formData();
-      const data = collectData(formData.entries());
       if (handler.schema.body) {
-        return handler.schema.body.parseAsync(data);
+        if (typeof handler.schema.body === "function") {
+          return handler.schema.body(formData);
+        }
+        return handler.schema.body.parseAsync(formData);
       }
-      return data;
+      return formData;
     }
 
-    throw new HttpError(400, `Unsupported content-type ${contentType}`);
+    throw new HttpError(400, `Unsupported Content-Type ${contentType}`);
   };
 
   return treq;
