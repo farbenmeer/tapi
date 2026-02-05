@@ -41,7 +41,7 @@ An object defining the input validation, authorization logic, and response struc
 | `authorize` | `(req: TRequest) => AuthData` | **Required.** A function that determines if the request is allowed. Throw an error to deny access. The return value is accessible via `req.auth()`. |
 | `params` | `ZodSchema` (object) | Optional. Zod schema for validating path parameters (e.g., `/users/:id`). |
 | `query` | `ZodSchema` (object) | Optional. Zod schema for validating query string parameters. |
-| `body` | `ZodSchema` | Optional. Zod schema for validating the JSON request body. |
+| `body` | `ZodSchema` or (formData: FormData) => Promise<BodyType> | Optional. Zod schema for validating the JSON request body. |
 | `response` | `ZodSchema` | Optional. Zod schema to define the expected response shape. Currently used for OpenAPI generation. |
 
 ### `handler`
@@ -97,6 +97,31 @@ export const POST = defineHandler({
 
   // Perform database operation...
   
+  return TResponse.json({ success: true, author: user.userId });
+});
+```
+
+### POST Route with basic form data validation
+
+```ts
+export const POST = defineHandler({
+  authorize: (req) => {
+    if (!req.headers.get("Authorization")) throw new Error("Unauthorized");
+    return { userId: "current-user" };
+  },
+  body: (formData: FormData) => {
+    return z.object({
+      title: z.string().min(3),
+      content: z.string()
+    }).parse({
+      title: formData.get("title"), 
+      content: formData.get("content")
+    });
+  }
+}, async (req) => {
+  const user = req.auth();
+  const { title, content } = await req.data();
+
   return TResponse.json({ success: true, author: user.userId });
 });
 ```
