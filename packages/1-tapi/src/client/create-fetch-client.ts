@@ -132,7 +132,15 @@ interface ProxyMethods {
 
 function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
   return new Proxy(() => {}, {
-    get(_target, prop: string) {
+    get(_target, prop: string | symbol) {
+      if (typeof prop === "symbol") {
+        if (prop === Symbol.toPrimitive) {
+          return function toPrimitive() {
+            return `[TApi Route ${baseUrl}/${lastProp}]`;
+          };
+        }
+        return undefined;
+      }
       return createProxy(methods, baseUrl + "/" + lastProp, prop);
     },
     apply(_target, _thisArg, args) {
@@ -167,6 +175,7 @@ function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
 
           return methods.mutate(lastProp.toUpperCase(), url, args[0], args[1]);
         }
+
         default:
           throw new Error(`Tapi: Unsupported method: ${lastProp}`);
       }

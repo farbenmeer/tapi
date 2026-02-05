@@ -111,4 +111,10 @@ describe("createFetchClient", () => {
     const anotherPromise = client.error["not-found"].get();
     expect(anotherPromise).toBe(promise);
   });
+
+  test("Symbol.toPrimitive", async () => {
+    expect((client.method as any)[Symbol.toPrimitive]()).toBe(
+      "[TApi Route https://example.com/api/method]"
+    );
+  });
 });
