@@ -6,6 +6,8 @@ import {
   streamRevalidatedTags,
 } from "@farbenmeer/tapi/server";
 import connect from "connect";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import serveStatic from "serve-static";
 import { INVALIDATIONS_ROUTE } from "../constants.js";
 import { loadEnv } from "../load-env.js";
@@ -99,6 +101,13 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
   });
 
   app.use(serveStatic(dist));
+
+  // SPA fallback: serve index.html for non-API, non-static routes
+  const indexHtml = readFileSync(path.join(dist, "index.html"));
+  app.use((_req, res) => {
+    res.setHeader("Content-Type", "text/html");
+    res.end(indexHtml);
+  });
 
   return app;
 }

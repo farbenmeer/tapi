@@ -6,3 +6,4 @@ export { usePathname } from "./use-pathname";
 export { useSearchParams } from "./use-search-params";
 export { useHash } from "./use-hash";
 export { useParams } from "./use-params";
+export { Switch } from "./switch";

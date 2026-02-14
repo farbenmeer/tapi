@@ -9,6 +9,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 import { createServer } from "vite";
+import react from "@vitejs/plugin-react";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "../server/node-http-adapter.js";
@@ -38,7 +39,7 @@ export const dev = new Command()
         middlewareMode: true,
         ...config.vite?.server,
       },
-      plugins: [...(config.vite?.plugins ?? []), viteTsconfigPaths()],
+      plugins: [...(config.vite?.plugins ?? []), react(), viteTsconfigPaths()],
       clearScreen: false,
     });
 
