@@ -24,7 +24,15 @@ export async function generateOpenAPISchema(
         Object.entries(apiDefinition.routes).map(async ([path, route]) => [
           transformPath(path),
           Object.fromEntries(
-            Object.entries(await route).map(([method, handler]) => [
+            Object.entries(await route)
+              .filter(
+                (entry): entry is [string, { schema: any; handler: any }] =>
+                  entry[1] != null &&
+                  typeof entry[1] === "object" &&
+                  "schema" in entry[1] &&
+                  "handler" in entry[1]
+              )
+              .map(([method, handler]) => [
               method.toLowerCase(),
               {
                 requestParams: {

@@ -51,7 +51,7 @@ export function Switch({ children }: Props) {
         ];
     }
     return null;
-  }, [routeMeta]);
+  }, [routeMeta, pathname]);
 
   if (!match) {
     return null;

@@ -63,7 +63,7 @@ export class Cache {
 
   private revalidateRequest(
     url: string,
-    entry: CacheEntry
+    entry: CacheEntry,
   ): { observable: ObservablePromise; revalidated: Promise<void> } {
     if (entry.timeout) {
       // clear timeout to make sure it the entry doesn't get revalidated again or removed based on TTL
@@ -82,12 +82,23 @@ export class Cache {
               clearTimeout(entry.timeout);
             }
             if (entry.current?.expiresAt) {
-              entry.timeout = setTimeout(() => {
-                this.revalidateRequest(url, entry);
-              }, entry.current?.expiresAt + Math.round(Math.random() * this.maxOverdueTTL));
+              entry.timeout = setTimeout(
+                () => {
+                  this.revalidateRequest(url, entry);
+                },
+                entry.current?.expiresAt +
+                  Math.round(Math.random() * this.maxOverdueTTL),
+              );
             }
           }
           entry.subscriptions.add(callback);
+
+          // If there's a newer revalidation in-flight or completed since
+          // this observable was created, notify the new subscriber immediately
+          // so it doesn't miss the update.
+          if (entry.next && entry.next !== observable) {
+            callback(entry.next);
+          }
 
           return () => {
             entry.subscriptions.delete(callback);
@@ -96,7 +107,7 @@ export class Cache {
             }
           };
         },
-      }
+      },
     );
 
     entry.next = observable;
@@ -123,7 +134,7 @@ export class Cache {
         // update entry
         const oldTags = entry.current?.tags ?? new Set();
         const newTags = new Set(
-          response.headers.get(TAGS_HEADER)?.split(" ") ?? []
+          response.headers.get(TAGS_HEADER)?.split(" ") ?? [],
         );
         const expiresAtHeader = response.headers.get(EXPIRES_AT_HEADER);
         const expiresAt = expiresAtHeader
@@ -233,7 +244,7 @@ export class Cache {
     }
     // revalidate urls and wait until all are resolved or rejected
     await Promise.allSettled(
-      Array.from(urls).map((url) => this.revalidateUrl(url))
+      Array.from(urls).map((url) => this.revalidateUrl(url)),
     );
   }
 
