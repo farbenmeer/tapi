@@ -5,7 +5,7 @@ import { ApiDefinition, createBunnyApp } from "../src/server";
 
 export async function testApi(
   api: ApiDefinition<any>,
-  requestOptions: httpMocks.RequestOptions
+  requestOptions: httpMocks.RequestOptions,
 ): Promise<ServerResponse> {
   const app = createBunnyApp({
     api: () =>
@@ -16,6 +16,7 @@ export async function testApi(
     apiInfo: {
       title: "Bunny Test API",
       version: "1.0.0",
+      buildId: "testBuildId",
     },
   });
 

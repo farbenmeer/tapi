@@ -13,6 +13,7 @@ import { INVALIDATIONS_ROUTE } from "../constants.js";
 import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
 import type { Cache } from "@farbenmeer/tapi/server";
+import { readFile } from "node:fs/promises";
 
 interface BunnyServerOptions {
   api: () => Promise<{ api: ApiDefinition<any>; cache?: Cache }>;
@@ -33,7 +34,7 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
         },
       },
       cache: await cache,
-    })
+    }),
   );
   let openApiJson: string | undefined;
 
@@ -46,15 +47,15 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
     if (/^\/api(\/|$)/.test(url.pathname)) {
       const request = toRequest(req, url);
       const response = await apiRequestHandler.then((handle) =>
-        handle(request)
+        handle(request),
       );
       if (response.status < 300) {
         console.info(
-          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`,
         );
       } else {
         console.error(
-          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`,
         );
       }
       await fromResponse(res, response);
@@ -66,7 +67,7 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
         openApiJson = JSON.stringify(
           await generateOpenAPISchema((await api()).api, {
             info: apiInfo,
-          })
+          }),
         );
       }
       res.setHeader("Content-Type", "application/json");
@@ -100,11 +101,12 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
     next();
   });
 
-  app.use(serveStatic(dist));
+  app.use(serveStatic(dist, { index: false }));
 
   // SPA fallback: serve index.html for non-API, non-static routes
-  const indexHtml = readFileSync(path.join(dist, "index.html"));
-  app.use((_req, res) => {
+  let indexHtml: string | null = null;
+  app.use(async (_req, res) => {
+    indexHtml ??= await readFile(path.join(dist, "index.html"), "utf-8");
     res.setHeader("Content-Type", "text/html");
     res.end(indexHtml);
   });
