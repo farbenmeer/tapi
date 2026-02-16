@@ -10,7 +10,7 @@ export const api = defineApi()
       TResponse.json([
         { id: "1", title: "Book 1" },
         { id: "2", title: "Book 2" },
-      ])
+      ]),
     ),
     POST: defineHandler(
       {
@@ -20,7 +20,7 @@ export const api = defineApi()
           title: z.string(),
         }),
       },
-      async (req) => TResponse.json(await req.data())
+      async (req) => TResponse.json(await req.data()),
     ),
   })
   .route("/books/:id", {
@@ -34,7 +34,7 @@ export const api = defineApi()
         TResponse.json({
           id: req.params().id,
           title: `Book ${req.params().id}`,
-        })
+        }),
     ),
   })
   .route("/movies/:id", {
@@ -54,8 +54,8 @@ export const api = defineApi()
             cache: {
               tags: ["movies"],
             },
-          }
-        )
+          },
+        ),
     ),
   })
   .route("/movies", {
@@ -65,7 +65,19 @@ export const api = defineApi()
         authorize: () => true,
       },
       async (req) =>
-        TResponse.json(await req.data(), { cache: { tags: ["movies"] } })
+        TResponse.json(await req.data(), { cache: { tags: ["movies"] } }),
+    ),
+  })
+  .route("/formAction", {
+    POST: defineHandler(
+      {
+        body: (formData) => ({
+          message: formData.get("message"),
+        }),
+        authorize: () => true,
+      },
+      async (req) =>
+        TResponse.json(await req.data(), { cache: { tags: ["movies"] } }),
     ),
   })
   .route("/authorized", {
@@ -76,7 +88,7 @@ export const api = defineApi()
           return header === "Bearer token";
         },
       },
-      async () => TResponse.json({ authorized: true })
+      async () => TResponse.json({ authorized: true }),
     ),
   })
   .route("/files/*path", {
@@ -89,7 +101,7 @@ export const api = defineApi()
         TResponse.json({
           path: req.params().path,
           message: `Accessing file: ${req.params().path}`,
-        })
+        }),
     ),
   })
   .route("/wildcard/*", {
@@ -97,7 +109,7 @@ export const api = defineApi()
       {
         authorize: () => true,
       },
-      async (req) => TResponse.json({ pathname: req.url })
+      async (req) => TResponse.json({ pathname: req.url }),
     ),
   })
   .route("/method", {
@@ -105,31 +117,31 @@ export const api = defineApi()
       {
         authorize: () => true,
       },
-      async () => TResponse.json({ method: "GET" })
+      async () => TResponse.json({ method: "GET" }),
     ),
     POST: defineHandler(
       {
         authorize: () => true,
       },
-      async () => TResponse.json({ method: "POST" })
+      async () => TResponse.json({ method: "POST" }),
     ),
     PUT: defineHandler(
       {
         authorize: () => true,
       },
-      async () => TResponse.json({ method: "PUT" })
+      async () => TResponse.json({ method: "PUT" }),
     ),
     PATCH: defineHandler(
       {
         authorize: () => true,
       },
-      async () => TResponse.json({ method: "PATCH" })
+      async () => TResponse.json({ method: "PATCH" }),
     ),
     DELETE: defineHandler(
       {
         authorize: () => true,
       },
-      async () => TResponse.json({ method: "DELETE" })
+      async () => TResponse.json({ method: "DELETE" }),
     ),
   })
   .route("/error/not-found", {
@@ -139,6 +151,6 @@ export const api = defineApi()
       },
       async () => {
         throw new HttpError(404, "Not Found");
-      }
+      },
     ),
   });
