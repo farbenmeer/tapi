@@ -15,6 +15,7 @@ import { fromResponse, toRequest } from "./node-http-adapter.js";
 import type { Cache } from "@farbenmeer/tapi/server";
 import type { ServerConfig } from "../config.js";
 import { parseURL } from "./parse-url.js";
+import { readFile } from "node:fs/promises";
 
 interface BunnyServerOptions {
   api: () => Promise<{ api: ApiDefinition<any>; cache?: Cache }>;
@@ -104,11 +105,12 @@ export function createBunnyApp({
     next();
   });
 
-  app.use(serveStatic(dist));
+  app.use(serveStatic(dist, { index: false }));
 
   // SPA fallback: serve index.html for non-API, non-static routes
-  const indexHtml = readFileSync(path.join(dist, "index.html"));
-  app.use((_req, res) => {
+  let indexHtml: string | null = null;
+  app.use(async (_req, res) => {
+    indexHtml ??= await readFile(path.join(dist, "index.html"), "utf-8");
     res.setHeader("Content-Type", "text/html");
     res.end(indexHtml);
   });
