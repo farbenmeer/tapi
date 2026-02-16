@@ -15,7 +15,8 @@
     "start": "bunny start",
     "test": "playwright test",
     "test:dev": "playwright test --project=dev",
-    "test:prod": "playwright test --project=prod"
+    "test:prod": "playwright test --project=prod",
+    "ci-setup": "playwright install --with-deps"
   },
   "dependencies": {
     "@farbenmeer/bunny": "workspace:^",
