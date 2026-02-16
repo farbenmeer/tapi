@@ -35,3 +35,6 @@ Example of using environment variables from a .env-file with bunny.
 
 ### [todo-list](./examples/todo-list)
 Example of a simple todo list application using bunny.
+
+### [contact-book](./examples/contact-book)
+Example of a contact book application using bunny.
