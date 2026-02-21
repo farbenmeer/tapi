@@ -1,5 +1,16 @@
 # @farbenmeer/react-tapi
 
+## 8.0.0
+
+### Patch Changes
+
+- Updated dependencies [a5228c8]
+- Updated dependencies [25886ad]
+- Updated dependencies [4786307]
+- Updated dependencies [7720a49]
+  - @farbenmeer/tapi@0.9.0
+  - @farbenmeer/lacy@1.0.0
+
 ## 7.0.0
 
 ### Minor Changes
