@@ -15,19 +15,17 @@ export const GET = defineHandler(
   async () => {
     const todos = todo.array().parse(db.prepare("SELECT * FROM todos").all());
     return TResponse.json(todos, { cache: { tags: ["todos"] } });
-  }
+  },
 );
 
 export const POST = defineHandler(
   {
     authorize: () => true,
-    body: z.object({
-      text: z.string().min(1),
-    }),
   },
   async (req) => {
-    const { text } = await req.data();
+    const formData = await req.formData();
+    const text = z.string().min(1).parse(formData.get("text"));
     db.prepare("INSERT INTO todos (text, done) VALUES (?, ?)").run(text, 0);
     return TResponse.void({ cache: { tags: ["todos"] } });
-  }
+  },
 );

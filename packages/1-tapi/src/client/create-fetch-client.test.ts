@@ -35,7 +35,7 @@ describe("createFetchClient", () => {
       "https://example.com/api/books/1?test=asdf",
       {
         method: "GET",
-      }
+      },
     );
     expect(response).toEqual({ id: "1", title: "Book 1" });
   });
@@ -89,7 +89,7 @@ describe("createFetchClient", () => {
       "https://example.com/api/files/documents/report.pdf",
       {
         method: "GET",
-      }
+      },
     );
     expect(response).toEqual({
       path: "documents/report.pdf",
@@ -101,7 +101,7 @@ describe("createFetchClient", () => {
     const formData = new FormData();
     formData.set("id", "3");
     formData.set("title", "Movie 3");
-    const response = await client.movies.post(formData);
+    const response = await client.formData.post(formData);
     expect(response).toEqual({ id: "3", title: "Movie 3" });
   });
 
@@ -114,7 +114,7 @@ describe("createFetchClient", () => {
 
   test("Symbol.toPrimitive", async () => {
     expect((client.method as any)[Symbol.toPrimitive]()).toBe(
-      "[TApi Route https://example.com/api/method]"
+      "[TApi Route https://example.com/api/method]",
     );
   });
 });
