@@ -295,43 +295,17 @@ async function prepareRequestWithBody(
     req,
     cache,
   );
-  treq.data = async () => {
-    const contentType = req.headers.get("content-type");
 
-    if (!contentType) {
-      throw new HttpError(400, "Missing content-type header");
-    }
-
-    if (contentType.startsWith("application/json")) {
-      const data = await req.json();
-      if (handler.schema.body) {
-        if (typeof handler.schema.body === "function") {
-          throw new HttpError(
-            400,
-            `Expected Form-Data Content-Type: multipart/form-data or application/x-www-form-urlencoded, received application/json`,
-          );
-        }
-        return handler.schema.body.parseAsync(data);
-      }
-      return data;
-    }
-
-    if (
-      contentType.startsWith("multipart/form-data") ||
-      contentType.startsWith("application/x-www-form-urlencoded")
-    ) {
-      const formData = await req.formData();
-      if (handler.schema.body) {
-        if (typeof handler.schema.body === "function") {
-          return handler.schema.body(formData);
-        }
-        return handler.schema.body.parseAsync(formData);
-      }
-      return formData;
-    }
-
-    throw new HttpError(400, `Unsupported Content-Type ${contentType}`);
-  };
+  if (handler.schema.body) {
+    treq.data = async () => handler.schema.body?.parseAsync(await req.json());
+  } else {
+    treq.data = () => {
+      console.error(
+        "Unexpected call to TRequest.data() method: no body parser specified",
+      );
+      throw new HttpError(500, "Internal Server Error");
+    };
+  }
 
   return treq;
 }
