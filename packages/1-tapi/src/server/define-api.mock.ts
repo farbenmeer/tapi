@@ -68,16 +68,15 @@ export const api = defineApi()
         TResponse.json(await req.data(), { cache: { tags: ["movies"] } }),
     ),
   })
-  .route("/formAction", {
+  .route("/formData", {
     POST: defineHandler(
       {
-        body: (formData) => ({
-          message: formData.get("message"),
-        }),
         authorize: () => true,
       },
       async (req) =>
-        TResponse.json(await req.data(), { cache: { tags: ["movies"] } }),
+        TResponse.json(Object.fromEntries(await req.formData()), {
+          cache: { tags: ["movies"] },
+        }),
     ),
   })
   .route("/authorized", {

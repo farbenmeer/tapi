@@ -99,9 +99,10 @@ describe("createFetchClient", () => {
 
   test("as form action", async () => {
     const formData = new FormData();
-    formData.set("message", "foo");
-    const response = await client.formAction.post(formData);
-    expect(response).toEqual({ message: "foo" });
+    formData.set("id", "3");
+    formData.set("title", "Movie 3");
+    const response = await client.formData.post(formData);
+    expect(response).toEqual({ id: "3", title: "Movie 3" });
   });
 
   test("not found", async () => {
