@@ -1,5 +1,16 @@
 # @farbenmeer/tapi
 
+## 0.9.0
+
+### Minor Changes
+
+- a5228c8: do not pre-parse form data
+
+### Patch Changes
+
+- 4786307: add toPrimitive handler as react seems to call that
+- 7720a49: fix: actually return auth data from req.auth()
+
 ## 0.8.0
 
 ### Minor Changes
