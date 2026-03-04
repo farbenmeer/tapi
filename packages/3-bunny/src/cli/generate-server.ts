@@ -1,6 +1,9 @@
+import type { ServerConfig } from "../config";
+
 export function generateServer(
   apiPath: string,
-  apiInfo: { title: string; version: string }
+  apiInfo: { title: string; version: string },
+  serverConfig?: ServerConfig,
 ) {
   return `
 const { createBunnyApp } = require("@farbenmeer/bunny/server")
@@ -15,7 +18,8 @@ createBunnyApp({
   apiInfo: {
     title: "${apiInfo.title}",
     version: "${apiInfo.version}",
-  }
+  },
+  serverConfig: ${JSON.stringify(serverConfig, null, 2)},
 }).listen(3000);
 `;
 }

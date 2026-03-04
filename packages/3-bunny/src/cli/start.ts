@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { createBunnyApp } from "../server.js";
+import { readConfig } from "./read-config.js";
 
 export const start = new Command()
   .name("start")
@@ -10,8 +11,9 @@ export const start = new Command()
   .action(async (options) => {
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
     const packageJson = JSON.parse(
-      await readFile(path.join(process.cwd(), "package.json"), "utf-8")
+      await readFile(path.join(process.cwd(), "package.json"), "utf-8"),
     );
+    const config = await readConfig();
     process.env.NODE_ENV = "production";
 
     const buildId = await readFile(path.join(bunnyDir, "buildId.txt"), "utf-8");
@@ -26,5 +28,6 @@ export const start = new Command()
         version: packageJson.version,
         buildId,
       },
+      serverConfig: config.server,
     }).listen(parseInt(options.port, 10));
   });

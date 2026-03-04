@@ -12,6 +12,7 @@ import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
 import type { Cache } from "@farbenmeer/tapi/server";
 import type { ServerConfig } from "../config.js";
+import { parseURL } from "./parse-url.js";
 
 interface BunnyServerOptions {
   api: () => Promise<{ api: ApiDefinition<any>; cache?: Cache }>;
@@ -44,16 +45,7 @@ export function createBunnyApp({
 
   app.use(async (req, res, next) => {
     if (!req.url) return next();
-    let host = serverConfig?.host ?? "127.0.0.1:3000";
-    let proto = serverConfig?.protocol ?? "http";
-    if (serverConfig?.trustHostHeader && req.headers.host) {
-      host = req.headers.host!;
-    }
-    if (serverConfig?.trustForwardedHeader) {
-      host = (req.headers["x-forwarded-for"] ?? host) as string;
-      proto = (req.headers["x-forwarded-proto"] ?? proto) as string;
-    }
-    const url = new URL(req.url, `${proto}://${host}`);
+    const url = parseURL(serverConfig, req);
 
     if (/^\/api(\/|$)/.test(url.pathname)) {
       const request = toRequest(req, url);
