@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.4.2
+
+### Patch Changes
+
+- 2305793: do not assume host header for host by default
+
 ## 0.4.1
 
 ### Patch Changes

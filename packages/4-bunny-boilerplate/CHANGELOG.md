@@ -1,5 +1,13 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.2.5
+
+### Patch Changes
+
+- 5d751be: add AGENTS.md
+- Updated dependencies [2305793]
+  - @farbenmeer/bunny@0.4.2
+
 ## 0.2.4
 
 ### Patch Changes
