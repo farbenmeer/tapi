@@ -50,16 +50,20 @@ export const build = new Command()
     });
 
     const packageJson = JSON.parse(
-      await readFile(path.join(process.cwd(), "package.json"), "utf8")
+      await readFile(path.join(process.cwd(), "package.json"), "utf8"),
     );
 
     if (options.standalone) {
       const serverBuild = await esbuild.build({
         stdin: {
-          contents: generateServer(path.join(srcDir, "api.ts"), {
-            title: packageJson.name,
-            version: packageJson.version,
-          }),
+          contents: generateServer(
+            path.join(srcDir, "api.ts"),
+            {
+              title: packageJson.name,
+              version: packageJson.version,
+            },
+            config.server,
+          ),
           sourcefile: path.join(bunnyDir, "virtual", "server.js"),
           resolveDir: bunnyDir,
         },
@@ -80,7 +84,9 @@ export const build = new Command()
         console.log("Total Modules:", Object.keys(serverMeta?.inputs).length);
         console.log(
           "User Modules:",
-          Object.keys(serverMeta?.inputs).filter((key) => key.startsWith("src"))
+          Object.keys(serverMeta?.inputs).filter((key) =>
+            key.startsWith("src"),
+          ),
         );
         console.log("Output Size:", Math.round(serverMeta.bytes / 1000), "kiB");
       }
@@ -112,7 +118,7 @@ export const build = new Command()
     const manifest: BunnyManifest = {
       buildId,
       staticCachedFiles: clientFiles.flatMap((build) =>
-        build.output.map((file) => `/${file.fileName}`)
+        build.output.map((file) => `/${file.fileName}`),
       ),
     };
     await esbuild.build({

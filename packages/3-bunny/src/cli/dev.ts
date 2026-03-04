@@ -13,6 +13,7 @@ import viteTsconfigPaths from "vite-tsconfig-paths";
 import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "../server/node-http-adapter.js";
 import { readConfig } from "./read-config.js";
+import { parseURL } from "../server/parse-url.js";
 
 export const dev = new Command()
   .name("dev")
@@ -61,7 +62,7 @@ export const dev = new Command()
         },
       });
       const packageJson = JSON.parse(
-        await readFile(path.join(process.cwd(), "package.json"), "utf8")
+        await readFile(path.join(process.cwd(), "package.json"), "utf8"),
       );
       const schema = await generateOpenAPISchema(api, {
         info: {
@@ -104,7 +105,7 @@ export const dev = new Command()
               console.info(
                 "Output Size:",
                 Math.round(apiMeta.bytes / 1000),
-                "kiB"
+                "kiB",
               );
               await reload(path.join(process.cwd(), entryPoint));
             });
@@ -117,19 +118,17 @@ export const dev = new Command()
 
     app.use(async (req, res, next) => {
       if (!req.url) return next();
-      const forwarded = req.headers["x-forwarded-for"];
-      const host = forwarded ?? req.headers["host"] ?? `localhost:${port}`;
-      const url = new URL(req.url, `http://${host}`);
+      const url = parseURL(config.server, req);
       if (/^\/api(\/|$)/.test(url.pathname)) {
         const request = toRequest(req, url);
         const response = await tapi.apiRequestHandler!(request);
         if (response.status < 300) {
           console.info(
-            `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+            `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`,
           );
         } else {
           console.error(
-            `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+            `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`,
           );
         }
         await fromResponse(res, response);
@@ -154,6 +153,7 @@ export const dev = new Command()
         res.end();
         return;
       }
+
       next();
     });
 
