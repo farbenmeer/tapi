@@ -11,14 +11,21 @@ import { INVALIDATIONS_ROUTE } from "../constants.js";
 import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
 import type { Cache } from "@farbenmeer/tapi/server";
+import type { ServerConfig } from "../config.js";
 
 interface BunnyServerOptions {
   api: () => Promise<{ api: ApiDefinition<any>; cache?: Cache }>;
   dist: string;
   apiInfo: { title: string; version: string; buildId: string };
+  serverConfig?: ServerConfig;
 }
 
-export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
+export function createBunnyApp({
+  api,
+  dist,
+  apiInfo,
+  serverConfig,
+}: BunnyServerOptions) {
   loadEnv("production");
   const app = connect();
   const cache = api().then(({ cache = new PubSub() }) => cache);
@@ -31,28 +38,35 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
         },
       },
       cache: await cache,
-    })
+    }),
   );
   let openApiJson: string | undefined;
 
   app.use(async (req, res, next) => {
     if (!req.url) return next();
-    const forwarded = req.headers["x-forwarded-for"];
-    const host = forwarded ?? req.headers["host"] ?? `localhost:3000`;
-    const url = new URL(req.url, `http://${host}`);
+    let host = serverConfig?.host ?? "127.0.0.1:3000";
+    let proto = serverConfig?.protocol ?? "http";
+    if (serverConfig?.trustHostHeader && req.headers.host) {
+      host = req.headers.host!;
+    }
+    if (serverConfig?.trustForwardedHeader) {
+      host = (req.headers["x-forwarded-for"] ?? host) as string;
+      proto = (req.headers["x-forwarded-proto"] ?? proto) as string;
+    }
+    const url = new URL(req.url, `${proto}://${host}`);
 
     if (/^\/api(\/|$)/.test(url.pathname)) {
       const request = toRequest(req, url);
       const response = await apiRequestHandler.then((handle) =>
-        handle(request)
+        handle(request),
       );
       if (response.status < 300) {
         console.info(
-          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`,
         );
       } else {
         console.error(
-          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`
+          `Bunny: ${request.method} ${url.pathname} ${response.status} ${response.statusText}`,
         );
       }
       await fromResponse(res, response);
@@ -64,7 +78,7 @@ export function createBunnyApp({ api, dist, apiInfo }: BunnyServerOptions) {
         openApiJson = JSON.stringify(
           await generateOpenAPISchema((await api()).api, {
             info: apiInfo,
-          })
+          }),
         );
       }
       res.setHeader("Content-Type", "application/json");
