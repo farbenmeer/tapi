@@ -8,7 +8,7 @@ interface Options {
 
 export function resolve(
   path: string,
-  { pathname, parentPathname, searchParams }: Options
+  { pathname, parentPathname, searchParams }: Options,
 ) {
   if (path.startsWith("/")) {
     return path;
@@ -38,7 +38,7 @@ export function compilePathRegex(path: string): RegExp {
   const pattern = path
     .replaceAll(/\*(\w+)/g, "(?<$1>.+)") // *name -> named capture group
     .replaceAll(/\*/g, ".+") // * -> match everything including /
-    .replaceAll(/:(\w+)/g, "(?<$1>[\\w-]+)"); // :param -> named capture group
+    .replaceAll(/:(\w+)/g, "(?<$1>[^\\/]+)"); // :param -> named capture group
 
   // If pattern contains a wildcard, it already matches everything - use exact match
   if (path.includes("*")) {
@@ -57,7 +57,7 @@ export function compileExactPathRegex(path: string): RegExp {
   const pattern = path
     .replaceAll(/\*(\w+)/g, "(?<$1>.+)") // *name -> named capture group
     .replaceAll(/\*/g, ".+") // * -> match everything including /
-    .replaceAll(/:(\w+)/g, "(?<$1>[\\w-]+)"); // :param -> named capture group
+    .replaceAll(/:(\w+)/g, "(?<$1>[^\\/]+)"); // :param -> named capture group
   return new RegExp(`^(${pattern})$`);
 }
 

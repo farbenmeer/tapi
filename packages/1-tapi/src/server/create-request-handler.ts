@@ -30,7 +30,7 @@ const headersSchema = z
 
 export function createRequestHandler(
   api: ApiDefinition<Record<BasePath, MaybePromise<BaseRoute>>>,
-  options: Options = {}
+  options: Options = {},
 ) {
   const errorHook =
     options.hooks?.error ??
@@ -94,14 +94,14 @@ export function createRequestHandler(
                 handler,
                 url,
                 params,
-                req
+                req,
               );
               const res = await executeHandler(handler, treq);
 
               if (res.cache) {
                 if ((treq as any)[authUsed] === true) {
                   console.warn(
-                    "TApi: Response specifies cache option but request handler used auth information (called req.auth()): Response will not be cached"
+                    "TApi: Response specifies cache option but request handler used auth information (called req.auth()): Response will not be cached",
                   );
                 } else {
                   // cache fresh response according to cache options
@@ -139,7 +139,7 @@ export function createRequestHandler(
                 handler,
                 url,
                 params,
-                req
+                req,
               );
               const res = await executeHandler(handler, treq);
               if (res.cache?.tags) {
@@ -150,7 +150,7 @@ export function createRequestHandler(
                   options?.cache
                     ?.delete(
                       res.cache.tags,
-                      clientId ? { clientId: clientId.value } : undefined
+                      clientId ? { clientId: clientId.value } : undefined,
                     )
                     .catch(errorHook);
                 } catch (error) {
@@ -177,7 +177,7 @@ export function createRequestHandler(
                 handler,
                 url,
                 params,
-                req
+                req,
               );
               const res = await executeHandler(handler, treq);
               if (res.cache?.tags) {
@@ -188,7 +188,7 @@ export function createRequestHandler(
                   options?.cache
                     ?.delete(
                       res.cache.tags,
-                      clientId ? { clientId: clientId.value } : undefined
+                      clientId ? { clientId: clientId.value } : undefined,
                     )
                     .catch(errorHook);
                 } catch (error) {
@@ -219,7 +219,7 @@ export function compilePathRegex(path: string): RegExp {
   const pattern = path
     .replaceAll(/\*(\w+)/g, "(?<$1>.+)") // *name -> named capture group
     .replaceAll(/\*/g, ".+") // * -> match everything including /
-    .replaceAll(/:(\w+)/g, "(?<$1>\\w+)"); // :param -> named capture group
+    .replaceAll(/:(\w+)/g, "(?<$1>[^\\/]+)"); // :param -> named capture group
   return new RegExp(`^${pattern}$`);
 }
 
@@ -227,7 +227,7 @@ export async function prepareRequestWithoutBody<TBody = never>(
   handler: Handler<any, any, any, TBody>,
   url: URL,
   params: Record<string, string>,
-  req: Request
+  req: Request,
 ) {
   const treq = req as TRequest<any, any, any, TBody>;
   treq.params = () => {
@@ -235,7 +235,7 @@ export async function prepareRequestWithoutBody<TBody = never>(
       Object.entries(params).map(([key, value]) => [
         key,
         decodeURIComponent(value),
-      ])
+      ]),
     );
     if (handler.schema.params) {
       const schema = z.object(handler.schema.params);
@@ -259,7 +259,7 @@ export async function prepareRequestWithoutBody<TBody = never>(
     return cookieStore;
   };
   const auth = await handler.schema.authorize(
-    treq as TRequest<never, any, any, never>
+    treq as TRequest<never, any, any, never>,
   );
 
   if (!auth) {
@@ -278,7 +278,7 @@ export async function prepareRequestWithBody(
   handler: Handler<any, any, any, unknown>,
   url: URL,
   params: Record<string, string>,
-  req: Request
+  req: Request,
 ) {
   const treq = await prepareRequestWithoutBody(handler, url, params, req);
   treq.data = async () => {
@@ -294,7 +294,7 @@ export async function prepareRequestWithBody(
         if (typeof handler.schema.body === "function") {
           throw new HttpError(
             400,
-            `Expected Form-Data Content-Type: multipart/form-data or application/x-www-form-urlencoded, received application/json`
+            `Expected Form-Data Content-Type: multipart/form-data or application/x-www-form-urlencoded, received application/json`,
           );
         }
         return handler.schema.body.parseAsync(data);
@@ -340,7 +340,7 @@ function collectData(input: Iterable<[string, any]>) {
 
 export async function executeHandler<Body>(
   handler: Handler<any, any, any, Body>,
-  req: TRequest<any, any, any, Body>
+  req: TRequest<any, any, any, Body>,
 ) {
   const res = await handler.handler(req);
   if (handler.schema.response) {
@@ -369,7 +369,7 @@ function handleError(error: unknown) {
         headers: {
           "Content-Type": "application/json+httperror",
         },
-      }
+      },
     );
   }
   return new Response("Internal Server Error", { status: 500 });
