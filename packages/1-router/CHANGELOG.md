@@ -1,5 +1,11 @@
 # @farbenmeer/router
 
+## 0.6.1
+
+### Patch Changes
+
+- eb95338: match any non-slash character in path regexes
+
 ## 0.6.0
 
 ### Minor Changes
