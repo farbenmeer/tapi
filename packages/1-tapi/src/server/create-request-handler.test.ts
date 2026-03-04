@@ -55,6 +55,13 @@ describe("compilePathRegex", () => {
     const match = "/api/v1/users/123".match(pattern);
     expect(match?.groups).toEqual({ version: "v1", rest: "users/123" });
   });
+
+  test("match route with uuid as path parameter", () => {
+    const pattern = compilePathRegex("/api/:id");
+    expect(pattern.test("/api/51696958-4970-4994-814f-ca36de54b096")).toBe(
+      true,
+    );
+  });
 });
 
 describe("createRequestHandler", () => {
@@ -68,10 +75,10 @@ describe("createRequestHandler", () => {
           },
           () => {
             throw new Error("Unexpected error");
-          }
+          },
         ),
       }),
-      { hooks: { error: errorHook } }
+      { hooks: { error: errorHook } },
     );
     const response = await sut(new Request("http://localhost:3000"));
     expect(response.status).toBe(500);
@@ -92,10 +99,10 @@ describe("createRequestHandler", () => {
           async (req) => {
             await req.data();
             return new TResponse();
-          }
+          },
         ),
       }),
-      { hooks: { error: errorHook } }
+      { hooks: { error: errorHook } },
     );
     const response = await sut(
       new Request("http://localhost:3000", {
@@ -104,11 +111,11 @@ describe("createRequestHandler", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({}),
-      })
+      }),
     );
     expect(response.status).toBe(400);
     expect(response.headers.get("Content-Type")).toBe(
-      "application/json+zodissues"
+      "application/json+zodissues",
     );
     expect(await response.json()).toEqual([
       {
@@ -131,10 +138,10 @@ describe("createRequestHandler", () => {
           },
           async (req) => {
             return TResponse.json({ auth: req.auth() });
-          }
+          },
         ),
       }),
-      { hooks: { error: errorHook } }
+      { hooks: { error: errorHook } },
     );
     const response = await sut(new Request("http://localhost:3000"));
     expect(await response.json()).toEqual({ auth: "foo" });
