@@ -25,6 +25,10 @@ export async function handleResponse(res: Response) {
 async function parseBody(res: Response) {
   const contentType = res.headers.get("Content-Type");
 
+  if (contentType == "application/x-ndjson") {
+    return streamBody(res);
+  }
+
   if (contentType?.startsWith("application/json")) {
     return await res.json();
   }
@@ -39,4 +43,21 @@ async function parseBody(res: Response) {
   }
 
   throw new Error(`Tapi: Unsupported content type: ${contentType}`);
+}
+
+async function* streamBody(res: Response) {
+  if (!res.body) return;
+  let buffer = "";
+  const textDecoder = new TextDecoder();
+  for await (const chunk of res.body) {
+    buffer += textDecoder.decode(chunk);
+    const lines: string[] = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      yield JSON.parse(line);
+    }
+  }
+  if (buffer) {
+    yield JSON.parse(buffer);
+  }
 }

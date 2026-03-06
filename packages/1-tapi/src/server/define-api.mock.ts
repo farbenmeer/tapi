@@ -153,4 +153,19 @@ export const api = defineApi()
         throw new HttpError(404, "Not Found");
       },
     ),
+  })
+  .route("/stream", {
+    GET: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => {
+        async function* stream() {
+          for (let i = 0; i < 5; i++) {
+            yield { value: i };
+          }
+        }
+        return TResponse.ndjson(stream());
+      },
+    ),
   });

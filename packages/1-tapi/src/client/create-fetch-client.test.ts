@@ -116,4 +116,16 @@ describe("createFetchClient", () => {
       "[TApi Route https://example.com/api/method]",
     );
   });
+
+  test("Stream", async () => {
+    const response = await client.stream.get();
+    // @ts-ignore
+    expect(await Array.fromAsync(response)).toEqual([
+      { value: 0 },
+      { value: 1 },
+      { value: 2 },
+      { value: 3 },
+      { value: 4 },
+    ]);
+  });
 });
