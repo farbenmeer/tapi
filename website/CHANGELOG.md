@@ -1,5 +1,15 @@
 # @farbenmeer/tapi-website
 
+## 0.3.0
+
+### Minor Changes
+
+- 806bcd8: pass cache to defineApi, not createRequestHandler
+
+### Patch Changes
+
+- b1b4180: add revalidate method to TRequest
+
 ## 0.2.0
 
 ### Minor Changes

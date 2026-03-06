@@ -1,5 +1,12 @@
 # @farbenmeer/bunny-example-env-file
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [806bcd8]
+  - @farbenmeer/bunny@0.5.0
+
 ## 0.1.2
 
 ### Patch Changes
