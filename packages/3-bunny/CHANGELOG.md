@@ -1,5 +1,19 @@
 # @farbenmeer/bunny
 
+## 0.5.0
+
+### Minor Changes
+
+- 806bcd8: pass cache to defineApi, not createRequestHandler
+
+### Patch Changes
+
+- Updated dependencies [806bcd8]
+- Updated dependencies [36868d8]
+- Updated dependencies [b1b4180]
+  - @farbenmeer/tapi@0.10.0
+  - @farbenmeer/react-tapi@8.0.0
+
 ## 0.4.2
 
 ### Patch Changes

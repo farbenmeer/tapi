@@ -1,5 +1,13 @@
 # @farbenmeer/tapi
 
+## 0.10.0
+
+### Minor Changes
+
+- 806bcd8: pass cache to defineApi, not createRequestHandler
+- 36868d8: TResponse.ndjson responds with a newline-delimited json stream
+- b1b4180: add revalidate method to TRequest
+
 ## 0.9.0
 
 ### Minor Changes
