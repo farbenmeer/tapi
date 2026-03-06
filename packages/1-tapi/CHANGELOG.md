@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.10.1
+
+### Patch Changes
+
+- 91378be: add handling for ndjson streams to tapi client
+
 ## 0.10.0
 
 ### Minor Changes
