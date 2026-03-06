@@ -6,7 +6,7 @@ title: TRequest
 
 ## Interface
 
-`TRequest` extends the standard `Request` interface, adding four helper methods to access processed data.
+`TRequest` extends the standard `Request` interface, adding helper methods to access processed data.
 
 ```ts
 type TRequest<AuthData, Params, Query, Body> = Request & {
@@ -14,6 +14,8 @@ type TRequest<AuthData, Params, Query, Body> = Request & {
   params: () => Params;
   query: () => Query;
   data: () => Promise<Body>;
+  cookies: () => CookieStore;
+  invalidate: (tags: string[]) => Promise<void>;
 };
 ```
 
@@ -64,6 +66,29 @@ Returns the validated request body.
 
 ```ts
 const { title, description } = await req.data();
+```
+
+### `cookies()`
+
+Returns the cookie store for the current request, giving access to request cookies.
+
+- **Returns**: `CookieStore`
+
+```ts
+const sessionCookie = await req.cookies().get("session");
+```
+
+### `invalidate(tags)`
+
+Invalidates cached responses tagged with the given tags. This is useful in mutation handlers (POST, PUT, PATCH, DELETE) when you want to purge stale cache entries.
+
+- **Parameters**: `tags: string[]` — the cache tags to invalidate
+- **Returns**: `Promise<void>`
+- **Description**: Calls `cache.delete` with the provided tags. If a session cookie is present, the client ID is forwarded so that per-client caches can be targeted.
+
+```ts
+// After updating a post, invalidate related cache entries
+await req.invalidate(["posts", `post:${id}`]);
 ```
 
 ## Standard Request Methods

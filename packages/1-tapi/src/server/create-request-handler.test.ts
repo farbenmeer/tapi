@@ -7,6 +7,7 @@ import { defineApi } from "./define-api.js";
 import { defineHandler } from "./define-handler.js";
 import z from "zod";
 import { TResponse } from "./t-response.js";
+import type { Cache } from "./cache.js";
 
 describe("compilePathRegex", () => {
   test("match a simple route", () => {
@@ -126,6 +127,30 @@ describe("createRequestHandler", () => {
       },
     ]);
     expect(errorHook).toHaveBeenCalled();
+  });
+
+  test("req.invalidate calls cache.delete with the given tags", async () => {
+    const deleteMock = vi.fn().mockResolvedValue(undefined);
+    const mockCache: Cache = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn().mockResolvedValue(undefined),
+      delete: deleteMock,
+      subscribe: vi.fn().mockReturnValue(() => {}),
+    };
+    const sut = createRequestHandler(
+      defineApi({ cache: mockCache }).route("/", {
+        GET: defineHandler(
+          { authorize: () => true },
+          async (req) => {
+            await req.invalidate(["posts", "users"]);
+            return new TResponse();
+          },
+        ),
+      }),
+    );
+    const response = await sut(new Request("http://localhost:3000"));
+    expect(response.status).toBe(200);
+    expect(deleteMock).toHaveBeenCalledWith(["posts", "users"], undefined);
   });
 
   test("auth data is available on the request object", async () => {
