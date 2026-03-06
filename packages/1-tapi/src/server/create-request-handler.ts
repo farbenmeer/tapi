@@ -8,6 +8,7 @@ import { CookieStore } from "./cookie-store.js";
 import type { ApiDefinition } from "./define-api.js";
 import type { Handler } from "./handler.js";
 import type { TRequest } from "./t-request.js";
+import type { Cache } from "./cache.js";
 
 interface Options {
   basePath?: string;
@@ -93,6 +94,7 @@ export function createRequestHandler(
                 url,
                 params,
                 req,
+                api.cache,
               );
               const res = await executeHandler(handler, treq);
 
@@ -138,6 +140,7 @@ export function createRequestHandler(
                 url,
                 params,
                 req,
+                api.cache,
               );
               const res = await executeHandler(handler, treq);
               if (res.cache?.tags) {
@@ -176,6 +179,7 @@ export function createRequestHandler(
                 url,
                 params,
                 req,
+                api.cache,
               );
               const res = await executeHandler(handler, treq);
               if (res.cache?.tags) {
@@ -221,11 +225,12 @@ export function compilePathRegex(path: string): RegExp {
   return new RegExp(`^${pattern}$`);
 }
 
-export async function prepareRequestWithoutBody<TBody = never>(
+async function prepareRequestWithoutBody<TBody = never>(
   handler: Handler<any, any, any, TBody>,
   url: URL,
   params: Record<string, string>,
   req: Request,
+  cache: Cache,
 ) {
   const treq = req as TRequest<any, any, any, TBody>;
   treq.params = () => {
@@ -256,6 +261,10 @@ export async function prepareRequestWithoutBody<TBody = never>(
     treq.cookies = () => cookieStore;
     return cookieStore;
   };
+  treq.invalidate = async (tags: string[]) => {
+    const clientId = await treq.cookies().get(SESSION_COOKIE_NAME);
+    cache.delete(tags, clientId ? { clientId: clientId.value } : undefined);
+  };
   const auth = await handler.schema.authorize(
     treq as TRequest<never, any, any, never>,
   );
@@ -272,13 +281,20 @@ export async function prepareRequestWithoutBody<TBody = never>(
   return treq;
 }
 
-export async function prepareRequestWithBody(
+async function prepareRequestWithBody(
   handler: Handler<any, any, any, unknown>,
   url: URL,
   params: Record<string, string>,
   req: Request,
+  cache: Cache,
 ) {
-  const treq = await prepareRequestWithoutBody(handler, url, params, req);
+  const treq = await prepareRequestWithoutBody(
+    handler,
+    url,
+    params,
+    req,
+    cache,
+  );
   treq.data = async () => {
     const contentType = req.headers.get("content-type");
 

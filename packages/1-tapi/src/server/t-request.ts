@@ -1,4 +1,4 @@
-import { CookieStore } from "./cookie-store.js";
+import type { CookieStore } from "./cookie-store.js";
 
 export type TRequest<AuthData, Params, Query, Body> = Request & {
   params: () => Params;
@@ -6,4 +6,5 @@ export type TRequest<AuthData, Params, Query, Body> = Request & {
   data: () => Promise<Body>;
   auth: () => NonNullable<AuthData>;
   cookies: () => CookieStore;
+  invalidate: (tags: string[]) => Promise<void>;
 };

@@ -1,5 +1,5 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants.js";
-import { CookieStore } from "./cookie-store.js";
+import type { CookieStore } from "./cookie-store.js";
 
 interface TResponseInit extends ResponseInit {
   cache?: {
@@ -9,7 +9,7 @@ interface TResponseInit extends ResponseInit {
   cookies?: CookieStore;
 }
 
-export class TResponse<T = any> extends Response {
+export class TResponse<T = unknown> extends Response {
   public data?: T;
   public cache?: {
     tags?: string[];
@@ -41,7 +41,7 @@ export class TResponse<T = any> extends Response {
 
   static override json<T>(data: T, init: TResponseInit = {}): TResponse<T> {
     setHeader(init, "Content-Type", "application/json");
-    const res = new TResponse(JSON.stringify(data), init);
+    const res = new TResponse<T>(JSON.stringify(data), init);
     res.data = data;
     return res;
   }
@@ -60,14 +60,14 @@ export class TResponse<T = any> extends Response {
       },
     });
     setHeader(init, "Content-Type", "application/x-ndjson");
-    const res = new TResponse(stream, init);
+    const res = new TResponse<T[]>(stream, init);
     res.data = [];
     return res;
   }
 
   static void(init: TResponseInit = {}): TResponse<void> {
     setHeader(init, "Content-Length", "0");
-    const res = new TResponse(null, init);
+    const res = new TResponse<undefined>(null, init);
     res.data = undefined;
     return res;
   }
