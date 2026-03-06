@@ -117,28 +117,25 @@ If you need to access Hono's `Context` (like environment variables in Cloudflare
 
 ## 6. Revalidation Stream
 
-To enable tag-based revalidation across all cache layers, set up a shared `PubSub` instance and a revalidation endpoint.
+To enable tag-based revalidation across all cache layers, add a revalidation endpoint. `defineApi` automatically creates a `PubSub` instance, so no extra setup is needed for single-host deployments.
 
-Update your Hono app to use a `PubSub` and add a `/api/revalidate` route:
+Add a `/api/revalidate` route to your Hono app:
 
 ```ts
 // src/index.ts
 import { Hono } from "hono";
-import { PubSub, createRequestHandler, streamRevalidatedTags } from "@farbenmeer/tapi/server";
+import { createRequestHandler, streamRevalidatedTags } from "@farbenmeer/tapi/server";
 import { api } from "./api";
 
 const app = new Hono();
 
-const pubsub = new PubSub();
-
 const handler = createRequestHandler(api, {
   basePath: "/api",
-  cache: pubsub,
 });
 
 app.get("/api/revalidate", (c) => {
   return streamRevalidatedTags({
-    cache: pubsub,
+    cache: api.cache,
     buildId: process.env.BUILD_ID!,
   });
 });

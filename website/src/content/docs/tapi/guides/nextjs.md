@@ -145,47 +145,18 @@ export default async function ServerPage() {
 
 ## 6. Revalidation Stream
 
-To enable tag-based revalidation across all cache layers, set up a shared `PubSub` instance and a revalidation endpoint.
+To enable tag-based revalidation across all cache layers, add a revalidation endpoint. `defineApi` automatically creates a `PubSub` instance, so no extra setup is needed for single-host deployments.
 
-First, create a shared module for the `PubSub` instance:
-
-```ts
-// src/pubsub.ts
-import { PubSub } from "@farbenmeer/tapi/server";
-
-export const pubsub = new PubSub();
-```
-
-Update your route handler to use it:
-
-```ts
-// src/app/api/[...tapi]/route.ts
-import { createRequestHandler } from "@farbenmeer/tapi/server";
-import { api } from "@/api";
-import { pubsub } from "@/pubsub";
-
-const handler = createRequestHandler(api, {
-  basePath: "/api",
-  cache: pubsub,
-});
-
-export const GET = handler;
-export const POST = handler;
-export const PUT = handler;
-export const PATCH = handler;
-export const DELETE = handler;
-```
-
-Then add a revalidation endpoint at `src/app/api/revalidate/route.ts`:
+Add a revalidation endpoint at `src/app/api/revalidate/route.ts`:
 
 ```ts
 // src/app/api/revalidate/route.ts
 import { streamRevalidatedTags } from "@farbenmeer/tapi/server";
-import { pubsub } from "@/pubsub";
+import { api } from "@/api";
 
 export const GET = () => {
   return streamRevalidatedTags({
-    cache: pubsub,
+    cache: api.cache,
     buildId: process.env.BUILD_ID!,
   });
 };

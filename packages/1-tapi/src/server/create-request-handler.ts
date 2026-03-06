@@ -1,21 +1,19 @@
 import { ZodError, z } from "zod/v4";
+import { SESSION_COOKIE_NAME } from "../shared/constants.js";
 import { HttpError } from "../shared/http-error.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
-import { type Cache } from "./cache.js";
+import { CookieStore } from "./cookie-store.js";
 import type { ApiDefinition } from "./define-api.js";
 import type { Handler } from "./handler.js";
 import type { TRequest } from "./t-request.js";
-import { CookieStore } from "./cookie-store.js";
-import { SESSION_COOKIE_NAME } from "../shared/constants.js";
 
 interface Options {
   basePath?: string;
   hooks?: {
     error?: (error: unknown) => MaybePromise<void>;
   };
-  cache?: Cache;
   defaultTTL?: number;
 }
 
@@ -61,7 +59,7 @@ export function createRequestHandler(
           case "GET": {
             try {
               // get matching cache entry
-              const cached = await options?.cache?.get(req.url);
+              const cached = await api.cache?.get(req.url);
 
               if (cached) {
                 // serve from cache
@@ -107,7 +105,7 @@ export function createRequestHandler(
                   // cache fresh response according to cache options
                   try {
                     const cloned = res.clone();
-                    options?.cache
+                    api.cache
                       ?.set({
                         key: req.url,
                         data: Array.from(res.headers.entries()),
@@ -147,7 +145,7 @@ export function createRequestHandler(
                   const clientId = await treq
                     .cookies()
                     .get(SESSION_COOKIE_NAME);
-                  options?.cache
+                  api.cache
                     ?.delete(
                       res.cache.tags,
                       clientId ? { clientId: clientId.value } : undefined,
@@ -185,7 +183,7 @@ export function createRequestHandler(
                   const clientId = await treq
                     .cookies()
                     .get(SESSION_COOKIE_NAME);
-                  options?.cache
+                  api.cache
                     ?.delete(
                       res.cache.tags,
                       clientId ? { clientId: clientId.value } : undefined,

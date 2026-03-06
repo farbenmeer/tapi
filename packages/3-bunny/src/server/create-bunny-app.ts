@@ -29,7 +29,6 @@ export function createBunnyApp({
 }: BunnyServerOptions) {
   loadEnv("production");
   const app = connect();
-  const cache = api().then(({ cache = new PubSub() }) => cache);
   const apiRequestHandler = api().then(async ({ api }) =>
     createRequestHandler(api, {
       basePath: "/api",
@@ -38,7 +37,6 @@ export function createBunnyApp({
           console.error(error);
         },
       },
-      cache: await cache,
     }),
   );
   let openApiJson: string | undefined;
@@ -81,7 +79,7 @@ export function createBunnyApp({
 
     if (url.pathname === INVALIDATIONS_ROUTE) {
       const response = streamRevalidatedTags({
-        cache: await cache,
+        cache: await api().then(({ api }) => api.cache),
         buildId: apiInfo.buildId,
       });
       console.info(`Bunny: Starting Invalidation Stream`);
