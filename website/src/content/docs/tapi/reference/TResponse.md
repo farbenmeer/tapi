@@ -34,6 +34,26 @@ return TResponse.json(
 );
 ```
 
+### `TResponse.ndjson(gen, init?)`
+
+Creates a streaming [NDJSON](https://github.com/ndjson/ndjson-spec) response from an async generator. Each yielded value is serialized as a JSON line followed by a newline character (`\n`). Sets `Content-Type: application/x-ndjson`.
+
+- **Parameters**:
+  - `gen`: An `AsyncGenerator<T>` that yields the items to stream.
+  - `init`: (Optional) A `TResponseInit` object.
+- **Returns**: `TResponse<T[]>`
+
+```ts
+export const GET = defineHandler({ authorize: () => true }, async () => {
+  async function* streamItems() {
+    yield { id: 1, name: "First" };
+    yield { id: 2, name: "Second" };
+  }
+
+  return TResponse.ndjson(streamItems());
+});
+```
+
 ### `TResponse.void(init?)`
 
 Creates an empty response with no body (has the `Content-Length: 0` header).
