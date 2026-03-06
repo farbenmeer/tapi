@@ -1,13 +1,21 @@
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath, StrictParams } from "../shared/path.js";
 import type { Route } from "../shared/route.js";
+import { type Cache, PubSub } from "./cache.js";
 
-export function defineApi() {
-  return new ApiDefinition({});
+interface Options {
+  cache?: Cache;
+}
+
+export function defineApi(options: Options = {}) {
+  return new ApiDefinition({}, options?.cache ?? new PubSub());
 }
 
 export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
-  constructor(public routes: Routes) {}
+  constructor(
+    public routes: Routes,
+    public cache: Cache,
+  ) {}
 
   route<
     Path extends BasePath,
@@ -23,7 +31,7 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
     PutBody = never,
     PatchResponse = never,
     PatchQuery extends Record<string, unknown> = never,
-    PatchBody = never
+    PatchBody = never,
   >(
     path: Path,
     route: MaybePromise<
@@ -43,7 +51,7 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
         PatchQuery,
         PatchBody
       >
-    >
+    >,
   ) {
     (this.routes[path] as any) = route;
     return this as unknown as ApiDefinition<

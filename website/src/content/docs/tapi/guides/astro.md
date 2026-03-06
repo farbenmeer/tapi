@@ -141,39 +141,19 @@ const data = await serverClient.hello.get();
 
 ## 6. Revalidation Stream
 
-To enable tag-based revalidation across all cache layers, set up a shared `PubSub` instance and a revalidation endpoint.
+To enable tag-based revalidation across all cache layers, add a revalidation endpoint. `defineApi` automatically creates a `PubSub` instance, so no extra setup is needed for single-host deployments.
 
-First, update your route handler to use a `PubSub`:
-
-```ts
-// src/pages/api/[...tapi].ts
-import { PubSub, createRequestHandler } from "@farbenmeer/tapi/server";
-import { api } from "../../api";
-import type { APIRoute } from "astro";
-
-export const pubsub = new PubSub();
-
-const handler = createRequestHandler(api, {
-  basePath: "/api",
-  cache: pubsub,
-});
-
-export const ALL: APIRoute = ({ request }) => {
-  return handler(request);
-};
-```
-
-Then add a revalidation endpoint at `src/pages/api/revalidate.ts`:
+Add a revalidation endpoint at `src/pages/api/revalidate.ts`:
 
 ```ts
 // src/pages/api/revalidate.ts
 import { streamRevalidatedTags } from "@farbenmeer/tapi/server";
-import { pubsub } from "./[...tapi]";
+import { api } from "../../api";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = () => {
   return streamRevalidatedTags({
-    cache: pubsub,
+    cache: api.cache,
     buildId: import.meta.env.BUILD_ID,
   });
 };

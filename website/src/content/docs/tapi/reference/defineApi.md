@@ -20,10 +20,16 @@ export const api = defineApi()
 ## Signature
 
 ```ts
-function defineApi(): ApiDefinition<{}>
+function defineApi(options?: { cache?: Cache }): ApiDefinition<{}>
 ```
 
 Returns an empty `ApiDefinition` instance.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `cache` | `Cache` | `new PubSub()` | The cache/pub-sub instance used for tag-based revalidation. Defaults to an in-process `PubSub`. Pass a `RedisCache` or other shared implementation when running multiple server instances. |
 
 ## Methods
 

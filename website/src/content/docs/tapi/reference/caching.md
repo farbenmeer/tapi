@@ -29,28 +29,33 @@ where 'refresh' means that the client will _immediately_ request a fresh version
 
 ### Server-side Cache
 
-TApi does not cache data on the server-side by default. You can enable caching by passing a `cache` to `createRequestHandler`:
+TApi does not cache data on the server-side by default. You can enable caching by passing a `cache` to `defineApi`:
 
 ```ts
-createRequestHandler(api, { cache: new InMemoryCache() })
+import { defineApi } from '@farbenmeer/tapi/server';
+
+export const api = defineApi({ cache: new InMemoryCache() })
+  .route(...)
 ```
 
 for reference cache implementations check out the [tag-based-cache](/tag-based-cache) package.
 
-Even when not caching, TApi includes a very simple Pub/Sub system to distribute invalidated tags to all connected clients via long polling connections. To set this up, you will need to create an instance of the `PubSub` class and pass it to the `createRequestHandler`:
+TApi includes a built-in Pub/Sub system to distribute invalidated tags to all connected clients via long polling connections. By default, `defineApi` automatically creates a `PubSub` instance — no extra setup is needed for single-host deployments. To use a custom implementation (e.g. Redis for multi-host), pass it explicitly:
 
 ```ts
-import { PubSub, createRequestHandler } from '@farbenmeer/tapi/server';
+import { PubSub, defineApi } from '@farbenmeer/tapi/server';
 
-const pubsub = new PubSub();
-const handleRequest = createRequestHandler(api, { cache: pubsub });
+export const api = defineApi({ cache: new PubSub() })
+  .route(...)
 ```
-and set up a separate route for the long-polling endpoint:
+
+Set up a separate route for the long-polling endpoint, reading the cache from the api definition:
 
 ```ts
 import { streamRevalidatedTags } from '@farbenmeer/tapi/server';
+import { api } from './api';
 
-const GET = () => streamRevalidatedTags({ cache: pubsub, buildId: process.env.BUILD_ID })
+const GET = () => streamRevalidatedTags({ cache: api.cache, buildId: process.env.BUILD_ID })
 ```
 
 where `process.env.BUILD_ID` is a unique identifier for your build. This is used to notify the TApi service worker when it needs to reload.
