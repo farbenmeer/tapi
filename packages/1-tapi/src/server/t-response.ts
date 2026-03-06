@@ -49,7 +49,7 @@ export class TResponse<T = unknown> extends Response {
   static ndjson<T>(
     gen: AsyncGenerator<T, void, unknown>,
     init: TResponseInit = {},
-  ): TResponse<T[]> {
+  ): TResponse<AsyncGenerator<T, void, unknown>> {
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
@@ -60,8 +60,8 @@ export class TResponse<T = unknown> extends Response {
       },
     });
     setHeader(init, "Content-Type", "application/x-ndjson");
-    const res = new TResponse<T[]>(stream, init);
-    res.data = [];
+    const res = new TResponse<AsyncGenerator<T, void, unknown>>(stream, init);
+    res.data = gen;
     return res;
   }
 
