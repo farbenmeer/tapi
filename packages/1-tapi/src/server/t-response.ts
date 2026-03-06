@@ -25,7 +25,7 @@ export class TResponse<T = any> extends Response {
       setHeader(
         rawInit,
         EXPIRES_AT_HEADER,
-        (Date.now() + cache.ttl * 1000).toFixed(0)
+        (Date.now() + cache.ttl * 1000).toFixed(0),
       );
     }
     if (cookies) {
@@ -43,6 +43,25 @@ export class TResponse<T = any> extends Response {
     setHeader(init, "Content-Type", "application/json");
     const res = new TResponse(JSON.stringify(data), init);
     res.data = data;
+    return res;
+  }
+
+  static ndjson<T>(
+    gen: AsyncGenerator<T, void, unknown>,
+    init: TResponseInit = {},
+  ): TResponse<T[]> {
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        for await (const item of gen) {
+          controller.enqueue(encoder.encode(`${JSON.stringify(item)}\n`));
+        }
+        controller.close();
+      },
+    });
+    setHeader(init, "Content-Type", "application/x-ndjson");
+    const res = new TResponse(stream, init);
+    res.data = [];
     return res;
   }
 

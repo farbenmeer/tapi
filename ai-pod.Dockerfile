@@ -1,6 +1,6 @@
-FROM ubuntu:latest
+FROM node:24
 
-RUN apt-get update && apt-get install -y curl git
+RUN corepack enable
 
 WORKDIR /app
 
