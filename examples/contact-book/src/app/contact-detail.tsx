@@ -4,7 +4,7 @@ import { useParams, useRouter, Link } from "@farbenmeer/router";
 import { client } from "client";
 
 export function ContactDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const contact = useQuery(client.contacts[id!]!.get());
   const [editing, setEditing] = useState(false);
