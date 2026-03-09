@@ -1,6 +1,8 @@
 FROM node:24
 
 RUN corepack enable
+RUN npm install -g @playwright/cli
+RUN npx playwright install-deps
 
 WORKDIR /app
 
