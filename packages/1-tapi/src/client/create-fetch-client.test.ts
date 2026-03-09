@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, vi, test } from "vitest";
-import { createFetchClient } from "./create-fetch-client.js";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { api } from "../server/define-api.mock.js";
 import { requestHandler } from "../server/request-handler.mock.js";
+import { createFetchClient } from "./create-fetch-client.js";
 
 describe("createFetchClient", () => {
   const fetch = vi.fn((url: string, init: RequestInit) => {
@@ -140,12 +140,28 @@ describe("createFetchClient", () => {
   });
 
   test("route with refresh ttl", async () => {
-    const response1 = await client.refreshTtl.get();
-    const response2 = await client.refreshTtl.get();
+    const response1 = await client.refreshTtl.get({ ttl: 1 });
+    const response2 = await client.refreshTtl.get({ ttl: 1 });
     expect(response1).toBe(response2);
     await new Promise((resolve) => setTimeout(resolve));
-    const response3 = await client.refreshTtl.get();
+    const response3 = await client.refreshTtl.get({ ttl: 1 });
     expect(response3).toBe(response1);
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  test("route with large refresh ttl", async () => {
+    const ttl = 1000 * 60 * 60 * 24 * 100;
+    const sub = vi.fn();
+    const response1 = client.refreshTtl.get({
+      ttl,
+    });
+    response1.subscribe(sub);
+    const response2 = await client.refreshTtl.get({
+      ttl,
+    });
+    expect(await response1).toBe(response2);
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(sub).not.toHaveBeenCalled();
   });
 });

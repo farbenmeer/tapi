@@ -173,10 +173,14 @@ export const api = defineApi()
   .route("/refreshTtl", {
     GET: defineHandler(
       {
+        query: {
+          ttl: z.string().transform(Number),
+        },
         authorize: () => true,
       },
-      async () => {
-        return TResponse.json(Date.now(), { cache: { ttl: 1 } });
+      async (req) => {
+        const { ttl } = req.query();
+        return TResponse.json(Date.now(), { cache: { ttl } });
       },
     ),
   });
