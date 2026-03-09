@@ -125,7 +125,8 @@ describe("createFetchClient", () => {
       // Initial fetch — entry.current is not yet set when we subscribe
       const promise = ttlClient.cached.get();
       const unsubscribe = promise.subscribe(vi.fn());
-      await promise; // entry.current is now set with expiresAt
+      await promise;
+      await Promise.resolve(); // let waitForRevalidation finish setting entry.current
 
       // Unsubscribe so size drops to 0, then re-subscribe:
       // the subscribe handler sees entry.current.expiresAt and schedules the TTL timeout
