@@ -1,4 +1,4 @@
-import { startTransition, useMemo, useState, type ReactNode } from "react";
+import { startTransition, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   HashContext,
   PathnameContext,
@@ -33,6 +33,18 @@ export function Router({
     new ImmutableSearchParams(location.search)
   );
   const [hash, setHash] = useState(location.hash);
+
+  useEffect(() => {
+    const handlePopstate = () => {
+      startTransition(() => {
+        setPathname(removeTrailingSlash(location.pathname));
+        setSearchParams(new ImmutableSearchParams(location.search));
+        setHash(location.hash);
+      });
+    };
+    window.addEventListener("popstate", handlePopstate);
+    return () => window.removeEventListener("popstate", handlePopstate);
+  }, [location]);
 
   const routerContextValue = useMemo(
     () => ({
