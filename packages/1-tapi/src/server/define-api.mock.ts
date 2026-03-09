@@ -176,7 +176,7 @@ export const api = defineApi()
         authorize: () => true,
       },
       async () => {
-        return TResponse.json({}, { cache: { ttl: 1 } });
+        return TResponse.json(Date.now(), { cache: { ttl: 1 } });
       },
     ),
   });

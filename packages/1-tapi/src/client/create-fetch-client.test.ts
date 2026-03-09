@@ -143,6 +143,9 @@ describe("createFetchClient", () => {
     const response1 = await client.refreshTtl.get();
     const response2 = await client.refreshTtl.get();
     expect(response1).toBe(response2);
+    await new Promise((resolve) => setTimeout(resolve));
+    const response3 = await client.refreshTtl.get();
+    expect(response3).toBe(response1);
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 });
