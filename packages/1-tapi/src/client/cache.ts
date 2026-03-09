@@ -86,7 +86,7 @@ export class Cache {
                 () => {
                   this.revalidateRequest(url, entry);
                 },
-                entry.current?.expiresAt +
+                entry.current.expiresAt - Date.now() +
                   Math.round(Math.random() * this.maxOverdueTTL),
               );
             }

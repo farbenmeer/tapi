@@ -112,6 +112,40 @@ describe("createFetchClient", () => {
     expect(anotherPromise).toBe(promise);
   });
 
+  test("TTL-based revalidation fires after TTL, not immediately", async () => {
+    vi.useFakeTimers();
+    // A fresh client with no jitter so timing is deterministic
+    const ttlClient = createFetchClient<typeof api.routes>(
+      "https://example.com/api",
+      { fetch, maxOverdueTTL: 0 },
+    );
+    try {
+      const ttlSeconds = 60;
+
+      // Initial fetch — entry.current is not yet set when we subscribe
+      const promise = ttlClient.cached.get();
+      const unsubscribe = promise.subscribe(vi.fn());
+      await promise; // entry.current is now set with expiresAt
+
+      // Unsubscribe so size drops to 0, then re-subscribe:
+      // the subscribe handler sees entry.current.expiresAt and schedules the TTL timeout
+      unsubscribe();
+      promise.subscribe(vi.fn());
+
+      expect(fetch).toHaveBeenCalledTimes(1);
+
+      // Before TTL expires: no revalidation
+      await vi.advanceTimersByTimeAsync((ttlSeconds - 1) * 1000);
+      expect(fetch).toHaveBeenCalledTimes(1);
+
+      // After TTL expires: revalidation should fire
+      await vi.advanceTimersByTimeAsync(2 * 1000);
+      expect(fetch).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   test("Symbol.toPrimitive", async () => {
     expect((client.method as any)[Symbol.toPrimitive]()).toBe(
       "[TApi Route https://example.com/api/method]",
