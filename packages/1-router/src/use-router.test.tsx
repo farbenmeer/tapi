@@ -53,6 +53,35 @@ describe("useRouter", () => {
     expect(screen.getByTestId("sut")).toHaveTextContent("foo=bar");
   });
 
+  test("should revert url when browser back is used", async () => {
+    const { location, history, back } = mockHistory("/original");
+
+    function Sut() {
+      const router = useRouter();
+      const pathname = usePathname();
+
+      useEffect(() => {
+        router.push("/new-url");
+      }, []);
+
+      return <div data-testid="sut">{pathname}</div>;
+    }
+
+    const screen = await render(
+      <Router history={history} location={location}>
+        <Sut />
+      </Router>
+    );
+
+    await expect.element(screen.getByTestId("sut")).toHaveTextContent("/new-url");
+
+    back();
+
+    await expect
+      .element(screen.getByTestId("sut"))
+      .toHaveTextContent("/original");
+  });
+
   test("should merge with parent url when relative pathname is used", async () => {
     const { location, history } = mockHistory("/parent");
 
