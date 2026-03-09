@@ -3,6 +3,7 @@ import { defineApi } from "./define-api.js";
 import { defineHandler } from "./define-handler.js";
 import { TResponse } from "./t-response.js";
 import { HttpError } from "../shared/http-error.js";
+import { getEffectiveTypeParameterDeclarations } from "typescript";
 
 export const api = defineApi()
   .route("/books", {
@@ -166,6 +167,16 @@ export const api = defineApi()
           }
         }
         return TResponse.ndjson(stream());
+      },
+    ),
+  })
+  .route("/refreshTtl", {
+    GET: defineHandler(
+      {
+        authorize: () => true,
+      },
+      async () => {
+        return TResponse.json({}, { cache: { ttl: 1 } });
       },
     ),
   });

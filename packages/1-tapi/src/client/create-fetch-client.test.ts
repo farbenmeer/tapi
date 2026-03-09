@@ -7,8 +7,12 @@ describe("createFetchClient", () => {
   const fetch = vi.fn((url: string, init: RequestInit) => {
     return requestHandler(new Request(url, init));
   });
+  const errorHook = vi.fn();
   let client = createFetchClient<typeof api.routes>("https://example.com/api", {
     fetch,
+    hooks: {
+      error: errorHook,
+    },
   });
 
   beforeEach(() => {
@@ -117,7 +121,7 @@ describe("createFetchClient", () => {
     );
   });
 
-  test("Stream", async () => {
+  test("stream", async () => {
     const response = await client.stream.get();
     // @ts-ignore
     expect(await Array.fromAsync(response)).toEqual([
@@ -127,5 +131,18 @@ describe("createFetchClient", () => {
       { value: 3 },
       { value: 4 },
     ]);
+  });
+
+  test("route with query params is cached properly", async () => {
+    const response1 = await client.movies[1].get({ test: "foo" });
+    const response2 = await client.movies[1].get({ test: "foo" });
+    expect(response1).toBe(response2);
+  });
+
+  test("route with refresh ttl", async () => {
+    const response1 = await client.refreshTtl.get();
+    const response2 = await client.refreshTtl.get();
+    expect(response1).toBe(response2);
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });
