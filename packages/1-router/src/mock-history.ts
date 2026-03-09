@@ -19,7 +19,7 @@ export function mockHistory(pathname = "/") {
     back() {
       if (stack.length > 1) {
         stack.pop();
-        location.href = stack[stack.length - 1];
+        location.href = stack[stack.length - 1]!;
         window.dispatchEvent(new PopStateEvent("popstate"));
       }
     },
