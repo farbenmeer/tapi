@@ -16,9 +16,9 @@ export const GET = defineHandler(
     const contact = contactsMap.get(id);
     if (!contact) throw new HttpError(404, "Contact not found");
     return TResponse.json(contact, {
-      cache: { tags: ["contacts", `contact:${id}`], ttl: 60 },
+      cache: { tags: [`contact:${id}`], ttl: 60 },
     });
-  }
+  },
 );
 
 export const PATCH = defineHandler(
@@ -41,7 +41,7 @@ export const PATCH = defineHandler(
     return TResponse.json(updated, {
       cache: { tags: ["contacts", `contact:${id}`] },
     });
-  }
+  },
 );
 
 export const DELETE = defineHandler(
@@ -57,5 +57,5 @@ export const DELETE = defineHandler(
     return TResponse.void({
       cache: { tags: ["contacts", `contact:${id}`] },
     });
-  }
+  },
 );
