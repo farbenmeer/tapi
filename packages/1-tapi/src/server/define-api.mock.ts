@@ -183,4 +183,15 @@ export const api = defineApi()
         return TResponse.json(Date.now(), { cache: { ttl } });
       },
     ),
+  })
+  .route("/refreshTtl/useSession", {
+    GET: defineHandler(
+      {
+        authorize: () => ({ id: 1 }),
+      },
+      async (req) => {
+        const { id } = req.auth();
+        return TResponse.json({ id }, { cache: { ttl: 1 } });
+      },
+    ),
   });

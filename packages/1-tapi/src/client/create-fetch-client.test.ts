@@ -164,4 +164,17 @@ describe("createFetchClient", () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(sub).not.toHaveBeenCalled();
   });
+
+  test("route with refresh ttl that uses session", async () => {
+    const sub = vi.fn();
+    const response1 = client.refreshTtl.useSession.get();
+    response1.subscribe(sub);
+    const response2 = await client.refreshTtl.useSession.get();
+    expect(await response1).toBe(response2);
+    await new Promise((resolve) => setTimeout(resolve));
+    const response3 = await client.refreshTtl.useSession.get();
+    expect(await response1).toBe(response3);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(sub).not.toHaveBeenCalled();
+  });
 });
