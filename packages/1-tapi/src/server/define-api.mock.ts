@@ -153,6 +153,16 @@ export const api = defineApi()
       },
     ),
   })
+  .route("/cached", {
+    GET: defineHandler(
+      { authorize: () => true },
+      async () =>
+        TResponse.json(
+          { data: "cached" },
+          { cache: { tags: ["cached"], ttl: 60 } },
+        ),
+    ),
+  })
   .route("/stream", {
     GET: defineHandler(
       {
