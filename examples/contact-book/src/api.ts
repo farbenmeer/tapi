@@ -1,8 +1,8 @@
 import { defineApi } from "@farbenmeer/bunny/server";
 import { InMemoryCache } from "@farbenmeer/tag-based-cache/in-memory-cache";
 
-export const cache = new InMemoryCache();
+const cache = new InMemoryCache();
 
-export const api = defineApi()
+export const api = defineApi({ cache })
   .route("/contacts", import("./api/contacts"))
   .route("/contacts/:id", import("./api/contact"));
