@@ -1,41 +1,47 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { PGlite } from "@electric-sql/pglite";
+import { PGlite, type Extensions } from "@electric-sql/pglite";
 import { PrismaPGlite } from "pglite-prisma-adapter";
 import { readMigrationSql } from "./migrations.js";
 
 export interface PgliteTestDb {
   cleanup(): void;
-  getAdapter(): Promise<{ adapter: PrismaPGlite; pglite: PGlite }>;
+  getAdapter(): Promise<PrismaPGlite>;
 }
 
-export async function createPgliteTestDb(
-  migrationsPath: string = "prisma/migrations"
-): Promise<PgliteTestDb> {
-  const tmpDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), "prisma-test-pglite-")
-  );
-  const templateDir = path.join(tmpDir, "template");
+interface Options {
+  migrationsPath?: string;
+  extensions?: Extensions;
+}
 
+export function createPgliteTestDb({
+  migrationsPath = "prisma/migrations",
+  extensions = {},
+}: Options = {}): PgliteTestDb {
   const fullSql = readMigrationSql(migrationsPath);
 
-  const pglite = new PGlite(templateDir);
-  await pglite.exec(fullSql);
-  await pglite.close();
+  const dump = (async () => {
+    const pglite = await PGlite.create({ extensions });
+    await pglite.exec(fullSql);
+    const dump = await pglite.dumpDataDir();
+    await pglite.close();
+    return dump;
+  })();
 
-  let counter = 0;
+  const instances: PGlite[] = [];
 
   return {
-    cleanup(): void {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+    async cleanup(): Promise<void> {
+      for (const instance of instances) {
+        await instance.close();
+      }
     },
-    async getAdapter(): Promise<{ adapter: PrismaPGlite; pglite: PGlite }> {
-      const cloneDir = path.join(tmpDir, `test-${++counter}`);
-      fs.cpSync(templateDir, cloneDir, { recursive: true });
-      const pg = new PGlite(cloneDir);
+    async getAdapter() {
+      const pg = await PGlite.create({ extensions, loadDataDir: await dump });
+      instances.push(pg);
       const adapter = new PrismaPGlite(pg);
-      return { adapter, pglite: pg };
+      return adapter;
     },
   };
 }
