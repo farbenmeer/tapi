@@ -1,22 +1,28 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { fileURLToPath } from "node:url";
 import * as path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PrismaClient } from "./generated/sqlite/index.js";
-import { applyMigrations } from "../src/index.js";
+import { createSqliteTestDb, type SqliteTestDb } from "../src/sqlite.js";
 
 const migrationsPath = path.join(
   fileURLToPath(import.meta.url),
   "../prisma/sqlite/migrations"
 );
 
-describe("applyMigrations (SQLite e2e)", () => {
+describe("createSqliteTestDb (SQLite e2e)", () => {
+  let testDb: SqliteTestDb;
   let prisma: PrismaClient;
 
-  beforeEach(async () => {
-    const adapter = new PrismaBetterSqlite3({ url: ":memory:" });
-    prisma = new PrismaClient({ adapter });
-    await applyMigrations(prisma, migrationsPath);
+  beforeAll(() => {
+    testDb = createSqliteTestDb(migrationsPath);
+  });
+
+  afterAll(() => {
+    testDb.cleanup();
+  });
+
+  beforeEach(() => {
+    prisma = new PrismaClient({ adapter: testDb.getAdapter() });
   });
 
   afterEach(async () => {

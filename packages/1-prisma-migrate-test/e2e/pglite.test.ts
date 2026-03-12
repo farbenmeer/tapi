@@ -1,25 +1,32 @@
 import { PGlite } from "@electric-sql/pglite";
-import { PrismaPGlite } from "pglite-prisma-adapter";
 import { fileURLToPath } from "node:url";
 import * as path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PrismaClient } from "./generated/pglite/index.js";
-import { applyMigrations } from "../src/index.js";
+import { createPgliteTestDb, type PgliteTestDb } from "../src/pglite.js";
 
 const migrationsPath = path.join(
   fileURLToPath(import.meta.url),
   "../prisma/pglite/migrations"
 );
 
-describe("applyMigrations (PGlite e2e)", () => {
+describe("createPgliteTestDb (PGlite e2e)", () => {
+  let testDb: PgliteTestDb;
   let pglite: PGlite;
   let prisma: PrismaClient;
 
+  beforeAll(async () => {
+    testDb = await createPgliteTestDb(migrationsPath);
+  });
+
+  afterAll(() => {
+    testDb.cleanup();
+  });
+
   beforeEach(async () => {
-    pglite = new PGlite();
-    const adapter = new PrismaPGlite(pglite);
+    const { adapter, pglite: pg } = await testDb.getAdapter();
+    pglite = pg;
     prisma = new PrismaClient({ adapter });
-    await applyMigrations(prisma, migrationsPath);
   });
 
   afterEach(async () => {
