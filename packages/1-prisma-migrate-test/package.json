@@ -21,7 +21,7 @@
     "build": "tsc --noEmit false",
     "release": "pnpm build && pnpm publish",
     "generate:e2e": "prisma generate --schema=./e2e/prisma/pglite/schema.prisma && prisma generate --schema=./e2e/prisma/sqlite/schema.prisma",
-    "test": "vitest",
+    "test": "pnpm generate:e2e && vitest",
     "test:unit": "vitest run src",
     "test:e2e": "vitest run e2e"
   },
