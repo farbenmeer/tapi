@@ -1,5 +1,18 @@
 # @farbenmeer/bunny
 
+## 0.5.1
+
+### Patch Changes
+
+- 99b28fb: Add Examples including UI Tests
+- 99b28fb: enable react dev server
+- Updated dependencies [9db39ab]
+- Updated dependencies [99b28fb]
+- Updated dependencies [0bbf9ba]
+- Updated dependencies [99b28fb]
+  - @farbenmeer/tapi@0.10.2
+  - @farbenmeer/router@0.6.2
+
 ## 0.5.0
 
 ### Minor Changes

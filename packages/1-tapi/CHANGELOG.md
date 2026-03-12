@@ -1,5 +1,12 @@
 # @farbenmeer/tapi
 
+## 0.10.2
+
+### Patch Changes
+
+- 9db39ab: fix inifinite reload issue for TTL-based refreshing endpoints
+- 99b28fb: notify subscribers of currently revalidating routes
+
 ## 0.10.1
 
 ### Patch Changes

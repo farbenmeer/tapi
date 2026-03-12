@@ -1,5 +1,12 @@
 # @farbenmeer/router
 
+## 0.6.2
+
+### Patch Changes
+
+- 99b28fb: actually export switch component
+- 0bbf9ba: Handle Back-Navigation
+
 ## 0.6.1
 
 ### Patch Changes

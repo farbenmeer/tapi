@@ -1,5 +1,11 @@
 # @farbenmeer/tapi-website
 
+## 0.3.1
+
+### Patch Changes
+
+- 99b28fb: Add Examples including UI Tests
+
 ## 0.3.0
 
 ### Minor Changes

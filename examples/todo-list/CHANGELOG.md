@@ -1,5 +1,14 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.3.2
+
+### Patch Changes
+
+- 99b28fb: Add Examples including UI Tests
+- Updated dependencies [99b28fb]
+- Updated dependencies [99b28fb]
+  - @farbenmeer/bunny@0.5.1
+
 ## 0.3.1
 
 ### Patch Changes
