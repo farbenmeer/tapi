@@ -12,9 +12,13 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+    "./sqlite": {
+      "types": "./dist/sqlite.d.ts",
+      "default": "./dist/sqlite.js"
+    },
+    "./pglite": {
+      "types": "./dist/pglite.d.ts",
+      "default": "./dist/pglite.js"
     }
   },
   "scripts": {
@@ -39,8 +43,16 @@
     "vitest": "^4.0.16"
   },
   "peerDependencies": {
-    "@prisma/client": ">=6.0.0",
-    "prisma": ">=6.0.0"
+    "@electric-sql/pglite": "^0.3.0",
+    "@prisma/adapter-better-sqlite3": "^7.0.0",
+    "better-sqlite3": "^12.0.0",
+    "pglite-prisma-adapter": "^0.7.0"
+  },
+  "peerDependenciesMeta": {
+    "@electric-sql/pglite": { "optional": true },
+    "@prisma/adapter-better-sqlite3": { "optional": true },
+    "better-sqlite3": { "optional": true },
+    "pglite-prisma-adapter": { "optional": true }
   },
   "repository": {
     "type": "git",

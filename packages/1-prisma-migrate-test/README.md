@@ -1,6 +1,6 @@
 # @farbenmeer/prisma-migrate-test
 
-A utility for applying Prisma migrations to any database client with a `$queryRawUnsafe` method. Useful for setting up test databases.
+Factory functions for creating isolated test databases using the template-clone pattern: migrations run **once** to build a template, then each test gets a cheap clone — no repeated migration overhead.
 
 ## Installation
 
@@ -8,65 +8,89 @@ A utility for applying Prisma migrations to any database client with a `$queryRa
 npm install @farbenmeer/prisma-migrate-test
 ```
 
-### Peer Dependencies
+## SQLite
+
+### Peer dependencies
 
 ```bash
-npm install @prisma/client prisma
+npm install better-sqlite3 @prisma/adapter-better-sqlite3
+npm install -D @types/better-sqlite3
 ```
 
-## Usage
+### Usage
 
 ```typescript
-import { applyMigrations } from "@farbenmeer/prisma-migrate-test";
+import { createSqliteTestDb } from "@farbenmeer/prisma-migrate-test/sqlite";
 import { PrismaClient } from "@prisma/client";
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
-const client = new PrismaClient();
-await applyMigrations(client);
+let testDb = createSqliteTestDb("prisma/migrations");
+let prisma: PrismaClient;
+
+beforeAll(() => {
+  testDb = createSqliteTestDb("prisma/migrations");
+});
+
+afterAll(() => {
+  testDb.cleanup();
+});
+
+beforeEach(() => {
+  prisma = new PrismaClient({ adapter: testDb.getAdapter() });
+});
+
+afterEach(async () => {
+  await prisma.$disconnect();
+});
 ```
 
-With a custom migrations path:
+### API
 
-```typescript
-await applyMigrations(client, "path/to/migrations/folder");
-```
+#### `createSqliteTestDb(migrationsPath?): SqliteTestDb`
 
-## API
-
-### `applyMigrations(client, migrationsPath?): Promise<void>`
-
-Reads all Prisma migration SQL files, concatenates them in chronological order, and executes the result via `client.$queryRawUnsafe`.
+Runs all migrations once into a template `.db` file, then provides cheap per-test clones.
 
 **Parameters:**
-- `client` - Any object with a `$queryRawUnsafe(query: string): Promise<unknown>` method
-- `migrationsPath` - Path to the Prisma migrations folder (default: `"prisma/migrations"`)
+- `migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
 
-## Vitest Setup Examples
+**Returns:** `SqliteTestDb`
+- `getAdapter(): PrismaBetterSqlite3` — copies the template and returns a new adapter backed by the clone
+- `cleanup(): void` — deletes the temp directory
 
-### PGlite (in-memory PostgreSQL)
+## PGlite
 
-Install dependencies:
+### Peer dependencies
 
 ```bash
 npm install @electric-sql/pglite pglite-prisma-adapter
 ```
 
-Configure your Prisma schema to use the `postgresql` provider and generate the client with the `pglite` previewFeature. Then in your tests:
+### Usage
+
+Configure your Prisma schema to use the `postgresql` provider and generate the client with the `pglite` previewFeature.
 
 ```typescript
+import { createPgliteTestDb } from "@farbenmeer/prisma-migrate-test/pglite";
 import { PGlite } from "@electric-sql/pglite";
-import { PrismaPGlite } from "pglite-prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-import { applyMigrations } from "@farbenmeer/prisma-migrate-test";
-import { afterEach, beforeEach } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
+let testDb: Awaited<ReturnType<typeof createPgliteTestDb>>;
 let pglite: PGlite;
 let prisma: PrismaClient;
 
+beforeAll(async () => {
+  testDb = await createPgliteTestDb("prisma/migrations");
+});
+
+afterAll(() => {
+  testDb.cleanup();
+});
+
 beforeEach(async () => {
-  pglite = new PGlite();
-  const adapter = new PrismaPGlite(pglite);
+  const { adapter, pglite: pg } = await testDb.getAdapter();
+  pglite = pg;
   prisma = new PrismaClient({ adapter });
-  await applyMigrations(prisma, "prisma/migrations");
 });
 
 afterEach(async () => {
@@ -75,64 +99,20 @@ afterEach(async () => {
 });
 ```
 
-Each test gets a fresh in-memory PostgreSQL database with all migrations applied.
+### API
 
-### SQLite (in-memory)
+#### `createPgliteTestDb(migrationsPath?): Promise<PgliteTestDb>`
 
-Install dependencies:
+Runs all migrations once into a template PGlite directory, then provides cheap per-test clones.
 
-```bash
-npm install better-sqlite3 @prisma/adapter-better-sqlite3
-npm install -D @types/better-sqlite3
-```
+**Parameters:**
+- `migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
 
-Configure your Prisma schema to use the `sqlite` provider and generate the client with the `driverAdapters` previewFeature. Then in your tests:
+**Returns:** `Promise<PgliteTestDb>`
+- `getAdapter(): Promise<{ adapter: PrismaPGlite; pglite: PGlite }>` — copies the template directory and returns a new adapter and PGlite instance
+- `cleanup(): void` — deletes the temp directory
 
-```typescript
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "@prisma/client";
-import { applyMigrations } from "@farbenmeer/prisma-migrate-test";
-import { afterEach, beforeEach } from "vitest";
-
-let prisma: PrismaClient;
-
-beforeEach(async () => {
-  const adapter = new PrismaBetterSqlite3({ url: ":memory:" });
-  prisma = new PrismaClient({ adapter });
-  await applyMigrations(prisma, "prisma/migrations");
-});
-
-afterEach(async () => {
-  await prisma.$disconnect();
-});
-```
-
-Each test gets a fresh in-memory SQLite database with all migrations applied.
-
-## End-to-End Tests
-
-The `e2e/` directory contains a full Prisma setup with real in-memory databases:
-
-```
-e2e/
-  prisma/
-    pglite/
-      schema.prisma         # PostgreSQL provider schema
-      migrations/           # Prisma-generated SQL migrations
-    sqlite/
-      schema.prisma         # SQLite provider schema
-      migrations/           # Prisma-generated SQL migrations
-  pglite.test.ts            # PGlite (in-memory PostgreSQL) e2e tests
-  sqlite.test.ts            # better-sqlite3 (in-memory SQLite) e2e tests
-```
-
-Run the e2e tests:
-
-```bash
-pnpm test:e2e
-```
-
-The e2e tests apply the real migrations via `applyMigrations` and verify the schema by running SQL queries against the live in-memory databases.
+The caller must `await pglite.close()` after `await prisma.$disconnect()`.
 
 ## License
 
