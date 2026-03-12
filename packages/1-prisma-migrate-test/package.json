@@ -1,6 +1,6 @@
 {
   "name": "@farbenmeer/prisma-migrate-test",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Michel Smola",
     "email": "michel.smola@farbenmeer.de"
@@ -49,10 +49,18 @@
     "pglite-prisma-adapter": "^0.7.0"
   },
   "peerDependenciesMeta": {
-    "@electric-sql/pglite": { "optional": true },
-    "@prisma/adapter-better-sqlite3": { "optional": true },
-    "better-sqlite3": { "optional": true },
-    "pglite-prisma-adapter": { "optional": true }
+    "@electric-sql/pglite": {
+      "optional": true
+    },
+    "@prisma/adapter-better-sqlite3": {
+      "optional": true
+    },
+    "better-sqlite3": {
+      "optional": true
+    },
+    "pglite-prisma-adapter": {
+      "optional": true
+    }
   },
   "repository": {
     "type": "git",
