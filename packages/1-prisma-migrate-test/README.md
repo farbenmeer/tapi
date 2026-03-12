@@ -24,19 +24,19 @@ import { createSqliteTestDb } from "@farbenmeer/prisma-migrate-test/sqlite";
 import { PrismaClient } from "@prisma/client";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
-let testDb = createSqliteTestDb("prisma/migrations");
+let testDb: SqliteTestDb;
 let prisma: PrismaClient;
 
 beforeAll(() => {
-  testDb = createSqliteTestDb("prisma/migrations");
+  testDb = createSqliteTestDb({ migrationsPath: "prisma/migrations" });
 });
 
 afterAll(() => {
   testDb.cleanup();
 });
 
-beforeEach(() => {
-  prisma = new PrismaClient({ adapter: testDb.getAdapter() });
+beforeEach(async () => {
+  prisma = new PrismaClient({ adapter: await testDb.getAdapter() });
 });
 
 afterEach(async () => {
@@ -46,15 +46,15 @@ afterEach(async () => {
 
 ### API
 
-#### `createSqliteTestDb(migrationsPath?): SqliteTestDb`
+#### `createSqliteTestDb(options?): SqliteTestDb`
 
-Runs all migrations once into a template `.db` file, then provides cheap per-test clones.
+Runs all migrations once into an in-memory template, then provides cheap per-test clones written to a temp directory.
 
 **Parameters:**
-- `migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
+- `options.migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
 
 **Returns:** `SqliteTestDb`
-- `getAdapter(): PrismaBetterSqlite3` — copies the template and returns a new adapter backed by the clone
+- `getAdapter(): Promise<PrismaBetterSqlite3>` — writes a clone of the template to disk and returns a new adapter backed by it
 - `cleanup(): void` — deletes the temp directory
 
 ## PGlite
@@ -71,48 +71,42 @@ Configure your Prisma schema to use the `postgresql` provider and generate the c
 
 ```typescript
 import { createPgliteTestDb } from "@farbenmeer/prisma-migrate-test/pglite";
-import { PGlite } from "@electric-sql/pglite";
 import { PrismaClient } from "@prisma/client";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
-let testDb: Awaited<ReturnType<typeof createPgliteTestDb>>;
-let pglite: PGlite;
+let testDb: PgliteTestDb;
 let prisma: PrismaClient;
 
-beforeAll(async () => {
-  testDb = await createPgliteTestDb("prisma/migrations");
+beforeAll(() => {
+  testDb = createPgliteTestDb({ migrationsPath: "prisma/migrations" });
 });
 
-afterAll(() => {
-  testDb.cleanup();
+afterAll(async () => {
+  await testDb.cleanup();
 });
 
 beforeEach(async () => {
-  const { adapter, pglite: pg } = await testDb.getAdapter();
-  pglite = pg;
-  prisma = new PrismaClient({ adapter });
+  prisma = new PrismaClient({ adapter: await testDb.getAdapter() });
 });
 
 afterEach(async () => {
   await prisma.$disconnect();
-  await pglite.close();
 });
 ```
 
 ### API
 
-#### `createPgliteTestDb(migrationsPath?): Promise<PgliteTestDb>`
+#### `createPgliteTestDb(options?): PgliteTestDb`
 
-Runs all migrations once into a template PGlite directory, then provides cheap per-test clones.
+Runs all migrations once into an in-memory PGlite instance and dumps the result, then provides cheap per-test clones restored from that dump.
 
 **Parameters:**
-- `migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
+- `options.migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
+- `options.extensions` — PGlite extensions to pass to each instance (default: `{}`)
 
-**Returns:** `Promise<PgliteTestDb>`
-- `getAdapter(): Promise<{ adapter: PrismaPGlite; pglite: PGlite }>` — copies the template directory and returns a new adapter and PGlite instance
-- `cleanup(): void` — deletes the temp directory
-
-The caller must `await pglite.close()` after `await prisma.$disconnect()`.
+**Returns:** `PgliteTestDb`
+- `getAdapter(): Promise<PrismaPGlite>` — restores a clone from the dump and returns a new adapter
+- `cleanup(): Promise<void>` — closes all open PGlite instances
 
 ## License
 
