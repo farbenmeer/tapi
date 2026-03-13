@@ -1,0 +1,83 @@
+---
+title: TApi
+description: Type-safe REST APIs with a fully typed client — no compile step required.
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+`@farbenmeer/tapi` lets you build REST APIs with a fully typed client SDK — client and server share the same type definitions with no code generation or build step involved.
+
+## Installation
+
+```bash
+npm install @farbenmeer/tapi
+```
+
+## Features
+
+<CardGrid>
+  <Card title="Type-Safe Client" icon="approve-check">
+    The client SDK is automatically typed from your API definition. No codegen, no compile step — just TypeScript.
+  </Card>
+  <Card title="Auth by Default" icon="shield">
+    Every route requires an explicit authorizer function, making it nearly impossible to accidentally ship an unauthenticated endpoint.
+  </Card>
+  <Card title="Built-in Validation" icon="approve-check-circle">
+    Request and response validation powered by [Zod](https://zod.dev/). Define your schema once, get validation and types together.
+  </Card>
+  <Card title="Automatic OpenAPI" icon="document">
+    An OpenAPI schema is auto-generated from your route definitions and served at `/.well-known/openapi.json`.
+  </Card>
+  <Card title="Tag-Based Caching" icon="rocket">
+    Integrated support for tag-based cache invalidation via `@farbenmeer/tag-based-cache`.
+  </Card>
+  <Card title="Offline Ready" icon="laptop">
+    Automatic service worker caching means apps built with TApi are available offline by default.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+The easiest way to use TApi is with the [Bunny Framework](/bunny). For standalone usage:
+
+```ts
+// src/api.ts
+import { defineApi } from "@farbenmeer/tapi/server";
+import { z } from "zod";
+
+export const api = defineApi().route(
+  "/hello",
+  import("./api/hello")
+);
+```
+
+```ts
+// src/api/hello.ts
+import { defineHandler } from "@farbenmeer/tapi/server";
+import { z } from "zod";
+
+export default defineHandler({
+  GET: {
+    output: z.object({ message: z.string() }),
+    handler: async () => ({ message: "Hello, world!" }),
+  },
+});
+```
+
+```ts
+// Client usage
+import { createFetchClient } from "@farbenmeer/tapi/client";
+import type { api } from "./api";
+
+const client = createFetchClient<typeof api.routes>("/api");
+const { message } = await client.hello.get();
+```
+
+## Guides
+
+<CardGrid>
+  <LinkCard title="Astro" href="/tapi/guides/astro" description="Use TApi with Astro's server endpoints." />
+  <LinkCard title="Next.js" href="/tapi/guides/nextjs" description="Integrate TApi into a Next.js project." />
+  <LinkCard title="Hono" href="/tapi/guides/hono" description="Mount TApi routes on a Hono server." />
+  <LinkCard title="Service Worker" href="/tapi/guides/service-worker" description="Enable offline support and caching." />
+</CardGrid>

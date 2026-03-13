@@ -42,10 +42,6 @@ export default defineConfig({
           ],
         },
         {
-          label: "Skeleton",
-          slug: "skeleton",
-        },
-        {
           label: "Router",
           collapsed: true,
           items: [

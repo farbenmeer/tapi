@@ -1,0 +1,77 @@
+---
+title: Lacy
+description: Lazy evaluation for JavaScript promises — chain property access and method calls without intermediate awaits.
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+`@farbenmeer/lacy` wraps any Promise in a `Proxy`, letting you chain property access and method calls lazily. Nothing evaluates until you `await` the final result.
+
+## Installation
+
+```bash
+npm install @farbenmeer/lacy
+```
+
+## Features
+
+<CardGrid>
+  <Card title="Zero Intermediate Awaits" icon="rocket">
+    Build deep chains without awaiting at every step — the full chain resolves in one `await`.
+  </Card>
+  <Card title="Proxy-Based" icon="setting">
+    Uses native JavaScript `Proxy`. No code generation, no decorators, no compilation required.
+  </Card>
+  <Card title="Standard Promise Protocol" icon="approve-check">
+    `LacyPromise` implements `.then()`, `.catch()`, and `.finally()`, so it works anywhere a `Promise` does.
+  </Card>
+  <Card title="Escape Hatch" icon="open-book">
+    Access the raw underlying `Promise` at any point via the `.$` property.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+Without Lacy, fetching nested data requires multiple awaits:
+
+```ts
+const response = await fetch("/api/users");
+const data = await response.json();
+const name = data[0].name;
+```
+
+With Lacy, the same thing as a single lazy chain:
+
+```ts
+import { lacy } from "@farbenmeer/lacy";
+
+const name = await lacy(fetch("/api/users")).json()[0].name;
+```
+
+## More Examples
+
+```ts
+import { lacy } from "@farbenmeer/lacy";
+
+const users = lacy(Promise.resolve([
+  { name: "Alice", age: 30 },
+  { name: "Bob", age: 25 },
+]));
+
+await users[0].name;              // "Alice"
+await users.map((u) => u.name);   // ["Alice", "Bob"]
+
+// Deeply nested values
+const data = lacy(Promise.resolve({ deeply: { nested: { value: 42 } } }));
+await data.deeply.nested.value;   // 42
+
+// Raw promise escape hatch
+const raw = await users.$;        // [{ name: "Alice", ... }, ...]
+```
+
+## How It Works
+
+- **Property access** (`obj.key`) — returns a new `LacyPromise` resolving to the property value
+- **Method calls** (`obj.method(args)`) — invokes the method on the resolved value and wraps the result
+- **`await`** — resolves the full deferred chain
+- **`.$`** — unwraps to the raw underlying `Promise`
