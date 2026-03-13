@@ -17,6 +17,7 @@ export default defineConfig({
       sidebar: [
         {
           label: "TApi",
+          collapsed: true,
           items: [
             { label: "Introduction", slug: "tapi" },
             {
@@ -31,6 +32,7 @@ export default defineConfig({
         },
         {
           label: "Lacy",
+          collapsed: true,
           items: [
             { label: "Introduction", slug: "lacy" },
             {
@@ -45,6 +47,7 @@ export default defineConfig({
         },
         {
           label: "Router",
+          collapsed: true,
           items: [
             { label: "Introduction", slug: "router" },
             {
@@ -59,6 +62,7 @@ export default defineConfig({
         },
         {
           label: "Bunny",
+          collapsed: true,
           items: [
             { label: "Introduction", slug: "bunny" },
             {
@@ -77,6 +81,7 @@ export default defineConfig({
         },
         {
           label: "Prisma Migrate Test",
+          collapsed: true,
           items: [
             { label: "Introduction", slug: "prisma-migrate-test" },
             {
@@ -87,6 +92,7 @@ export default defineConfig({
         },
         {
           label: "Tag-Based Cache",
+          collapsed: true,
           items: [
             { label: "Introduction", slug: "tag-based-cache" },
             {
