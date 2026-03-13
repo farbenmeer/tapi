@@ -1,0 +1,78 @@
+---
+title: Tag-Based Cache
+description: A cache abstraction with tag-based invalidation and multiple backend implementations.
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+`@farbenmeer/tag-based-cache` is a cache library built around tag-based invalidation. Instead of expiring individual keys, you invalidate entire groups of cache entries by their tags — a pattern that maps naturally to how data actually changes in real applications.
+
+## Installation
+
+```bash
+npm install @farbenmeer/tag-based-cache
+```
+
+## Backends
+
+<CardGrid>
+  <Card title="InMemoryCache" icon="rocket">
+    SQLite in-memory database. Fast, zero I/O — ideal for development, testing, and single-process deployments.
+  </Card>
+  <Card title="FilesystemCache" icon="document">
+    SQLite file-based database. Survives process restarts, suitable for single-host production setups.
+  </Card>
+  <Card title="RedisCache" icon="list-format">
+    Redis-backed distributed cache with pub/sub support. The right choice for multi-host deployments.
+  </Card>
+</CardGrid>
+
+All three implement the same `Cache` interface — swap backends without touching application code.
+
+## Quick Start
+
+```ts
+import { InMemoryCache } from "@farbenmeer/tag-based-cache/in-memory-cache";
+
+const cache = new InMemoryCache();
+
+// Store with tags
+await cache.set({
+  key: "user:1",
+  data: { name: "Alice" },
+  ttl: 3600,
+  tags: ["users", "user:1"],
+});
+
+// Retrieve
+const entry = await cache.get("user:1");
+// { data: { name: "Alice" }, attachment: null }
+
+// Invalidate all entries tagged "users"
+await cache.delete(["users"]);
+
+await cache.get("user:1"); // null
+```
+
+## Usage with TApi
+
+Pass a cache instance to `createRequestHandler` to enable server-side caching:
+
+```ts
+import { createRequestHandler } from "@farbenmeer/tapi/server";
+import { InMemoryCache } from "@farbenmeer/tag-based-cache/in-memory-cache";
+
+const cache = new InMemoryCache();
+const handleRequest = createRequestHandler(api, { cache });
+```
+
+See [Caching Strategies](/tapi/reference/caching) for the full picture.
+
+## Reference
+
+<CardGrid>
+  <LinkCard title="Cache Interface" href="/tag-based-cache/reference/cache" description="The shared interface all backends implement." />
+  <LinkCard title="InMemoryCache" href="/tag-based-cache/reference/in-memory-cache" description="SQLite in-memory backend." />
+  <LinkCard title="FilesystemCache" href="/tag-based-cache/reference/filesystem-cache" description="SQLite file-based backend." />
+  <LinkCard title="RedisCache" href="/tag-based-cache/reference/redis-cache" description="Redis-backed distributed backend." />
+</CardGrid>

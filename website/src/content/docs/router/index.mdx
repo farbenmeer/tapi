@@ -1,0 +1,86 @@
+---
+title: Router
+description: A lightweight React router with nested routes, path parameters, and immutable search params.
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+`@farbenmeer/router` is a minimal client-side React router. It covers the most common routing needs without any magic — just components, hooks, and TypeScript.
+
+## Installation
+
+```bash
+npm install @farbenmeer/router
+```
+
+## Features
+
+<CardGrid>
+  <Card title="Declarative Routing" icon="document">
+    Define routes as React components. No config files, no filesystem conventions.
+  </Card>
+  <Card title="Nested Routes" icon="list-format">
+    Compose routes hierarchically with automatic parameter inheritance from parent segments.
+  </Card>
+  <Card title="Path Parameters" icon="setting">
+    Dynamic segments with colon syntax (`:id`), plus wildcard routes (`*` and `*name`).
+  </Card>
+  <Card title="Immutable Search Params" icon="approve-check">
+    Update URL search parameters without mutation — each `.set()` returns a new params object.
+  </Card>
+  <Card title="Testing-Friendly" icon="approve-check-circle">
+    Inject a custom `location` and `history` into `<Router>` for fully deterministic tests.
+  </Card>
+  <Card title="Tiny" icon="rocket">
+    No dependencies beyond React. No runtime overhead from a complex matching engine.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+```tsx
+import { Router, Route, Link } from "@farbenmeer/router";
+
+function App() {
+  return (
+    <Router>
+      <nav>
+        <Link href="/">Home</Link>
+        <Link href="/users">Users</Link>
+      </nav>
+
+      <Route path="/">
+        <HomePage />
+      </Route>
+
+      <Route path="/users">
+        <UsersLayout />
+        <Route exact>
+          <UsersList />
+        </Route>
+        <Route path=":id">
+          <UserProfile />
+        </Route>
+      </Route>
+    </Router>
+  );
+}
+```
+
+## Hooks
+
+| Hook | Description |
+|---|---|
+| `useRouter()` | Programmatic navigation via `.push()` and `.replace()` |
+| `usePathname()` | Current pathname string |
+| `useParams()` | Dynamic route parameters from the current segment |
+| `useSearchParams()` | Immutable search parameter access and updates |
+| `useHash()` | Current URL hash fragment |
+
+## Reference
+
+<CardGrid>
+  <LinkCard title="Router" href="/router/reference/router" description="Root provider component." />
+  <LinkCard title="Route" href="/router/reference/route" description="Conditional render by path." />
+  <LinkCard title="Link" href="/router/reference/link" description="Client-side navigation anchor." />
+</CardGrid>
