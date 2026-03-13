@@ -76,6 +76,16 @@ export default defineConfig({
           ],
         },
         {
+          label: "Prisma Migrate Test",
+          items: [
+            { label: "Introduction", slug: "prisma-migrate-test" },
+            {
+              label: "Reference",
+              autogenerate: { directory: "prisma-migrate-test/reference" },
+            },
+          ],
+        },
+        {
           label: "Tag-Based Cache",
           items: [
             { label: "Introduction", slug: "tag-based-cache" },
