@@ -109,7 +109,7 @@ importers:
         version: 19.2.3(@types/react@19.2.10)
       tailwindcss:
         specifier: ^4
-        version: 4.1.18
+        version: 4.2.1
 
   packages/1-lacy:
     dependencies:
@@ -395,7 +395,7 @@ importers:
         version: 19.2.3(@types/react@19.2.10)
       tailwindcss:
         specifier: ^4
-        version: 4.1.18
+        version: 4.2.1
 
   website:
     dependencies:
@@ -3582,8 +3582,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  tailwindcss@4.1.18:
-    resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
+  tailwindcss@4.2.1:
+    resolution: {integrity: sha512-/tBrSQ36vCleJkAOsy9kbNTgaxvGbyOamC30PRePTQe/o1MFwEKHQk4Cn7BNGaPtjp+PuUrByJehM1hgxfq4sw==}
 
   tar-fs@2.1.4:
     resolution: {integrity: sha512-mDAjwmZdh7LTT6pNleZ05Yt65HC3E+NiQzl672vQG38jIrehtJk/J3mNwIg+vShQPcLF/LV7CMnDW6vjj6sfYQ==}
@@ -7838,7 +7838,7 @@ snapshots:
       picocolors: 1.1.1
       sax: 1.5.0
 
-  tailwindcss@4.1.18: {}
+  tailwindcss@4.2.1: {}
 
   tar-fs@2.1.4:
     dependencies:
