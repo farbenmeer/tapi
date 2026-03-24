@@ -20,7 +20,7 @@ npm install @farbenmeer/prisma-migrate-test
     Migrations run into an in-memory `better-sqlite3` template. Each test clone is written to a temp directory and cleaned up automatically.
   </Card>
   <Card title="PGlite" icon="approve-check">
-    Migrations run into an in-memory PGlite instance and the result is dumped. Each test clone is restored from that dump — no real Postgres required.
+    Migrations run into an in-memory PGlite instance and the result is dumped. Each test clone is restored from that dump — no real Postgres required. Supports optional seeding and per-test `reset()`.
   </Card>
 </CardGrid>
 

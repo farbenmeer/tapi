@@ -133,3 +133,85 @@ describe("createPgliteTestDb (PGlite e2e)", () => {
     expect(remaining).toHaveLength(0);
   });
 });
+
+describe("createPgliteTestDb with SQL string seed", () => {
+  let testDb: PgliteTestDb;
+
+  beforeAll(() => {
+    testDb = createPgliteTestDb({
+      migrationsPath,
+      seed: `INSERT INTO "User" (email, name) VALUES ('seeded@example.com', 'Seeded')`,
+    });
+  });
+
+  afterAll(() => testDb.cleanup());
+
+  it("includes seeded data in every clone", async () => {
+    const adapter = await testDb.getAdapter();
+    const prisma = new PrismaClient({ adapter });
+
+    const users = await prisma.user.findMany();
+    expect(users).toHaveLength(1);
+    expect(users[0]!.email).toBe("seeded@example.com");
+    expect(users[0]!.name).toBe("Seeded");
+
+    await prisma.$disconnect();
+  });
+
+  it("provides seeded data to a second independent clone", async () => {
+    const adapter = await testDb.getAdapter();
+    const prisma = new PrismaClient({ adapter });
+
+    const count = await prisma.user.count();
+    expect(count).toBe(1);
+
+    await prisma.$disconnect();
+  });
+});
+
+describe("createPgliteTestDb with function seed", () => {
+  let testDb: PgliteTestDb;
+
+  beforeAll(() => {
+    testDb = createPgliteTestDb({
+      migrationsPath,
+      seed: async (adapter) => {
+        const prisma = new PrismaClient({ adapter });
+        await prisma.user.create({
+          data: { email: "fn-seed@example.com", name: "FnSeeded" },
+        });
+        await prisma.post.create({
+          data: { title: "Seeded Post", userId: 1 },
+        });
+        await prisma.$disconnect();
+      },
+    });
+  });
+
+  afterAll(() => testDb.cleanup());
+
+  it("includes function-seeded data in every clone", async () => {
+    const adapter = await testDb.getAdapter();
+    const prisma = new PrismaClient({ adapter });
+
+    const users = await prisma.user.findMany();
+    expect(users).toHaveLength(1);
+    expect(users[0]!.email).toBe("fn-seed@example.com");
+
+    const posts = await prisma.post.findMany();
+    expect(posts).toHaveLength(1);
+    expect(posts[0]!.title).toBe("Seeded Post");
+
+    await prisma.$disconnect();
+  });
+
+  it("provides function-seeded data to a second independent clone", async () => {
+    const adapter = await testDb.getAdapter();
+    const prisma = new PrismaClient({ adapter });
+
+    expect(await prisma.user.count()).toBe(1);
+    expect(await prisma.post.count()).toBe(1);
+
+    await prisma.$disconnect();
+  });
+});
