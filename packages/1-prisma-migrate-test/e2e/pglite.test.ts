@@ -1,6 +1,5 @@
-import { PGlite } from "@electric-sql/pglite";
-import { fileURLToPath } from "node:url";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   afterAll,
   afterEach,
@@ -10,8 +9,8 @@ import {
   expect,
   it,
 } from "vitest";
-import { PrismaClient } from "./generated/pglite/index.js";
 import { createPgliteTestDb, type PgliteTestDb } from "../src/pglite.js";
+import { PrismaClient } from "./generated/pglite/index.js";
 
 const migrationsPath = path.join(
   fileURLToPath(import.meta.url),
@@ -91,6 +90,34 @@ describe("createPgliteTestDb (PGlite e2e)", () => {
     await expect(
       prisma.post.create({ data: { title: "Orphan", userId: 9999 } }),
     ).rejects.toThrow();
+  });
+
+  it("reset() truncates all public tables", async () => {
+    const adapter = await testDb.getAdapter();
+    const client = new PrismaClient({ adapter });
+
+    const user = await client.user.create({
+      data: { email: "reset@example.com", name: "Reset" },
+    });
+    await client.post.create({
+      data: { title: "To be reset", userId: user.id },
+    });
+
+    expect(await client.user.count()).toBeGreaterThan(0);
+    expect(await client.post.count()).toBeGreaterThan(0);
+
+    await adapter.reset();
+
+    expect(await client.user.count()).toBe(0);
+    expect(await client.post.count()).toBe(0);
+
+    // Tables still exist and are usable after reset
+    const newUser = await client.user.create({
+      data: { email: "after-reset@example.com" },
+    });
+    expect(newUser.id).toBeTypeOf("number");
+
+    await client.$disconnect();
   });
 
   it("deletes a User and cascades correctly", async () => {
