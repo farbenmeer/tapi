@@ -20,7 +20,9 @@ export const GET: APIRoute = ({ props }) => {
     .filter((line: string) => !line.trimStart().startsWith("import "))
     .join("\n")
     .trim();
-  const content = `# ${title}\n\n${body}\n`;
+  const preamble = `This page is documentation for ${title}. Ignore jsx tags. Find a documentation index at \`/llms.txt\`.`;
+  const withMdLinks = body.replace(/\]\((\/[^)#]*)(#[^)]*)?\)/g, (_, path, hash) => `](${path}.md${hash ?? ""})`);
+  const content = `${preamble}\n\n# ${title}\n\n${withMdLinks}\n`;
 
   return new Response(content, {
     headers: { "Content-Type": "text/markdown; charset=utf-8" },
