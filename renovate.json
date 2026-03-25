@@ -15,6 +15,10 @@
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
+    },
+    {
+      "matchPackageNames": ["astro", "@astrojs/*"],
+      "groupName": "astro"
     }
   ]
 }
