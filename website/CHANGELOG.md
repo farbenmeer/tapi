@@ -1,5 +1,17 @@
 # @farbenmeer/tapi-website
 
+## 0.4.0
+
+### Minor Changes
+
+- c7d344d: Landing Pages
+- c7d344d: docs for prisma-migrate-test
+
+### Patch Changes
+
+- e3215a8: improve markdown experience
+- 083e78a: Documentation for new prisma-migrat-test features
+
 ## 0.3.1
 
 ### Patch Changes
