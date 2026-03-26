@@ -242,7 +242,7 @@ importers:
         version: link:../1-tapi
       '@happy-dom/global-registrator':
         specifier: ^20.0.0
-        version: 20.8.7
+        version: 20.8.8
       '@testing-library/dom':
         specifier: ^10.4.1
         version: 10.4.1
@@ -279,7 +279,7 @@ importers:
         version: link:../1-lacy
       '@happy-dom/global-registrator':
         specifier: ^20.0.11
-        version: 20.8.7
+        version: 20.8.8
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
@@ -898,8 +898,8 @@ packages:
   '@expressive-code/plugin-text-markers@0.41.7':
     resolution: {integrity: sha512-Ewpwuc5t6eFdZmWlFyeuy3e1PTQC0jFvw2Q+2bpcWXbOZhPLsT7+h8lsSIJxb5mS7wZko7cKyQ2RLYDyK6Fpmw==}
 
-  '@happy-dom/global-registrator@20.8.7':
-    resolution: {integrity: sha512-fOmQ7AQG1xAYmyYeneq5jWSsgHb8YFHY5aDeW2bKIv1gQBYXiEdMvgkoPGs4Q8o2G5UVDKUNyQxuqYuTuXlZMw==}
+  '@happy-dom/global-registrator@20.8.8':
+    resolution: {integrity: sha512-2NE+gfUX092su6oZYw6yOfgPYAfx9NBLFdMLNdZZtkupCP9oZfz6qFRYf1o8la2Le7Tyb94O5TONzcozENx2xg==}
     engines: {node: '>=20.0.0'}
 
   '@hono/node-server@1.19.9':
@@ -4469,7 +4469,7 @@ snapshots:
     dependencies:
       '@expressive-code/core': 0.41.7
 
-  '@happy-dom/global-registrator@20.8.7':
+  '@happy-dom/global-registrator@20.8.8':
     dependencies:
       '@types/node': 25.5.0
       happy-dom: 20.8.8
