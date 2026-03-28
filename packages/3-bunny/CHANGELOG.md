@@ -1,5 +1,13 @@
 # @farbenmeer/bunny
 
+## 0.5.2
+
+### Patch Changes
+
+- e6781e2: Private routes can use tags for client side caching and streaming revalidation works in dev mode
+- Updated dependencies [e6781e2]
+  - @farbenmeer/tapi@0.10.3
+
 ## 0.5.1
 
 ### Patch Changes
