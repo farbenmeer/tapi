@@ -27,6 +27,6 @@
     "vitest": "^4.0.16"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5 || ^6.0.0"
   }
 }
