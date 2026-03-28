@@ -1,7 +1,10 @@
 import {
   createRequestHandler,
   generateOpenAPISchema,
+  streamRevalidatedTags,
+  type ApiDefinition,
 } from "@farbenmeer/tapi/server";
+import { INVALIDATIONS_ROUTE } from "@farbenmeer/tapi/client";
 import { Command } from "commander";
 import connect from "connect";
 import esbuild from "esbuild";
@@ -49,11 +52,13 @@ export const dev = new Command()
     const tapi: {
       apiRequestHandler?: (req: Request) => Promise<Response>;
       openAPISchema?: string;
+      api?: ApiDefinition<any>;
     } = {};
 
     async function reload(entryPoint: string) {
       console.log("Loading", entryPoint);
       const { api } = await import(entryPoint);
+      tapi.api = api;
       tapi.apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
         hooks: {
@@ -152,6 +157,22 @@ export const dev = new Command()
           });
         `);
         res.end();
+        return;
+      }
+
+      if (url.pathname === INVALIDATIONS_ROUTE) {
+        const response = streamRevalidatedTags({
+          cache: tapi.api!.cache,
+          buildId: "dev",
+        });
+        response.headers.forEach((value, key) => res.appendHeader(key, value));
+        res.flushHeaders();
+        if (response.body) {
+          for await (const chunk of response.body) {
+            if (res.closed) break;
+            res.write(chunk);
+          }
+        }
         return;
       }
 

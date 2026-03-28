@@ -1,1 +1,1 @@
-export const INVALIDATIONS_ROUTE = "/__bunny/invalidations";
+export { INVALIDATIONS_ROUTE } from "@farbenmeer/tapi/client";

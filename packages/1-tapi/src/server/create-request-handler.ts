@@ -99,11 +99,7 @@ export function createRequestHandler(
               const res = await executeHandler(handler, treq);
 
               if (res.cache) {
-                if ((treq as any)[authUsed] === true) {
-                  console.warn(
-                    "TApi: Response specifies cache option but request handler used auth information (called req.auth()): Response will not be cached",
-                  );
-                } else {
+                if ((treq as any)[authUsed] !== true) {
                   // cache fresh response according to cache options
                   try {
                     const cloned = res.clone();
