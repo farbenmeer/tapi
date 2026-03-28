@@ -10,3 +10,4 @@ export type { ApiDefinition } from "./define-api.js";
 export type { CookieStore } from "./cookie-store.js";
 export { streamRevalidatedTags } from "./revalidation-stream.js";
 export { PubSub, type Cache } from "./cache.js";
+export { INVALIDATIONS_ROUTE } from "../shared/constants.js";

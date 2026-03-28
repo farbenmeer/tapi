@@ -61,7 +61,7 @@ test("invalidations endpoint is accessible", async ({ page }) => {
 
   const status = await page.evaluate(async () => {
     const controller = new AbortController();
-    const res = await fetch("/__bunny/invalidations", {
+    const res = await fetch("/__tapi/invalidations", {
       signal: controller.signal,
     });
     controller.abort();

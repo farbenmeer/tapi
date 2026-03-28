@@ -1,4 +1,4 @@
-import { INVALIDATION_POST_EVENT, TAGS_HEADER } from "../shared/constants.js";
+import { INVALIDATION_POST_EVENT, INVALIDATIONS_ROUTE, TAGS_HEADER } from "../shared/constants.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
@@ -7,6 +7,34 @@ import type { Client, Revalidating } from "./client-types.js";
 import { handleResponse } from "./handle-response.js";
 
 const globalFetch = fetch;
+
+async function listenForInvalidations(url: string, cache: Cache) {
+  const MAX_ATTEMPTS = 1000;
+  for (let retry = 0; retry < MAX_ATTEMPTS; retry++) {
+    try {
+      const res = await globalFetch(url);
+      if (!res.ok || !res.body) break;
+
+      let buffer = "";
+      const decoder = new TextDecoder();
+      for await (const chunk of res.body) {
+        buffer += decoder.decode(chunk);
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          const rawTags = line.trim();
+          if (!rawTags) continue;
+          await cache.revalidateTags(rawTags.split(" "));
+        }
+      }
+    } catch {
+      // network error — retry below
+    }
+    await new Promise((resolve) =>
+      setTimeout(resolve, 500 * Math.pow(2, Math.min(retry, 10)))
+    );
+  }
+}
 
 interface Hooks {
   error?: (error: unknown) => void | Promise<void>;
@@ -17,6 +45,7 @@ interface Options {
   minTTL?: number;
   maxOverdueTTL?: number;
   hooks?: Hooks;
+  invalidationsUrl?: string | false;
 }
 
 export function createFetchClient<
@@ -29,6 +58,11 @@ export function createFetchClient<
     maxOverdueTTL: options.maxOverdueTTL,
     hooks: options.hooks,
   });
+
+  const invalidationsUrl =
+    options.invalidationsUrl === false
+      ? null
+      : (options.invalidationsUrl ?? INVALIDATIONS_ROUTE);
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", async (event) => {
@@ -48,6 +82,11 @@ export function createFetchClient<
         }
       }
     });
+    if (invalidationsUrl && !navigator.serviceWorker.controller) {
+      listenForInvalidations(invalidationsUrl, cache);
+    }
+  } else if (invalidationsUrl) {
+    listenForInvalidations(invalidationsUrl, cache);
   }
 
   function load(url: string, init: RequestInit = {}) {
