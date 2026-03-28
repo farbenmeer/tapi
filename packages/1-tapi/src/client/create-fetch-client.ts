@@ -85,7 +85,7 @@ export function createFetchClient<
     if (invalidationsUrl && !navigator.serviceWorker.controller) {
       listenForInvalidations(invalidationsUrl, cache);
     }
-  } else if (invalidationsUrl) {
+  } else if (invalidationsUrl && typeof window !== "undefined") {
     listenForInvalidations(invalidationsUrl, cache);
   }
 
