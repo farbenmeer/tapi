@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.10.3
+
+### Patch Changes
+
+- e6781e2: Private routes can use tags for client side caching and streaming revalidation works in dev mode
+
 ## 0.10.2
 
 ### Patch Changes
