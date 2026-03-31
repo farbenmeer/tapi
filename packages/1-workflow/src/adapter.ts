@@ -1,0 +1,31 @@
+export interface WorkflowState {
+  workflowId: string;
+  runId: string;
+  error: string | null;
+  input: unknown;
+  startedAt: Date;
+  finishedAt: Date | null;
+  leaseExpiredAt: Date;
+}
+
+export interface StepState {
+  runId: string;
+  stepId: string;
+  result: unknown;
+  error: string | null;
+}
+
+export interface Adapter {
+  getLastestRun(workflowId: string): Promise<WorkflowState | null>;
+  getNextWorkflow(): Promise<WorkflowState | null>;
+  createWorkflow(input: {
+    workflowId: string;
+    input: unknown;
+    leaseDuration: number;
+  }): Promise<WorkflowState>;
+  failWorkflow(runId: string, error: string): Promise<void>;
+  renewLease(runId: string, leaseDuration: number): Promise<void>;
+  finishWorkflow(runId: string): Promise<void>;
+  getSteps(runId: string): Promise<Map<string, StepState>>;
+  putStep(state: StepState): Promise<void>;
+}

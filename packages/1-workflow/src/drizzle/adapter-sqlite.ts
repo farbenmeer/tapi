@@ -1,0 +1,135 @@
+import { and, desc, eq, isNull, lt, sql } from "drizzle-orm";
+import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { Adapter, StepState, WorkflowState } from "../adapter";
+import { stepState, workflowState } from "./schema-sqlite";
+
+const now = () => sql<number>`unixepoch()`;
+const inXSeconds = (leaseDuration: number) =>
+  sql<number>`unixepoch() + ${leaseDuration}`;
+const oneSecondAgo = () => sql<number>`unixepoch() - 1`;
+
+export class DrizzleSqliteAdapter implements Adapter {
+  constructor(private db: BetterSQLite3Database) {}
+
+  async createWorkflow(input: {
+    workflowId: string;
+    input: unknown;
+    leaseDuration: number;
+  }): Promise<WorkflowState> {
+    const [result] = await this.db
+      .insert(workflowState)
+      .values({
+        workflowId: input.workflowId,
+        runId: crypto.randomUUID(),
+        error: null,
+        input: input.input,
+        leaseExpiredAt: inXSeconds(input.leaseDuration),
+        startedAt: now(),
+        finishedAt: null,
+      })
+      .returning();
+
+    if (!result) {
+      throw new Error("Failed to create workflow");
+    }
+
+    return mapWorkflowState(result);
+  }
+
+  async renewLease(runId: string, leaseDuration: number): Promise<void> {
+    await this.db
+      .update(workflowState)
+      .set({
+        leaseExpiredAt: inXSeconds(leaseDuration),
+      })
+      .where(eq(workflowState.runId, runId));
+  }
+
+  async getLastestRun(workflowId: string): Promise<WorkflowState | null> {
+    const [result] = await this.db
+      .select()
+      .from(workflowState)
+      .where(eq(workflowState.workflowId, workflowId))
+      .orderBy(desc(workflowState.startedAt))
+      .limit(1);
+
+    return result ? mapWorkflowState(result) : null;
+  }
+
+  async getNextWorkflow(): Promise<WorkflowState | null> {
+    const [running] = await this.db
+      .select()
+      .from(workflowState)
+      .where(
+        and(
+          isNull(workflowState.finishedAt),
+          lt(workflowState.leaseExpiredAt, oneSecondAgo()),
+        ),
+      )
+      .limit(1);
+
+    if (running) return mapWorkflowState(running);
+
+    return null;
+  }
+
+  async finishWorkflow(runId: string): Promise<void> {
+    await this.db
+      .update(workflowState)
+      .set({
+        finishedAt: now(),
+      })
+      .where(eq(workflowState.runId, runId));
+  }
+
+  async failWorkflow(runId: string, error: string): Promise<void> {
+    await this.db
+      .update(workflowState)
+      .set({
+        finishedAt: now(),
+        error,
+      })
+      .where(eq(workflowState.runId, runId));
+  }
+
+  async getSteps(runId: string): Promise<Map<string, StepState>> {
+    const steps = await this.db
+      .select()
+      .from(stepState)
+      .where(eq(stepState.runId, runId));
+
+    return new Map(steps.map((step) => [step.stepId, step]));
+  }
+
+  async putStep(state: StepState): Promise<void> {
+    await this.db
+      .insert(stepState)
+      .values({
+        runId: state.runId,
+        stepId: state.stepId,
+        result: state.result,
+        error: state.error,
+      })
+      .onConflictDoUpdate({
+        target: [stepState.runId, stepState.stepId],
+        set: {
+          result: state.result,
+          error: state.error,
+        },
+      });
+  }
+}
+
+function mapWorkflowState(
+  result: typeof workflowState.$inferSelect,
+): WorkflowState {
+  return {
+    workflowId: result.workflowId,
+    runId: result.runId,
+    error: result.error,
+    input: result.input,
+    startedAt: new Date(result.startedAt),
+    finishedAt: result.finishedAt ? new Date(result.finishedAt) : null,
+    leaseExpiredAt: new Date(result.leaseExpiredAt),
+  };
+}
