@@ -1,31 +1,40 @@
-import { log } from "console";
-import type { Adapter } from "./adapter.js";
+import type { Adapter, WorkflowState } from "./adapter.js";
 import { consoleLogger, type Logger } from "./logger.js";
 import { Workflow } from "./workflow.js";
 
-export function startEngine<W extends Record<string, Workflow<unknown>>>({
+interface Options<W extends Record<string, unknown>> {
+  storage: Adapter;
+  workflows: Workflows<W>;
+  leaseDuration?: number;
+  logger?: Logger;
+}
+
+type Workflows<W extends Record<string, unknown>> = {
+  [key in keyof W]: Workflow<W[key]>;
+};
+
+export function startEngine<W extends Record<string, unknown>>({
   storage,
   workflows,
   leaseDuration = 60_000,
   logger = consoleLogger,
-}: {
-  storage: Adapter;
-  workflows: W;
-  leaseDuration?: number;
-  logger?: Logger;
-}) {
+}: Options<W>) {
   return new RawEngine(storage, workflows, leaseDuration, logger) as Engine<W>;
 }
 
-export type Engine<W extends Record<string, Workflow<unknown>>> =
-  RawEngine<W> & {
-    [key in keyof W]: (input: W[key]["__t"]) => Promise<void>;
-  };
+interface WorkflowController<I> {
+  (input: I): Promise<void>;
+  schedule: (interval: number, input: I) => Promise<void>;
+}
 
-class RawEngine<W extends Record<string, Workflow<unknown>>> {
+export type Engine<W extends Record<string, unknown>> = RawEngine & {
+  [key in keyof W]: WorkflowController<W[key]>;
+};
+
+class RawEngine {
   constructor(
     private storage: Adapter,
-    private workflows: Record<string, Workflow<unknown>>,
+    private workflows: Record<string, Workflow<any>>,
     private leaseDuration: number,
     private logger: Logger,
   ) {
@@ -33,34 +42,61 @@ class RawEngine<W extends Record<string, Workflow<unknown>>> {
     Object.keys(workflows).forEach((workflowId) => {
       Object.defineProperty(this, workflowId, {
         get: () => {
-          return async (input: unknown) => {
-            await this.start(workflowId, input);
-            setTimeout(() => this.run());
-          };
+          const engine = this;
+          async function run(input: unknown) {
+            logger.debug(`Triggered workflow ${workflowId}`, { input });
+            await engine.start(workflowId, input);
+            setTimeout(() => engine.run());
+          }
+
+          return Object.assign(run, {
+            schedule: (interval: number, input: unknown) =>
+              engine.runScheduled(workflowId, input, interval),
+          });
         },
       });
     });
   }
 
   async run() {
-    let next = await this.storage.getNextWorkflow();
+    this.logger.debug("Engine running");
+    let next: WorkflowState | null;
+    next = await this.storage.getNextWorkflow(this.leaseDuration);
+
     while (next) {
+      this.logger.debug(`Next workflow: ${next.workflowId}`, {
+        input: next.input,
+      });
       const workflow = this.workflows[next.workflowId];
       if (workflow) {
         const runId = next.runId;
-        const leaseInterval = setInterval(
-          () => this.storage.renewLease(runId, this.leaseDuration),
-          this.leaseDuration,
-        );
-        await workflow.run(this.storage, next);
+        const abortController = new AbortController();
+        const leaseInterval = setInterval(() => {
+          try {
+            this.storage.renewLease(runId, this.leaseDuration);
+          } catch {
+            abortController.abort("Failed to renew lease");
+          }
+        }, this.leaseDuration);
+        try {
+          await workflow.run(this.storage, next, abortController.signal);
+        } catch (cause) {
+          const error =
+            cause instanceof Error
+              ? cause
+              : new Error("Unexpected error", { cause });
+          this.logger.error(error);
+          await this.storage.failWorkflow(next.runId, error.message);
+        }
         clearInterval(leaseInterval);
         await this.storage.finishWorkflow(next.runId);
       } else {
-        const error = "Workflow not found";
-        this.logger.error(new Error(error));
-        await this.storage.failWorkflow(next.runId, error);
+        const error = new Error(`Workflow "${next.workflowId}" not found`);
+        this.logger.error(error);
+        await this.storage.failWorkflow(next.runId, error.message);
       }
-      next = await this.storage.getNextWorkflow();
+
+      next = await this.storage.getNextWorkflow(this.leaseDuration);
     }
   }
 
@@ -68,28 +104,32 @@ class RawEngine<W extends Record<string, Workflow<unknown>>> {
     await this.storage.createWorkflow({
       workflowId,
       input,
-      leaseDuration: this.leaseDuration,
     });
   }
 
-  async schedule<ID extends keyof W>(
-    workflowId: ID,
+  private async runScheduled(
+    workflowId: string,
+    input: unknown,
     interval: number,
-    input: W[ID]["__t"],
   ): Promise<void> {
-    const lastRun = await this.storage.getLastestRun(workflowId as string);
+    const lastRun = await this.storage.getLastestRun(
+      workflowId as string,
+      input,
+    );
 
     const lastRunStartedAt = lastRun?.startedAt.getTime() ?? 0;
+    const nextRunIn = lastRunStartedAt + interval * 1000 - Date.now();
 
-    if (lastRunStartedAt < Date.now() - interval * 1000) {
+    if (nextRunIn <= 0) {
       await this.start(workflowId as string, input);
-      setTimeout(() => this.schedule(workflowId, interval, input), interval);
+      setTimeout(() => this.run());
+      setTimeout(
+        () => this.runScheduled(workflowId, input, interval),
+        interval,
+      );
       return;
     }
 
-    const nextRunIn =
-      interval - Math.round((Date.now() - lastRunStartedAt) / 1000);
-
-    setTimeout(() => this.schedule(workflowId, interval, input), nextRunIn);
+    setTimeout(() => this.runScheduled(workflowId, input, interval), nextRunIn);
   }
 }

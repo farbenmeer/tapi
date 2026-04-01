@@ -16,12 +16,14 @@ export interface StepState {
 }
 
 export interface Adapter {
-  getLastestRun(workflowId: string): Promise<WorkflowState | null>;
-  getNextWorkflow(): Promise<WorkflowState | null>;
+  getLastestRun(
+    workflowId: string,
+    input: unknown,
+  ): Promise<WorkflowState | null>;
+  getNextWorkflow(leaseDuration: number): Promise<WorkflowState | null>;
   createWorkflow(input: {
     workflowId: string;
     input: unknown;
-    leaseDuration: number;
   }): Promise<WorkflowState>;
   failWorkflow(runId: string, error: string): Promise<void>;
   renewLease(runId: string, leaseDuration: number): Promise<void>;

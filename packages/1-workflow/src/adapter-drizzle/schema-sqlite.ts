@@ -11,8 +11,8 @@ export const workflowState = sqliteTable("workflow_state", {
   error: text(),
   input: text({ mode: "json" }),
   leaseExpiredAt: integer().notNull(),
-  startedAt: text("started_at").notNull(),
-  finishedAt: text("finished_at"),
+  startedAt: integer("started_at").notNull(),
+  finishedAt: integer("finished_at"),
 });
 
 export const stepState = sqliteTable(

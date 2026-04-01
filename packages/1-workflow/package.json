@@ -20,11 +20,13 @@
   "scripts": {
     "build": "tsc --noEmit false",
     "release": "pnpm run build && pnpm publish",
-    "test": "vitest"
+    "test": "vitest",
+    "generate:drizzle-sqlite": "drizzle-kit generate --dialect=sqlite --schema=./src/adapter-drizzle/schema-sqlite.ts --out=./src/adapter-drizzle/migrations-sqlite"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
     "better-sqlite3": "^12.8.0",
+    "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
     "vitest": "^4.1.2"
   },

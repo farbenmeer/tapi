@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, lt, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNull, lt, sql } from "drizzle-orm";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import type { Adapter, StepState, WorkflowState } from "../adapter";
 import { stepState, workflowState } from "./schema-sqlite";
@@ -14,7 +14,6 @@ export class DrizzleSqliteAdapter implements Adapter {
   async createWorkflow(input: {
     workflowId: string;
     input: unknown;
-    leaseDuration: number;
   }): Promise<WorkflowState> {
     const [result] = await this.db
       .insert(workflowState)
@@ -23,7 +22,7 @@ export class DrizzleSqliteAdapter implements Adapter {
         runId: crypto.randomUUID(),
         error: null,
         input: input.input,
-        leaseExpiredAt: inXSeconds(input.leaseDuration),
+        leaseExpiredAt: 0,
         startedAt: now(),
         finishedAt: null,
       })
@@ -45,30 +44,44 @@ export class DrizzleSqliteAdapter implements Adapter {
       .where(eq(workflowState.runId, runId));
   }
 
-  async getLastestRun(workflowId: string): Promise<WorkflowState | null> {
+  async getLastestRun(
+    workflowId: string,
+    input: unknown,
+  ): Promise<WorkflowState | null> {
     const [result] = await this.db
       .select()
       .from(workflowState)
-      .where(eq(workflowState.workflowId, workflowId))
+      .where(
+        and(
+          eq(workflowState.workflowId, workflowId),
+          eq(workflowState.input, input),
+        ),
+      )
       .orderBy(desc(workflowState.startedAt))
       .limit(1);
 
     return result ? mapWorkflowState(result) : null;
   }
 
-  async getNextWorkflow(): Promise<WorkflowState | null> {
+  async getNextWorkflow(leaseDuration: number): Promise<WorkflowState | null> {
     const [running] = await this.db
-      .select()
-      .from(workflowState)
+      .update(workflowState)
+      .set({
+        leaseExpiredAt: inXSeconds(leaseDuration),
+      })
       .where(
         and(
           isNull(workflowState.finishedAt),
           lt(workflowState.leaseExpiredAt, oneSecondAgo()),
         ),
       )
-      .limit(1);
+      .orderBy(asc(workflowState.startedAt))
+      .limit(1)
+      .returning();
 
-    if (running) return mapWorkflowState(running);
+    if (running) {
+      return mapWorkflowState(running);
+    }
 
     return null;
   }

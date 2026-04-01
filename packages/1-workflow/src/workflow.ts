@@ -1,34 +1,44 @@
-import type { Adapter, WorkflowState } from "./adapter.js";
+import type { Adapter, StepState, WorkflowState } from "./adapter.js";
 import { context } from "./context.js";
 import { Step } from "./step.js";
 
-export function workflow<I>(gen: (input: I) => void) {
+export function workflow<I = void>(gen: (input: I) => void) {
   return new Workflow(gen);
 }
 
 export class Workflow<I> {
-  __t: I = undefined as I;
   constructor(private gen: (input: I) => void) {}
 
-  async run(storage: Adapter, state: WorkflowState) {
+  async run(storage: Adapter, state: WorkflowState, abortSignal: AbortSignal) {
     const steps = await storage.getSteps(state.runId);
 
     while (true) {
+      if (abortSignal.aborted) {
+        throw new Error(abortSignal.reason);
+      }
       try {
         context.stepState = steps;
         this.gen(state.input as I);
         return;
       } catch (v) {
         if (v instanceof Step) {
-          const result = await v.run();
-          const step = {
+          const stepState: StepState = {
             runId: state.runId,
             stepId: v.id(),
-            result,
+            result: null,
             error: null,
           };
-          await storage.putStep(step);
-          steps.set(v.id(), step);
+
+          try {
+            stepState.result = await v.run();
+          } catch (error) {
+            stepState.error = String(error);
+            await storage.putStep(stepState);
+            throw error;
+          }
+
+          await storage.putStep(stepState);
+          steps.set(v.id(), stepState);
           continue;
         }
 
