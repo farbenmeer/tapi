@@ -122,12 +122,14 @@ export class DrizzleSqliteAdapter implements Adapter {
         stepId: state.stepId,
         result: state.result,
         error: state.error,
+        attempt: state.attempt,
       })
       .onConflictDoUpdate({
         target: [stepState.runId, stepState.stepId],
         set: {
           result: state.result,
           error: state.error,
+          attempt: state.attempt,
         },
       });
   }

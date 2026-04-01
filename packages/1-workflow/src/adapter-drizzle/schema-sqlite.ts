@@ -22,6 +22,7 @@ export const stepState = sqliteTable(
     stepId: text("step_id").notNull(),
     result: text({ mode: "json" }),
     error: text(),
+    attempt: integer().notNull().default(0),
   },
   (table) => [primaryKey({ columns: [table.runId, table.stepId] })],
 );

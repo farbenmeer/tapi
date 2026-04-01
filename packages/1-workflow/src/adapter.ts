@@ -13,6 +13,7 @@ export interface StepState {
   stepId: string;
   result: unknown;
   error: string | null;
+  attempt: number;
 }
 
 export interface Adapter {

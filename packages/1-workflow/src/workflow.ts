@@ -27,18 +27,10 @@ export class Workflow<I> {
             stepId: v.id(),
             result: null,
             error: null,
+            attempt: 0,
           };
-
-          try {
-            stepState.result = await v.run();
-          } catch (error) {
-            stepState.error = String(error);
-            await storage.putStep(stepState);
-            throw error;
-          }
-
-          await storage.putStep(stepState);
           steps.set(v.id(), stepState);
+          await v.run(storage, stepState, abortSignal);
           continue;
         }
 
