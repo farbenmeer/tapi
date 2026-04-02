@@ -15,6 +15,13 @@
       "when": 1775081373138,
       "tag": "0001_slimy_meteorite",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1775085751434,
+      "tag": "0002_wise_newton_destine",
+      "breakpoints": true
     }
   ]
 }

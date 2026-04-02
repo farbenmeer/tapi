@@ -23,8 +23,7 @@ export class InMemoryAdapter implements Adapter {
   getNextWorkflow(leaseDuration: number): Promise<WorkflowState | null> {
     const wf = Array.from(this.workflows.values())
       .filter(
-        (wf) =>
-          !wf.finishedAt && wf.leaseExpiredAt.getTime() < Date.now() - 1000,
+        (wf) => !wf.finishedAt && wf.leaseExpiredAt.getTime() <= Date.now(),
       )
       .sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime())
       .pop();
@@ -58,10 +57,12 @@ export class InMemoryAdapter implements Adapter {
     wf.finishedAt = new Date();
     return Promise.resolve();
   }
-  renewLease(runId: string, leaseDuration: number): Promise<void> {
+  lease(runId: string, leaseDuration: number): Promise<void> {
     const wf = this.workflows.get(runId);
     if (!wf) return Promise.resolve();
-    wf.leaseExpiredAt = new Date(Date.now() + leaseDuration * 1000);
+    wf.leaseExpiredAt = new Date(
+      Math.max(Date.now() + leaseDuration * 1000, wf.leaseExpiredAt.getTime()),
+    );
     return Promise.resolve();
   }
   finishWorkflow(runId: string): Promise<void> {

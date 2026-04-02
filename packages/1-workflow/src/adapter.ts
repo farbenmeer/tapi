@@ -27,7 +27,7 @@ export interface Adapter {
     input: unknown;
   }): Promise<WorkflowState>;
   failWorkflow(runId: string, error: string): Promise<void>;
-  renewLease(runId: string, leaseDuration: number): Promise<void>;
+  lease(runId: string, leaseDuration: number): Promise<void>;
   finishWorkflow(runId: string): Promise<void>;
   getSteps(runId: string): Promise<Map<string, StepState>>;
   putStep(state: StepState): Promise<void>;

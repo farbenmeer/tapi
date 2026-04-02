@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull, lt, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNull, lt, lte, sql } from "drizzle-orm";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import type { Adapter, StepState, WorkflowState } from "../adapter";
 import { stepState, workflowState } from "./schema-sqlite";
@@ -6,7 +6,6 @@ import { stepState, workflowState } from "./schema-sqlite";
 const now = () => sql<number>`unixepoch()`;
 const inXSeconds = (leaseDuration: number) =>
   sql<number>`unixepoch() + ${leaseDuration}`;
-const oneSecondAgo = () => sql<number>`unixepoch() - 1`;
 
 export class DrizzleSqliteAdapter implements Adapter {
   constructor(private db: BetterSQLite3Database) {}
@@ -25,6 +24,7 @@ export class DrizzleSqliteAdapter implements Adapter {
         leaseExpiredAt: 0,
         startedAt: now(),
         finishedAt: null,
+        resumeAt: 0,
       })
       .returning();
 
@@ -35,13 +35,18 @@ export class DrizzleSqliteAdapter implements Adapter {
     return mapWorkflowState(result);
   }
 
-  async renewLease(runId: string, leaseDuration: number): Promise<void> {
+  async lease(runId: string, leaseDuration: number): Promise<void> {
     await this.db
       .update(workflowState)
       .set({
         leaseExpiredAt: inXSeconds(leaseDuration),
       })
-      .where(eq(workflowState.runId, runId));
+      .where(
+        and(
+          eq(workflowState.runId, runId),
+          lt(workflowState.leaseExpiredAt, inXSeconds(leaseDuration)),
+        ),
+      );
   }
 
   async getLastestRun(
@@ -72,7 +77,7 @@ export class DrizzleSqliteAdapter implements Adapter {
       .where(
         and(
           isNull(workflowState.finishedAt),
-          lt(workflowState.leaseExpiredAt, oneSecondAgo()),
+          lte(workflowState.leaseExpiredAt, now()),
         ),
       )
       .orderBy(asc(workflowState.startedAt))

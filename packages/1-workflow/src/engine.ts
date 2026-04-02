@@ -73,11 +73,11 @@ class RawEngine {
         const abortController = new AbortController();
         const leaseInterval = setInterval(() => {
           try {
-            this.storage.renewLease(runId, this.leaseDuration);
+            this.storage.lease(runId, this.leaseDuration + 1);
           } catch {
             abortController.abort("Failed to renew lease");
           }
-        }, this.leaseDuration);
+        }, this.leaseDuration * 1000);
         try {
           await workflow.run(this.storage, next, abortController.signal);
         } catch (cause) {

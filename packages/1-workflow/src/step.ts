@@ -45,6 +45,10 @@ export class Step<I = unknown> {
         await storage.putStep(state);
       }
 
+      const delay = this.baseTimeout * Math.pow(2, state.attempt - 1);
+
+      await storage.lease(state.runId, delay);
+
       await new Promise((resolve) =>
         setTimeout(resolve, this.baseTimeout * Math.pow(2, state.attempt - 1)),
       );
