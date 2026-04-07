@@ -1,5 +1,11 @@
 import { isDeepStrictEqual } from "node:util";
-import type { Adapter, StepState, WorkflowState } from "./adapter";
+import type {
+  Adapter,
+  ListOptions,
+  Page,
+  StepState,
+  WorkflowState,
+} from "./adapter";
 import crypto from "node:crypto";
 
 export class InMemoryAdapter implements Adapter {
@@ -83,5 +89,40 @@ export class InMemoryAdapter implements Adapter {
   putStep(state: StepState): Promise<void> {
     this.steps.set(`${state.runId}:${state.stepId}`, state);
     return Promise.resolve();
+  }
+  listWorkflows(options: ListOptions = {}): Promise<Page> {
+    const { cursor, pageSize = 30, page = 1 } = options;
+    const workflows = Array.from(this.workflows.values()).sort(
+      (a, b) => b.startedAt.getTime() - a.startedAt.getTime(),
+    );
+
+    if (options.cursor) {
+      const page: WorkflowState[] = [];
+      let cursorFound = false;
+      for (const workflow of workflows) {
+        if (workflow.runId === cursor) {
+          cursorFound = true;
+        }
+        if (page.length > pageSize) {
+          return Promise.resolve({
+            nextCursor: workflow.runId,
+            workflows: page,
+          });
+        }
+        if (cursorFound) {
+          page.push(workflow);
+        }
+      }
+      return Promise.resolve({
+        nextCursor: null,
+        workflows: page,
+      });
+    }
+
+    const startIndex = (page - 1) * pageSize;
+    return Promise.resolve({
+      nextCursor: workflows[startIndex + pageSize + 1]?.runId ?? null,
+      workflows: workflows.slice(startIndex, startIndex + pageSize),
+    });
   }
 }

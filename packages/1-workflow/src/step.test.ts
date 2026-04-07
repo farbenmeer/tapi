@@ -1,10 +1,9 @@
-import { describe, expect, test, vi } from "vitest";
-import { InMemoryAdapter } from "./adapter-inmemory";
-import { Step, step } from "./step";
-import { StepState } from "./adapter";
 import crypto from "node:crypto";
-import { beforeEach } from "node:test";
+import { describe, expect, test, vi } from "vitest";
+import { StepState } from "./adapter";
+import { InMemoryAdapter } from "./adapter-inmemory";
 import { FatalError } from "./fatal-error";
+import { step } from "./step";
 
 describe("step", () => {
   async function runStep(step: () => void, storage = new InMemoryAdapter()) {

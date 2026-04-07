@@ -29,6 +29,18 @@ export interface Adapter {
   failWorkflow(runId: string, error: string): Promise<void>;
   lease(runId: string, leaseDuration: number): Promise<void>;
   finishWorkflow(runId: string): Promise<void>;
+  listWorkflows(options?: ListOptions): Promise<Page>;
   getSteps(runId: string): Promise<Map<string, StepState>>;
   putStep(state: StepState): Promise<void>;
+}
+
+export interface Page {
+  workflows: WorkflowState[];
+  nextCursor: string | null;
+}
+
+export interface ListOptions {
+  page?: number;
+  pageSize?: number;
+  cursor?: string;
 }

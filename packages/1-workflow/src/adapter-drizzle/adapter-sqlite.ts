@@ -1,6 +1,12 @@
-import { and, asc, desc, eq, isNull, lt, lte, sql } from "drizzle-orm";
+import { and, asc, desc, or, eq, isNull, lt, lte, sql, gte } from "drizzle-orm";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
-import type { Adapter, StepState, WorkflowState } from "../adapter";
+import type {
+  Adapter,
+  ListOptions,
+  Page,
+  StepState,
+  WorkflowState,
+} from "../adapter";
 import { stepState, workflowState } from "./schema-sqlite";
 
 const now = () => sql<number>`unixepoch()`;
@@ -137,6 +143,47 @@ export class DrizzleSqliteAdapter implements Adapter {
           attempt: state.attempt,
         },
       });
+  }
+
+  async listWorkflows(options: ListOptions = {}): Promise<Page> {
+    const { page = 1, pageSize = 30, cursor } = options;
+
+    if (cursor) {
+      const [date, id] = cursor.split(":");
+      const workflows = await this.db
+        .select()
+        .from(workflowState)
+        .orderBy(desc(workflowState.startedAt), asc(workflowState.runId))
+        .where(
+          or(
+            lt(workflowState.startedAt, parseInt(date!, 10)),
+            and(
+              eq(workflowState.startedAt, parseInt(date!, 10)),
+              gte(workflowState.runId, id!),
+            ),
+          ),
+        )
+        .limit(pageSize + 1);
+
+      const next = workflows[pageSize];
+      return {
+        workflows: workflows.slice(0, pageSize).map(mapWorkflowState),
+        nextCursor: next ? `${next.startedAt}:${next.runId}` : null,
+      };
+    }
+
+    const workflows = await this.db
+      .select()
+      .from(workflowState)
+      .orderBy(desc(workflowState.startedAt), asc(workflowState.runId))
+      .offset((page - 1) * pageSize)
+      .limit(pageSize + 1);
+
+    const next = workflows[pageSize];
+    return {
+      workflows: workflows.slice(0, pageSize).map(mapWorkflowState),
+      nextCursor: next ? `${next.startedAt}:${next.runId}` : null,
+    };
   }
 }
 
