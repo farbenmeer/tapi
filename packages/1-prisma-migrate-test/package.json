@@ -39,7 +39,7 @@
     "better-sqlite3": "^12.6.2",
     "pglite-prisma-adapter": "^0.7.0",
     "prisma": ">=6.0.0",
-    "typescript": "^5",
+    "typescript": "^6.0.0",
     "vitest": "^4.0.16"
   },
   "peerDependencies": {
