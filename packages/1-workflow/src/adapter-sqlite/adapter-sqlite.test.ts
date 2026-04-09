@@ -1,25 +1,27 @@
-import { BetterSQLite3Database, drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import path from "node:path";
+import Database from "better-sqlite3";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { startEngine } from "../engine";
 import { step } from "../step";
 import { workflow } from "../workflow";
-import { DrizzleSqliteAdapter } from "./adapter-sqlite";
-import { workflowState } from "./schema-sqlite";
+import { SqliteAdapter } from "./adapter-sqlite";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
-describe("DrizzleSqliteAdapter", () => {
-  let db: BetterSQLite3Database;
+const SCHEMA = readFileSync(
+  path.resolve(import.meta.dirname, "../sql/sqlite.sql"),
+  "utf-8",
+);
+
+describe("SqliteAdapter", () => {
+  let db: Database.Database;
 
   beforeEach(() => {
-    db = drizzle(":memory:");
-    migrate(db, {
-      migrationsFolder: path.resolve(__dirname, "migrations-sqlite"),
-    });
+    db = new Database(":memory:");
+    db.exec(SCHEMA);
   });
 
   test("Basic adapter methods", async () => {
-    const adapter = new DrizzleSqliteAdapter(db);
+    const adapter = new SqliteAdapter(db);
 
     await adapter.createWorkflow({
       workflowId: "test",
@@ -38,7 +40,7 @@ describe("DrizzleSqliteAdapter", () => {
   });
 
   test("listWorkflows returns paginated results", async () => {
-    const adapter = new DrizzleSqliteAdapter(db);
+    const adapter = new SqliteAdapter(db);
 
     for (let i = 0; i < 5; i++) {
       await adapter.createWorkflow({ workflowId: `wf-${i}`, input: { i } });
@@ -71,7 +73,7 @@ describe("DrizzleSqliteAdapter", () => {
   });
 
   test("listWorkflows returns empty page when no workflows exist", async () => {
-    const adapter = new DrizzleSqliteAdapter(db);
+    const adapter = new SqliteAdapter(db);
 
     const result = await adapter.listWorkflows();
     expect(result.workflows).toEqual([]);
@@ -90,7 +92,7 @@ describe("DrizzleSqliteAdapter", () => {
     });
 
     const engine = startEngine({
-      storage: new DrizzleSqliteAdapter(db),
+      storage: new SqliteAdapter(db),
       workflows: {
         test: workflow(function testWorkflow(who: string) {
           const message = helloStep(who);
@@ -100,8 +102,6 @@ describe("DrizzleSqliteAdapter", () => {
     });
 
     await engine.test("world");
-
-    console.log(await db.select().from(workflowState));
 
     await vi.waitFor(() => expect(cb).toHaveBeenCalledWith("Hello, world!"));
   });
