@@ -4,7 +4,6 @@ import path from "node:path";
 import { Command } from "commander";
 import esbuild from "esbuild";
 import * as vite from "vite";
-import viteTsconfigPaths from "vite-tsconfig-paths";
 import { loadEnv } from "../load-env.js";
 import type { BunnyManifest } from "../manifest.js";
 import { generateServer } from "./generate-server.js";
@@ -46,7 +45,11 @@ export const build = new Command()
           ...config.vite?.build?.rollupOptions,
         },
       },
-      plugins: [...(config.vite?.plugins ?? []), viteTsconfigPaths()],
+      resolve: {
+        tsconfigPaths: true,
+        ...config.vite?.resolve,
+      },
+      plugins: config.vite?.plugins,
     });
 
     const packageJson = JSON.parse(

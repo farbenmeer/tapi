@@ -65,4 +65,4 @@ export default defineConfig({
 
 The config file is optional. If it does not exist, Bunny uses its defaults.
 
-Bunny always adds `vite-tsconfig-paths` to the Vite plugins so TypeScript path aliases work out of the box. Your `vite.plugins` are merged alongside it.
+Bunny enables Vite's native `resolve.tsconfigPaths` so TypeScript path aliases work out of the box. Your `vite.plugins` are merged alongside it.
