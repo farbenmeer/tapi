@@ -117,38 +117,6 @@ function generateKyselyTypes(
     "",
   ];
 
-  const hasJsonb =
-    dialect === "postgres" &&
-    tables.some((t) => t.columns.some((c) => c.type === "JSONB"));
-  const hasGenerated =
-    dialect === "sqlite" &&
-    tables.some((t) => t.columns.some((c) => c.default !== null));
-  const hasColumnType =
-    dialect === "postgres"
-      ? tables.some((t) => t.columns.some((c) => c.default !== null))
-      : hasGenerated;
-
-  if (hasColumnType || hasGenerated) {
-    lines.push('import type { ColumnType } from "kysely";');
-    lines.push("");
-  }
-
-  if (hasGenerated) {
-    lines.push(
-      "export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>",
-    );
-    lines.push("  ? ColumnType<S, I | undefined, U>");
-    lines.push("  : ColumnType<T, T | undefined, T>;");
-    lines.push("");
-  }
-
-  if (hasJsonb) {
-    lines.push(
-      "type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };",
-    );
-    lines.push("");
-  }
-
   for (const table of tables) {
     const interfaceName = tableToPascal(table.name);
     lines.push(`export interface ${interfaceName} {`);
@@ -156,21 +124,7 @@ function generateKyselyTypes(
     for (const col of table.columns) {
       const baseType = sqlTypeToTs(col.type, dialect);
       const nullable = !col.notNull && !col.primaryKey;
-      let tsType: string;
-
-      if (col.default !== null) {
-        if (dialect === "sqlite") {
-          tsType = `Generated<${nullable ? `${baseType} | null` : baseType}>`;
-        } else {
-          const selectType = nullable ? `${baseType} | null` : baseType;
-          tsType = `ColumnType<${selectType}, ${selectType} | undefined, ${selectType}>`;
-        }
-      } else if (nullable) {
-        tsType = `${baseType} | null`;
-      } else {
-        tsType = baseType;
-      }
-
+      const tsType = nullable ? `${baseType} | null` : baseType;
       lines.push(`  ${col.name}: ${tsType};`);
     }
 
@@ -199,7 +153,7 @@ function sqlTypeToTs(
     case "INTEGER":
       return "number";
     case "JSONB":
-      return dialect === "postgres" ? "JsonValue" : "string";
+      return dialect === "postgres" ? "unknown" : "string";
     default:
       return "string";
   }
