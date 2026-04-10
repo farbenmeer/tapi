@@ -50,5 +50,5 @@ jobs:
           # Allow git and gh CLI so Claude can commit, push, and create PRs
           # Disable web tools to prevent prompt injection via web content
           claude_args: |
-            --allowedTools "Bash(git:*),Bash(gh:*),Bash(find:*),Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(pnpm build),Bash(pnpm test)"
+            --allowedTools "Bash(git:*),Bash(gh:*),Bash(find:*),Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(pnpm build),Bash(pnpm test),Bash(pnpm install)"
             --disallowedTools "WebFetch,WebSearch"
