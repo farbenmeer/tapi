@@ -14,7 +14,7 @@ interface Options {
 
 export function streamRevalidatedTags({ cache, buildId }: Options) {
   const id = crypto.randomUUID();
-  let interval: NodeJS.Timeout | null = null;
+  let interval: ReturnType<typeof setInterval> | null = null;
   let unsubscribe = () => {};
   const stream = new ReadableStream({
     async start(controller) {
