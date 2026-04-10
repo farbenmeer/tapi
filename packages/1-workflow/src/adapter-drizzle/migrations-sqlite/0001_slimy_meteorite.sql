@@ -1,1 +1,0 @@
-ALTER TABLE `workflow_step_state` ADD `attempt` integer DEFAULT 0 NOT NULL;

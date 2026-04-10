@@ -1,1 +1,0 @@
-ALTER TABLE `workflow_state` ADD `resume_at` integer NOT NULL;
