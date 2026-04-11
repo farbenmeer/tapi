@@ -1,5 +1,11 @@
 # @farbenmeer/tapi-website
 
+## 0.4.1
+
+### Patch Changes
+
+- c648ec7: Remove deprecated vite-tsconfig-paths package
+
 ## 0.4.0
 
 ### Minor Changes
