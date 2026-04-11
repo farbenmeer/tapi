@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.5.3
+
+### Patch Changes
+
+- c648ec7: Remove deprecated vite-tsconfig-paths package
+
 ## 0.5.2
 
 ### Patch Changes
