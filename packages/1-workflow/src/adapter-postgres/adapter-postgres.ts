@@ -13,7 +13,7 @@ import type {
   StepState,
   WorkflowState,
 } from "../adapter";
-import type { Database } from "./types";
+import type { DB } from "./types";
 
 export interface PostgresDatabase {
   query(sql: string, params?: unknown[]): Promise<{ rows: unknown[] }>;
@@ -23,7 +23,7 @@ const now = () => sql<number>`EXTRACT(EPOCH FROM NOW())::integer`;
 const inXSeconds = (seconds: number) =>
   sql<number>`(EXTRACT(EPOCH FROM NOW()) + ${seconds})::integer`;
 
-const qb = new Kysely<Database>({
+const qb = new Kysely<DB>({
   dialect: {
     createAdapter: () => new KyselyPostgresAdapter(),
     createDriver: () => new DummyDriver(),
@@ -49,7 +49,7 @@ export class PostgresAdapter implements Adapter {
     workflowId: string;
     input: unknown;
   }): Promise<WorkflowState> {
-    const rows = await this.all<Database["workflow_state"]>(
+    const rows = await this.all<DB["workflow_state"]>(
       qb
         .insertInto("workflow_state")
         .values({
@@ -88,12 +88,12 @@ export class PostgresAdapter implements Adapter {
     workflowId: string,
     input: unknown,
   ): Promise<WorkflowState | null> {
-    const rows = await this.all<Database["workflow_state"]>(
+    const rows = await this.all<DB["workflow_state"]>(
       qb
         .selectFrom("workflow_state")
         .selectAll()
         .where("workflow_id", "=", workflowId)
-        .where("input", "=", sql`${JSON.stringify(input)}::jsonb`)
+        .where("input", "=", sql<any>`${JSON.stringify(input)}::jsonb`)
         .orderBy("started_at", "desc")
         .limit(1)
         .compile(),
@@ -113,7 +113,7 @@ export class PostgresAdapter implements Adapter {
       .forUpdate()
       .skipLocked();
 
-    const rows = await this.all<Database["workflow_state"]>(
+    const rows = await this.all<DB["workflow_state"]>(
       qb
         .updateTable("workflow_state")
         .set({
@@ -153,7 +153,7 @@ export class PostgresAdapter implements Adapter {
   }
 
   async getSteps(runId: string): Promise<Map<string, StepState>> {
-    const steps = await this.all<Database["workflow_step_state"]>(
+    const steps = await this.all<DB["workflow_step_state"]>(
       qb
         .selectFrom("workflow_step_state")
         .selectAll()
@@ -167,9 +167,9 @@ export class PostgresAdapter implements Adapter {
         {
           runId: step.run_id,
           stepId: step.step_id,
-          result: step.result,
+          result: step.result as unknown,
           error: step.error,
-          attempt: step.attempt,
+          attempt: step.attempt as unknown as number,
         },
       ]),
     );
@@ -202,7 +202,7 @@ export class PostgresAdapter implements Adapter {
 
     if (cursor) {
       const [date, id] = cursor.split(":");
-      const workflows = await this.all<Database["workflow_state"]>(
+      const workflows = await this.all<DB["workflow_state"]>(
         qb
           .selectFrom("workflow_state")
           .selectAll()
@@ -228,7 +228,7 @@ export class PostgresAdapter implements Adapter {
       };
     }
 
-    const workflows = await this.all<Database["workflow_state"]>(
+    const workflows = await this.all<DB["workflow_state"]>(
       qb
         .selectFrom("workflow_state")
         .selectAll()
@@ -249,7 +249,7 @@ export class PostgresAdapter implements Adapter {
 
 function mapWorkflowState(
   result: Pick<
-    Database["workflow_state"],
+    DB["workflow_state"],
     | "workflow_id"
     | "run_id"
     | "error"

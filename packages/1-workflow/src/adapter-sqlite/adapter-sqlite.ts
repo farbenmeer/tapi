@@ -163,7 +163,7 @@ export class SqliteAdapter implements Adapter {
           stepId: step.step_id,
           result: step.result != null ? JSON.parse(step.result) : null,
           error: step.error,
-          attempt: step.attempt,
+          attempt: step.attempt as unknown as number,
         },
       ]),
     );
