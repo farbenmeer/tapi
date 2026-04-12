@@ -15,7 +15,7 @@ interface CacheEntry {
   queuedRevalidation?: Promise<void>;
   fetch: () => Promise<Response>;
   subscriptions: Set<Subscription>;
-  timeout: NodeJS.Timeout | null;
+  timeout: ReturnType<typeof setTimeout> | null;
 }
 
 interface Hooks {

@@ -24,6 +24,7 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
 
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
     "declaration": true,
