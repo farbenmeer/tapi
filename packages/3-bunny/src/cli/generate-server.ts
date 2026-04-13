@@ -20,6 +20,6 @@ createBunnyApp({
     version: "${apiInfo.version}",
   },
   serverConfig: ${JSON.stringify(serverConfig, null, 2)},
-}).listen(3000);
+}).listen(parseInt(process.env.PORT ?? 3000, 10));
 `;
 }

@@ -22,7 +22,7 @@ export const dev = new Command()
   .name("dev")
   .description("Bunny Development server")
   .option("--port <port>", "Port to listen on", "3000")
-  .action(async ({ port }) => {
+  .action(async ({ port: portArg }) => {
     const config = await readConfig();
     const bunnyDir = path.join(process.cwd(), ".bunny/dev");
     if (existsSync(bunnyDir)) {
@@ -32,6 +32,7 @@ export const dev = new Command()
     const srcDir = path.join(process.cwd(), "src");
 
     loadEnv("development");
+    const port = parseInt(portArg ?? process.env.PORT ?? "3000", 10);
 
     const viteServer = await createServer({
       configFile: false,
@@ -48,6 +49,14 @@ export const dev = new Command()
       },
       plugins: [...(config.vite?.plugins ?? []), react()],
       clearScreen: false,
+      define: {
+        "process.env.NODE_ENV": JSON.stringify(
+          process.env.NODE_ENV ?? "development",
+        ),
+        "process.env.BUNNY_BUNDLE": JSON.stringify("client"),
+        "process.env.BUNNY_ENV": JSON.stringify("development"),
+        ...config.client?.define,
+      },
     });
 
     const app = connect();
@@ -92,6 +101,12 @@ export const dev = new Command()
       entryNames: "[name]-[hash]",
       outExtension: { ".js": ".cjs" },
       metafile: true,
+      define: {
+        "process.env.BUNNY_BUNDLE": JSON.stringify("server"),
+        "process.env.BUNNY_ENV": JSON.stringify("development"),
+        "process.env.BUNNY_SERVER": JSON.stringify("dev"),
+        ...config.server?.define,
+      },
       plugins: [
         {
           name: "bunny-hot-reload",
@@ -184,6 +199,6 @@ export const dev = new Command()
 
     app.use(viteServer.middlewares);
 
-    app.listen(parseInt(port, 10));
+    app.listen(port);
     console.info(`Dev-Server started on port ${port}`);
   });

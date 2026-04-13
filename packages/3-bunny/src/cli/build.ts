@@ -40,9 +40,9 @@ export const build = new Command()
         sourcemap: options.sourcemap,
         emptyOutDir: false,
         ...config.vite?.build,
-        rollupOptions: {
+        rolldownOptions: {
           input: path.join(srcDir, "index.html"),
-          ...config.vite?.build?.rollupOptions,
+          ...config.vite?.build?.rolldownOptions,
         },
       },
       resolve: {
@@ -50,6 +50,14 @@ export const build = new Command()
         ...config.vite?.resolve,
       },
       plugins: config.vite?.plugins,
+      define: {
+        "process.env.NODE_ENV": JSON.stringify(
+          process.env.NODE_ENV ?? "production",
+        ),
+        "process.env.BUNNY_BUNDLE": JSON.stringify("client"),
+        "process.env.BUNNY_ENV": JSON.stringify("production"),
+        ...config.client?.define,
+      },
     });
 
     const packageJson = JSON.parse(
@@ -79,6 +87,12 @@ export const build = new Command()
         outExtension: { ".js": ".cjs" },
         packages: "bundle",
         metafile: true,
+        define: {
+          "process.env.BUNNY_BUNDLE": JSON.stringify("server"),
+          "process.env.BUNNY_ENV": JSON.stringify("production"),
+          "process.env.BUNNY_SERVER": JSON.stringify("standalone"),
+          ...config.server?.define,
+        },
       });
 
       const serverMeta = serverBuild.metafile.outputs[".bunny/prod/server.cjs"];
@@ -106,6 +120,12 @@ export const build = new Command()
         },
         packages: "external",
         metafile: true,
+        define: {
+          "process.env.BUNNY_BUNDLE": JSON.stringify("server"),
+          "process.env.BUNNY_ENV": JSON.stringify("production"),
+          "process.env.BUNNY_SERVER": JSON.stringify("cli"),
+          ...config.server?.define,
+        },
       });
       const apiMeta = apiBuild.metafile.outputs[".bunny/prod/api.cjs"];
       console.log("Bunny: Built API");
@@ -135,6 +155,12 @@ export const build = new Command()
       entryNames: "sw",
       define: {
         __BUNNY_MANIFEST: JSON.stringify(JSON.stringify(manifest)),
+        "process.env.NODE_ENV": JSON.stringify(
+          process.env.NODE_ENV ?? "production",
+        ),
+        "process.env.BUNNY_BUNDLE": JSON.stringify("worker"),
+        "process.env.BUNNY_ENV": JSON.stringify("production"),
+        ...config.worker?.define,
       },
     });
     console.log("Bunny: Built Service Worker");
