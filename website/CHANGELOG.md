@@ -1,5 +1,12 @@
 # @farbenmeer/tapi-website
 
+## 0.4.1
+
+### Patch Changes
+
+- 65f8be3: Define statically-replaced variables
+- c648ec7: Remove deprecated vite-tsconfig-paths package
+
 ## 0.4.0
 
 ### Minor Changes
