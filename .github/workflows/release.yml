@@ -20,9 +20,6 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v6
 
-      - name: Disable pnpm verify-deps-before-run
-        run: echo "verify-deps-before-run=false" > .npmrc
-
       - uses: pnpm/action-setup@v6.0.0
 
       - uses: actions/setup-node@v6
@@ -40,3 +37,13 @@ jobs:
           publish: pnpm run release
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Diagnose dirty lockfile
+        if: always()
+        run: |
+          echo "=== pnpm version ==="
+          pnpm -v
+          echo "=== git status ==="
+          git status
+          echo "=== pnpm-lock.yaml diff (first 300 lines) ==="
+          git --no-pager diff pnpm-lock.yaml | head -n 300 || true
