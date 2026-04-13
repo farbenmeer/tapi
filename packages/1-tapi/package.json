@@ -29,7 +29,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "pnpm build && git status --porcelain && pnpm publish",
+    "release": "pnpm build && pnpm publish",
     "test": "vitest"
   },
   "devDependencies": {

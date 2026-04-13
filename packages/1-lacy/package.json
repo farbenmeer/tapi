@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "pnpm run build && git status --porcelain && pnpm publish",
+    "release": "pnpm run build && pnpm publish",
     "test": "vitest"
   },
   "devDependencies": {

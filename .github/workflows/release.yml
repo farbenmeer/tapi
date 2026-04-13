@@ -20,6 +20,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v6
 
+      - name: Disable pnpm verify-deps-before-run
+        run: echo "verify-deps-before-run=false" > .npmrc
+
       - uses: pnpm/action-setup@v6.0.0
 
       - uses: actions/setup-node@v6
