@@ -7,7 +7,7 @@ import type { MaybePromise } from "../shared/maybe-promise.js";
 
 export function createLocalClient<
   Routes extends Record<Path, MaybePromise<BaseRoute>>,
->(api: ApiDefinition<Routes>, init: RequestInit) {
+>(api: ApiDefinition<Routes>, init: RequestInit = {}) {
   const handler = createRequestHandler(api);
   return createFetchClient<Routes>("http://localhost", {
     fetch(url, localInit) {
