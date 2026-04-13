@@ -232,7 +232,7 @@ importers:
     dependencies:
       kysely:
         specifier: ^0.28.0
-        version: 0.28.15
+        version: 0.28.16
       typescript:
         specifier: ^5 || ^6.0.0
         version: 6.0.2
@@ -257,10 +257,10 @@ importers:
         version: 0.31.10
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@electric-sql/pglite@0.4.4)(@prisma/client@7.7.0(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2))(typescript@6.0.2))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.8.0)(kysely@0.28.15)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2))
+        version: 0.45.2(@electric-sql/pglite@0.4.4)(@prisma/client@7.7.0(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2))(typescript@6.0.2))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.8.0)(kysely@0.28.16)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2))
       kysely-codegen:
         specifier: ^0.18.0
-        version: 0.18.5(better-sqlite3@12.8.0)(kysely@0.28.15)(mysql2@3.15.3)(pg@8.20.0)(typescript@6.0.2)
+        version: 0.18.5(better-sqlite3@12.8.0)(kysely@0.28.16)(mysql2@3.15.3)(pg@8.20.0)(typescript@6.0.2)
       pg:
         specifier: ^8.0.0
         version: 8.20.0
@@ -3205,8 +3205,8 @@ packages:
       tedious:
         optional: true
 
-  kysely@0.28.15:
-    resolution: {integrity: sha512-r2clcf7HLWvDXaVUEvQymXJY4i3bSOIV3xsL/Upy3ZfSv5HeKsk9tsqbBptLvth5qHEIhxeHTA2jNLyQABkLBA==}
+  kysely@0.28.16:
+    resolution: {integrity: sha512-3i5pmOiZvMDj00qhrIVbH0AnioVTx22DMP7Vn5At4yJO46iy+FM8Y/g61ltenLVSo3fiO8h8Q3QOFgf/gQ72ww==}
     engines: {node: '>=20.0.0'}
 
   lightningcss-android-arm64@1.32.0:
@@ -6672,14 +6672,14 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.21.0
 
-  drizzle-orm@0.45.2(@electric-sql/pglite@0.4.4)(@prisma/client@7.7.0(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2))(typescript@6.0.2))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.8.0)(kysely@0.28.15)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2)):
+  drizzle-orm@0.45.2(@electric-sql/pglite@0.4.4)(@prisma/client@7.7.0(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2))(typescript@6.0.2))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.8.0)(kysely@0.28.16)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2)):
     optionalDependencies:
       '@electric-sql/pglite': 0.4.4
       '@prisma/client': 7.7.0(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@6.0.2))(typescript@6.0.2)
       '@types/better-sqlite3': 7.6.13
       '@types/pg': 8.20.0
       better-sqlite3: 12.8.0
-      kysely: 0.28.15
+      kysely: 0.28.16
       mysql2: 3.15.3
       pg: 8.20.0
       postgres: 3.4.7
@@ -7421,14 +7421,14 @@ snapshots:
 
   klona@2.0.6: {}
 
-  kysely-codegen@0.18.5(better-sqlite3@12.8.0)(kysely@0.28.15)(mysql2@3.15.3)(pg@8.20.0)(typescript@6.0.2):
+  kysely-codegen@0.18.5(better-sqlite3@12.8.0)(kysely@0.28.16)(mysql2@3.15.3)(pg@8.20.0)(typescript@6.0.2):
     dependencies:
       chalk: 4.1.2
       cosmiconfig: 9.0.1(typescript@6.0.2)
       dotenv: 16.6.1
       dotenv-expand: 12.0.3
       git-diff: 2.0.6
-      kysely: 0.28.15
+      kysely: 0.28.16
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
@@ -7440,7 +7440,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  kysely@0.28.15: {}
+  kysely@0.28.16: {}
 
   lightningcss-android-arm64@1.32.0:
     optional: true
