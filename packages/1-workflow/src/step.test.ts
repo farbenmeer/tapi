@@ -54,43 +54,72 @@ describe("step", () => {
 
   test("fails after n retries", async () => {
     const storage = new InMemoryAdapter();
-
     const fn = vi.fn(() => Promise.reject("NEIN"));
-
     const sut = step<void, string>({ baseTimeout: 1 }, fn);
-    await expect(() => runStep(sut, storage)).rejects.toThrow("NEIN");
 
-    const [stepState] = storage.steps.values();
+    const runId = crypto.randomUUID();
+    let stepId = "";
 
-    expect(stepState.error).toBe("NEIN");
+    try {
+      sut();
+    } catch (s: any) {
+      stepId = s.id();
+      const stepState: StepState = { runId, stepId, result: null, error: null, attempt: 0 };
+      await expect(() =>
+        s.run(storage, stepState, AbortSignal.timeout(1000)),
+      ).rejects.toThrow("NEIN");
+    }
+
+    const steps = await storage.getSteps(runId);
+    const [savedStep] = steps.values();
+
+    expect(savedStep.error).toBe("NEIN");
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
   test("fails immediately on fatal error", async () => {
     const storage = new InMemoryAdapter();
-
     const fn = vi.fn(() => Promise.reject(new FatalError("NEIN")));
-
     const sut = step<void, string>({ baseTimeout: 1 }, fn);
-    await expect(() => runStep(sut, storage)).rejects.toThrow("NEIN");
 
-    const [stepState] = storage.steps.values();
+    const runId = crypto.randomUUID();
 
-    expect(stepState.error).toBe("FatalError: NEIN");
+    try {
+      sut();
+    } catch (s: any) {
+      const stepState: StepState = { runId, stepId: s.id(), result: null, error: null, attempt: 0 };
+      await expect(() =>
+        s.run(storage, stepState, AbortSignal.timeout(1000)),
+      ).rejects.toThrow("NEIN");
+    }
+
+    const steps = await storage.getSteps(runId);
+    const [savedStep] = steps.values();
+
+    expect(savedStep.error).toBe("FatalError: NEIN");
   });
 
   test("throws original error on fatal error", async () => {
     const storage = new InMemoryAdapter();
-
     const fn = vi.fn(() =>
       Promise.reject(FatalError.from(new TypeError("NEIN"))),
     );
-
     const sut = step<void, string>({ baseTimeout: 1 }, fn);
-    await expect(() => runStep(sut, storage)).rejects.toThrow(TypeError);
 
-    const [stepState] = storage.steps.values();
+    const runId = crypto.randomUUID();
 
-    expect(stepState.error).toBe("TypeError: NEIN");
+    try {
+      sut();
+    } catch (s: any) {
+      const stepState: StepState = { runId, stepId: s.id(), result: null, error: null, attempt: 0 };
+      await expect(() =>
+        s.run(storage, stepState, AbortSignal.timeout(1000)),
+      ).rejects.toThrow(TypeError);
+    }
+
+    const steps = await storage.getSteps(runId);
+    const [savedStep] = steps.values();
+
+    expect(savedStep.error).toBe("TypeError: NEIN");
   });
 });
