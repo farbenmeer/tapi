@@ -95,6 +95,14 @@ test("shows 404 for unknown route", async ({ page }) => {
   await expect(page.getByTestId("not-found")).toBeVisible();
 });
 
+test("process.env.BUNNY_ENV is 'development' in dev", async ({ page }) => {
+  await page.goto("/");
+  const marker = await page.evaluate(
+    () => (window as unknown as { __BUNNY_DEV_MARKER__?: string }).__BUNNY_DEV_MARKER__,
+  );
+  expect(marker).toBe("BUNNY_DEV_ONLY_MARKER_9f3a1b7c");
+});
+
 test("client-side navigation does not cause full reload", async ({
   page,
   baseURL,
