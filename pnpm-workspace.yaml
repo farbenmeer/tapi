@@ -4,6 +4,7 @@ packages:
   - website
 
 managePackageManagerVersions: false
+strictDepBuilds: false
 
 onlyBuiltDependencies:
   - '@prisma/engines'
