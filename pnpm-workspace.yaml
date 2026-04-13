@@ -3,6 +3,8 @@ packages:
   - examples/*
   - website
 
+managePackageManagerVersions: false
+
 onlyBuiltDependencies:
   - '@prisma/engines'
   - better-sqlite3

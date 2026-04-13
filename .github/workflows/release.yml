@@ -20,9 +20,6 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v6
 
-      - name: Disable pnpm self-install into lockfile
-        run: echo "manage-package-manager-versions=false" > .npmrc
-
       - uses: pnpm/action-setup@v6.0.0
 
       - uses: actions/setup-node@v6
