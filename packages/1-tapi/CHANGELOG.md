@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.10.4
+
+### Patch Changes
+
+- 7cba1cc: local client can be passed additional fetch options
+
 ## 0.10.3
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @farbenmeer/bunny
 
+## 0.6.0
+
+### Minor Changes
+
+- 65f8be3: Define statically-replaced variables
+
+### Patch Changes
+
+- c648ec7: Remove deprecated vite-tsconfig-paths package
+- Updated dependencies [7cba1cc]
+  - @farbenmeer/tapi@0.10.4
+
 ## 0.5.2
 
 ### Patch Changes
