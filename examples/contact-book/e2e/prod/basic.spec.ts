@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { createContactViaApi, deleteAllContactsViaApi } from "../helpers";
 
 test.beforeEach(async ({ baseURL }) => {
@@ -39,6 +41,22 @@ test("full CRUD workflow", async ({ page, baseURL }) => {
   await page.getByTestId("delete-button").click();
   await expect(page.getByTestId("contact-list")).toBeVisible();
   await expect(page.getByTestId("empty-state")).toBeVisible();
+});
+
+test("dev-only code is stripped from production bundle", async ({ page }) => {
+  await page.goto("/");
+  const marker = await page.evaluate(
+    () => (window as unknown as { __BUNNY_DEV_MARKER__?: string }).__BUNNY_DEV_MARKER__,
+  );
+  expect(marker).toBeUndefined();
+
+  const assetsDir = path.join(process.cwd(), ".bunny/prod/dist/assets");
+  const jsFiles = readdirSync(assetsDir).filter((f) => f.endsWith(".js"));
+  expect(jsFiles.length).toBeGreaterThan(0);
+  for (const file of jsFiles) {
+    const contents = readFileSync(path.join(assetsDir, file), "utf8");
+    expect(contents).not.toContain("BUNNY_DEV_ONLY_MARKER_9f3a1b7c");
+  }
 });
 
 test("direct URL access works (SPA routing)", async ({ page, baseURL }) => {
