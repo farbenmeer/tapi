@@ -17,7 +17,7 @@ export interface StepState {
 }
 
 export interface Adapter {
-  getLastestRun(
+  getLatestRun(
     workflowId: string,
     input: unknown,
   ): Promise<WorkflowState | null>;

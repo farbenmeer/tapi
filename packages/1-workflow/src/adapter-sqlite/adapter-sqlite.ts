@@ -34,7 +34,10 @@ const qb = new Kysely<DB>({
 export class SqliteAdapter implements Adapter {
   constructor(protected db: SqliteDatabase) {}
 
-  private all<T>(compiled: { sql: string; parameters: readonly unknown[] }): T[] {
+  private all<T>(compiled: {
+    sql: string;
+    parameters: readonly unknown[];
+  }): T[] {
     return this.db.prepare(compiled.sql).all(...compiled.parameters) as T[];
   }
 
@@ -53,10 +56,9 @@ export class SqliteAdapter implements Adapter {
         run_id: crypto.randomUUID(),
         error: null,
         input: JSON.stringify(input.input),
-        leaseExpiredAt: 0,
+        lease_expired_at: 0,
         started_at: sql<number>`unixepoch()`,
         finished_at: null,
-        resume_at: 0,
       })
       .returningAll()
       .compile();
@@ -72,15 +74,19 @@ export class SqliteAdapter implements Adapter {
       qb
         .updateTable("workflow_state")
         .set({
-          leaseExpiredAt: sql<number>`unixepoch() + ${leaseDuration}`,
+          lease_expired_at: sql<number>`unixepoch() + ${leaseDuration}`,
         })
         .where("run_id", "=", runId)
-        .where("leaseExpiredAt", "<", sql<number>`unixepoch() + ${leaseDuration}`)
+        .where(
+          "lease_expired_at",
+          "<",
+          sql<number>`unixepoch() + ${leaseDuration}`,
+        )
         .compile(),
     );
   }
 
-  async getLastestRun(
+  async getLatestRun(
     workflowId: string,
     input: unknown,
   ): Promise<WorkflowState | null> {
@@ -103,7 +109,7 @@ export class SqliteAdapter implements Adapter {
       .selectFrom("workflow_state")
       .select("run_id")
       .where("finished_at", "is", null)
-      .where("leaseExpiredAt", "<=", sql<number>`unixepoch()`)
+      .where("lease_expired_at", "<=", sql<number>`unixepoch()`)
       .orderBy("started_at", "asc")
       .limit(1);
 
@@ -111,7 +117,7 @@ export class SqliteAdapter implements Adapter {
       qb
         .updateTable("workflow_state")
         .set({
-          leaseExpiredAt: sql<number>`unixepoch() + ${leaseDuration}`,
+          lease_expired_at: sql<number>`unixepoch() + ${leaseDuration}`,
         })
         .where("run_id", "=", subquery)
         .returningAll()
@@ -250,7 +256,7 @@ function mapWorkflowState(
     | "input"
     | "started_at"
     | "finished_at"
-    | "leaseExpiredAt"
+    | "lease_expired_at"
   >,
 ): WorkflowState {
   return {
@@ -263,8 +269,9 @@ function mapWorkflowState(
     ),
     finishedAt: result.finished_at ? new Date(result.finished_at * 1000) : null,
     leaseExpiredAt: new Date(
-      (typeof result.leaseExpiredAt === "number" ? result.leaseExpiredAt : 0) *
-        1000,
+      (typeof result.lease_expired_at === "number"
+        ? result.lease_expired_at
+        : 0) * 1000,
     ),
   };
 }

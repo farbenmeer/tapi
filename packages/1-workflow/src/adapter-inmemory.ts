@@ -4,7 +4,7 @@ import Database from "better-sqlite3";
 import { SqliteAdapter } from "./adapter-sqlite/adapter-sqlite";
 
 const SQLITE_SCHEMA = readFileSync(
-  path.resolve(import.meta.dirname, "sql/sqlite.sql"),
+  path.resolve(process.cwd(), "sql/sqlite.sql"),
   "utf-8",
 );
 

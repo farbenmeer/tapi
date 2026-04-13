@@ -13,8 +13,7 @@ export interface WorkflowState {
   error: string | null;
   finished_at: number | null;
   input: string | null;
-  leaseExpiredAt: number;
-  resume_at: number;
+  lease_expired_at: number;
   run_id: string;
   started_at: number;
   workflow_id: string;

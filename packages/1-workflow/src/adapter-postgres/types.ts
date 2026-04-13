@@ -26,7 +26,6 @@ export interface WorkflowState {
   finished_at: number | null;
   input: Json | null;
   lease_expired_at: number;
-  resume_at: number;
   run_id: string;
   started_at: number;
   workflow_id: string;

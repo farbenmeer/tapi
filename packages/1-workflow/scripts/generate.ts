@@ -12,19 +12,16 @@ import Database from "better-sqlite3";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 
-const ROOT = path.resolve(import.meta.dirname, "..");
+const ROOT = process.cwd();
 const SRC = path.join(ROOT, "src");
+const SQL = path.join(ROOT, "sql");
 const BIN = path.join(ROOT, "node_modules/.bin");
 
 function makeTmpDir(prefix: string) {
   return mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
-function runAsync(
-  command: string,
-  args: string[],
-  cwd: string,
-): Promise<void> {
+function runAsync(command: string, args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { cwd, stdio: "inherit" });
     child.on("error", reject);
@@ -37,14 +34,14 @@ function runAsync(
 
 function cleanDrizzleKitOutput(dir: string) {
   for (const file of readdirSync(dir)) {
-    if (file.endsWith(".sql") || file === "relations.ts" || file === "meta") {
+    if (file.endsWith(".sql") || file === "meta") {
       rmSync(path.join(dir, file), { recursive: true, force: true });
     }
   }
 }
 
 async function generateSqlite() {
-  const sqliteSql = readFileSync(path.join(SRC, "sql/sqlite.sql"), "utf-8");
+  const sqliteSql = readFileSync(path.join(SQL, "sqlite.sql"), "utf-8");
   const tmpDir = makeTmpDir("workflow-codegen-sqlite-");
   const tmpDb = path.join(tmpDir, "codegen.sqlite");
 
@@ -89,10 +86,7 @@ async function generateSqlite() {
 }
 
 async function generatePostgres() {
-  const postgresSql = readFileSync(
-    path.join(SRC, "sql/postgres.sql"),
-    "utf-8",
-  );
+  const postgresSql = readFileSync(path.join(SQL, "postgres.sql"), "utf-8");
 
   const pg = new PGlite();
   await pg.exec(postgresSql);

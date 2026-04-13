@@ -21,7 +21,8 @@
     "url": "git+https://github.com/farbenmeer/tapi.git"
   },
   "files": [
-    "dist"
+    "dist",
+    "sql"
   ],
   "scripts": {
     "build": "tsc --noEmit false",
@@ -46,6 +47,7 @@
     "vitest": "^4.1.2"
   },
   "peerDependencies": {
+    "better-sqlite3": "^12.8.0",
     "typescript": "^5 || ^6.0.0"
   }
 }

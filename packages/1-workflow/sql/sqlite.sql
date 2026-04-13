@@ -3,10 +3,9 @@ CREATE TABLE IF NOT EXISTS workflow_state (
   run_id TEXT PRIMARY KEY NOT NULL,
   error TEXT,
   input TEXT,
-  leaseExpiredAt INTEGER NOT NULL,
+  lease_expired_at INTEGER NOT NULL,
   started_at INTEGER NOT NULL,
-  finished_at INTEGER,
-  resume_at INTEGER NOT NULL
+  finished_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS workflow_step_state (

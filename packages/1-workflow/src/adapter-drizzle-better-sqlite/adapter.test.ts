@@ -10,7 +10,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 const SCHEMA = readFileSync(
-  path.resolve(import.meta.dirname, "../sql/sqlite.sql"),
+  path.resolve(process.cwd(), "sql/sqlite.sql"),
   "utf-8",
 );
 

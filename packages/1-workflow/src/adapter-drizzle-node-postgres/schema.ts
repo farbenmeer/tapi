@@ -11,7 +11,6 @@ export const workflowState = pgTable("workflow_state", {
 	leaseExpiredAt: integer("lease_expired_at").notNull(),
 	startedAt: integer("started_at").notNull(),
 	finishedAt: integer("finished_at"),
-	resumeAt: integer("resume_at").notNull(),
 });
 
 export const workflowStepState = pgTable("workflow_step_state", {

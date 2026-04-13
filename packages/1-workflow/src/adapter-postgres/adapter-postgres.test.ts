@@ -8,7 +8,7 @@ import { workflow } from "../workflow";
 import { PostgresAdapter } from "./adapter-postgres";
 
 const SCHEMA = readFileSync(
-  path.resolve(import.meta.dirname, "../sql/postgres.sql"),
+  path.resolve(process.cwd(), "sql/postgres.sql"),
   "utf-8",
 );
 

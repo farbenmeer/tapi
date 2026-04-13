@@ -112,7 +112,7 @@ class RawEngine {
     input: unknown,
     interval: number,
   ): Promise<void> {
-    const lastRun = await this.storage.getLastestRun(
+    const lastRun = await this.storage.getLatestRun(
       workflowId as string,
       input,
     );

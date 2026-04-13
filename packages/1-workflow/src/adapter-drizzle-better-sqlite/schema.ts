@@ -6,10 +6,9 @@ export const workflowState = sqliteTable("workflow_state", {
 	runId: text("run_id").primaryKey().notNull(),
 	error: text(),
 	input: text(),
-	leaseExpiredAt: integer().notNull(),
+	leaseExpiredAt: integer("lease_expired_at").notNull(),
 	startedAt: integer("started_at").notNull(),
 	finishedAt: integer("finished_at"),
-	resumeAt: integer("resume_at").notNull(),
 });
 
 export const workflowStepState = sqliteTable("workflow_step_state", {

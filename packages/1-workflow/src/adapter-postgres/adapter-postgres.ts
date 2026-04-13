@@ -60,7 +60,6 @@ export class PostgresAdapter implements Adapter {
           lease_expired_at: 0,
           started_at: now(),
           finished_at: null,
-          resume_at: 0,
         })
         .returningAll()
         .compile(),
@@ -84,7 +83,7 @@ export class PostgresAdapter implements Adapter {
     );
   }
 
-  async getLastestRun(
+  async getLatestRun(
     workflowId: string,
     input: unknown,
   ): Promise<WorkflowState | null> {
@@ -182,13 +181,19 @@ export class PostgresAdapter implements Adapter {
         .values({
           run_id: state.runId,
           step_id: state.stepId,
-          result: state.result != null ? sql`${JSON.stringify(state.result)}::jsonb` : null,
+          result:
+            state.result != null
+              ? sql`${JSON.stringify(state.result)}::jsonb`
+              : null,
           error: state.error,
           attempt: state.attempt,
         })
         .onConflict((oc) =>
           oc.columns(["run_id", "step_id"]).doUpdateSet({
-            result: state.result != null ? sql`${JSON.stringify(state.result)}::jsonb` : null,
+            result:
+              state.result != null
+                ? sql`${JSON.stringify(state.result)}::jsonb`
+                : null,
             error: state.error,
             attempt: state.attempt,
           }),
