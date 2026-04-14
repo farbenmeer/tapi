@@ -8,7 +8,7 @@ import { loadEnv } from "../load-env.js";
 export const start = new Command()
   .name("start")
   .description("Bunny Production server")
-  .option("--port <number>", "Port number", process.env.PORT ?? "3000")
+  .option("--port <number>", "Port number (default: 3000)")
   .action(async (options) => {
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
     const packageJson = JSON.parse(

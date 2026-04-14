@@ -21,7 +21,7 @@ import { parseURL } from "../server/parse-url.js";
 export const dev = new Command()
   .name("dev")
   .description("Bunny Development server")
-  .option("--port <port>", "Port to listen on", "3000")
+  .option("--port <port>", "Port to listen on (default: 3000)")
   .action(async ({ port: portArg }) => {
     const bunnyDir = path.join(process.cwd(), ".bunny/dev");
     if (existsSync(bunnyDir)) {
