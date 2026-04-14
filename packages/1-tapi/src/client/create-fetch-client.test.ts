@@ -164,4 +164,11 @@ describe("createFetchClient", () => {
       { value: 4 },
     ]);
   });
+
+  test("optional query parameters", async () => {
+    expect(await client.optionalQuery.get()).toEqual({});
+    expect(await client.optionalQuery.get({ optional: "foo" })).toEqual({
+      optional: "foo",
+    });
+  });
 });

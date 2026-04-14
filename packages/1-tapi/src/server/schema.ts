@@ -13,7 +13,9 @@ export type Schema<
   __q?: Query;
   __b?: Body;
   params?: { [key in keyof Params]: ZodType<Params[key], string> };
-  query?: { [key in keyof Query]: ZodType<Query[key], string | string[]> };
+  query?: {
+    [key in keyof Query]: ZodType<Query[key], string | string[] | undefined>;
+  };
   body?: ZodType<Body>;
   response?: ZodType<Response>;
   authorize: (

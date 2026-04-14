@@ -154,13 +154,11 @@ export const api = defineApi()
     ),
   })
   .route("/cached", {
-    GET: defineHandler(
-      { authorize: () => true },
-      async () =>
-        TResponse.json(
-          { data: "cached" },
-          { cache: { tags: ["cached"], ttl: 60 } },
-        ),
+    GET: defineHandler({ authorize: () => true }, async () =>
+      TResponse.json(
+        { data: "cached" },
+        { cache: { tags: ["cached"], ttl: 60 } },
+      ),
     ),
   })
   .route("/stream", {
@@ -175,6 +173,19 @@ export const api = defineApi()
           }
         }
         return TResponse.ndjson(stream());
+      },
+    ),
+  })
+  .route("/optionalQuery", {
+    GET: defineHandler(
+      {
+        query: {
+          optional: z.string().optional(),
+        },
+        authorize: () => true,
+      },
+      async (req) => {
+        return TResponse.json(req.query());
       },
     ),
   });

@@ -42,13 +42,13 @@ export type QueryWithoutBody<
   Handler extends BaseHandler<any, any, any, undefined> | undefined
 > = Handler extends undefined
   ? never
-  : keyof QueryType<Handler> extends never
+  : RequiredKeys<QueryType<Handler>> extends never
   ? (
-      query?: {},
+      query?: Partial<QueryType<Handler>>,
       req?: RequestInit
     ) => Promise<ResponseType<Handler>> & Observable<ResponseType<Handler>>
   : (
-      query: QueryType<Handler>,
+      query: OptionalizeUndefined<QueryType<Handler>>,
       req?: RequestInit
     ) => Promise<ResponseType<Handler>> & Observable<ResponseType<Handler>>;
 
@@ -64,13 +64,13 @@ export type MutationWithoutBody<
   Handler extends BaseHandler<any, any, any, undefined> | undefined
 > = Handler extends undefined
   ? never
-  : keyof QueryType<Handler> extends never
+  : RequiredKeys<QueryType<Handler>> extends never
   ? (
-      query?: {},
+      query?: Partial<QueryType<Handler>>,
       req?: RequestInit
     ) => Promise<ResponseType<Handler>> & Revalidating
   : (
-      query: QueryType<Handler>,
+      query: OptionalizeUndefined<QueryType<Handler>>,
       req?: RequestInit
     ) => Promise<ResponseType<Handler>> & Revalidating;
 
@@ -80,11 +80,21 @@ export type MutationWithBody<
   ? never
   : (
       body?: BodyType<Handler> | FormData,
-      req?: RequestInit & { query?: QueryType<Handler> }
+      req?: RequestInit & { query?: OptionalizeUndefined<QueryType<Handler>> }
     ) => Promise<ResponseType<Handler>> & Revalidating;
 
 type QueryType<Handler extends { schema: { __q?: any } } | undefined> =
   NonNullable<NonNullable<Handler>["schema"]["__q"]>;
+
+type RequiredKeys<T> = {
+  [K in keyof T]-?: undefined extends T[K] ? never : K;
+}[keyof T];
+
+type OptionalizeUndefined<T> = {
+  [K in keyof T as undefined extends T[K] ? never : K]: T[K];
+} & {
+  [K in keyof T as undefined extends T[K] ? K : never]?: T[K];
+};
 
 type BodyType<Handler extends { schema: { __b?: any } } | undefined> =
   NonNullable<NonNullable<Handler>["schema"]["__b"]>;
