@@ -1,5 +1,13 @@
 # @farbenmeer/bunny
 
+## 0.6.1
+
+### Patch Changes
+
+- 78fa57c: load env before loading config
+- Updated dependencies [a34ecc8]
+  - @farbenmeer/tapi@0.10.5
+
 ## 0.6.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.10.5
+
+### Patch Changes
+
+- a34ecc8: optional query parameters
+
 ## 0.10.4
 
 ### Patch Changes
