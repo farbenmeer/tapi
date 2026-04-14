@@ -3,11 +3,10 @@ packages:
   - examples/*
   - website
 
-managePackageManagerVersions: false
 strictDepBuilds: false
 
 onlyBuiltDependencies:
-  - '@prisma/engines'
+  - "@prisma/engines"
   - better-sqlite3
   - esbuild
   - prisma

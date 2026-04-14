@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit false",
-    "release": "pnpm build && pnpm publish",
+    "release": "pnpm build && pnpm publish --no-git-checks",
     "generate:e2e": "prisma generate --schema=./e2e/prisma/pglite/schema.prisma && prisma generate --schema=./e2e/prisma/sqlite/schema.prisma",
     "test": "pnpm generate:e2e && vitest",
     "test:unit": "vitest run src",
