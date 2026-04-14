@@ -23,7 +23,6 @@ export const dev = new Command()
   .description("Bunny Development server")
   .option("--port <port>", "Port to listen on", "3000")
   .action(async ({ port: portArg }) => {
-    const config = await readConfig();
     const bunnyDir = path.join(process.cwd(), ".bunny/dev");
     if (existsSync(bunnyDir)) {
       await rm(bunnyDir, { recursive: true });
@@ -32,6 +31,8 @@ export const dev = new Command()
     const srcDir = path.join(process.cwd(), "src");
 
     loadEnv("development");
+    const config = await readConfig();
+
     const port = parseInt(portArg ?? process.env.PORT ?? "3000", 10);
 
     const viteServer = await createServer({

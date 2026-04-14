@@ -16,7 +16,6 @@ export const build = new Command()
   .option("--standalone", "Generate standalone server", false)
   .description("Bunny Production Build")
   .action(async (options) => {
-    const config = await readConfig();
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
     const srcDir = path.join(process.cwd(), "src");
     const distDir = path.join(bunnyDir, "dist");
@@ -25,10 +24,11 @@ export const build = new Command()
     }
     await mkdir(bunnyDir, { recursive: true });
 
-    loadEnv("production");
-
     const buildId = randomUUID();
     await writeFile(path.join(bunnyDir, "buildId.txt"), buildId);
+
+    loadEnv("production");
+    const config = await readConfig();
 
     const clientBuildOutput = await vite.build({
       configFile: false,
