@@ -198,7 +198,7 @@ importers:
     devDependencies:
       '@redis/client':
         specifier: ^5.10.0
-        version: 5.12.0
+        version: 5.12.1
       '@types/node':
         specifier: ^25.0.3
         version: 25.6.0
@@ -1638,8 +1638,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@redis/client@5.12.0':
-    resolution: {integrity: sha512-rFtRx68ZOtFO6aQwEfMaje3dh/x6BOr0kAauIiTimUw+A6RVbx5QVLbYHQXL+hlxondnm8dbNV6lsgzShg3yKQ==}
+  '@redis/client@5.12.1':
+    resolution: {integrity: sha512-7aPGWeqA3uFm43o19umzdl16CEjK/JQGtSXVPevplTaOU3VJA/rseBC1QvYUz9lLDIMBimc4SW/zrW4S89BaCA==}
     engines: {node: '>= 18.19.0'}
     peerDependencies:
       '@node-rs/xxhash': ^1.1.0
@@ -5686,7 +5686,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  '@redis/client@5.12.0':
+  '@redis/client@5.12.1':
     dependencies:
       cluster-key-slot: 1.1.2
 
