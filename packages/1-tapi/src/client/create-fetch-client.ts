@@ -1,4 +1,8 @@
-import { INVALIDATION_POST_EVENT, INVALIDATIONS_ROUTE, TAGS_HEADER } from "../shared/constants.js";
+import {
+  INVALIDATION_POST_EVENT,
+  INVALIDATIONS_ROUTE,
+  TAGS_HEADER,
+} from "../shared/constants.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
@@ -31,7 +35,7 @@ async function listenForInvalidations(url: string, cache: Cache) {
       // network error — retry below
     }
     await new Promise((resolve) =>
-      setTimeout(resolve, 500 * Math.pow(2, Math.min(retry, 10)))
+      setTimeout(resolve, 500 * Math.pow(2, Math.min(retry, 10))),
     );
   }
 }
@@ -49,7 +53,7 @@ interface Options {
 }
 
 export function createFetchClient<
-  Routes extends Record<BasePath, MaybePromise<BaseRoute>>
+  Routes extends Record<BasePath, MaybePromise<BaseRoute>>,
 >(apiUrl: string, options: Options = {}) {
   const fetch = options.fetch ?? globalFetch;
 
@@ -77,7 +81,7 @@ export function createFetchClient<
         } catch (error) {
           console.warn(
             "TApi: Failed to revalidate tags: received invalid post message",
-            event.data
+            event.data,
           );
         }
       }
@@ -94,7 +98,7 @@ export function createFetchClient<
       fetch(url, {
         method: "GET",
         ...init,
-      })
+      }),
     );
   }
 
@@ -106,7 +110,7 @@ export function createFetchClient<
     method: string,
     url: string,
     data?: FormData | unknown,
-    init: RequestInit = {}
+    init: RequestInit = {},
   ): Promise<any> & Revalidating {
     const headers = new Headers(init.headers);
 
@@ -120,14 +124,14 @@ export function createFetchClient<
         typeof data === "undefined"
           ? undefined
           : data instanceof FormData
-          ? data
-          : JSON.stringify(data),
+            ? data
+            : JSON.stringify(data),
       ...init,
       headers,
     });
 
     const revalidationPromise = res.then((res) =>
-      cache.revalidateTags(res.headers.get(TAGS_HEADER)?.split(" ") ?? [])
+      cache.revalidateTags(res.headers.get(TAGS_HEADER)?.split(" ") ?? []),
     );
 
     return Object.assign(
@@ -139,7 +143,7 @@ export function createFetchClient<
         }),
       {
         revalidated: revalidationPromise,
-      }
+      },
     );
   }
 
@@ -152,7 +156,7 @@ export function createFetchClient<
           mutate,
         },
         apiUrl,
-        prop
+        prop,
       );
     },
   }) as unknown as Client<Routes>;
@@ -165,8 +169,18 @@ interface ProxyMethods {
     method: string,
     url: string,
     data: FormData | unknown,
-    init?: RequestInit
+    init?: RequestInit,
   ): Promise<unknown> & Revalidating;
+}
+
+function buildUrl(baseUrl: string, query: unknown) {
+  if (!query || typeof query !== "object") return baseUrl;
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (typeof value === "undefined") continue;
+    searchParams.append(key, value as string);
+  }
+  return searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
 }
 
 function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
@@ -185,34 +199,28 @@ function createProxy(methods: ProxyMethods, baseUrl: string, lastProp: string) {
     apply(_target, _thisArg, args) {
       switch (lastProp) {
         case "revalidate": {
-          const searchParams = new URLSearchParams(args[0]);
-          const url =
-            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
-          return methods.revalidate(url);
+          return methods.revalidate(buildUrl(baseUrl, args[0]));
         }
         case "get": {
-          const searchParams = new URLSearchParams(args[0]);
-          const url =
-            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
-
-          const observablePromise = methods.load(url, args[1]);
-          return observablePromise;
+          return methods.load(buildUrl(baseUrl, args[0]), args[1]);
         }
         case "delete": {
-          const searchParams = new URLSearchParams(args[0]);
-          const url =
-            searchParams.size > 0 ? baseUrl + "?" + searchParams : baseUrl;
-          return methods.mutate("DELETE", url, undefined, args[1]);
+          return methods.mutate(
+            "DELETE",
+            buildUrl(baseUrl, args[0]),
+            undefined,
+            args[1],
+          );
         }
         case "post":
         case "put":
         case "patch": {
-          let url = baseUrl;
-          if (args[1]?.query) {
-            url += "?" + new URLSearchParams(args[1].query);
-          }
-
-          return methods.mutate(lastProp.toUpperCase(), url, args[0], args[1]);
+          return methods.mutate(
+            lastProp.toUpperCase(),
+            buildUrl(baseUrl, args[1]?.query),
+            args[0],
+            args[1],
+          );
         }
 
         default:

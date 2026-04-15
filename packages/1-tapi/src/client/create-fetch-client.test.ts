@@ -171,4 +171,12 @@ describe("createFetchClient", () => {
       optional: "foo",
     });
   });
+
+  test("undefined query parameters are omitted", async () => {
+    expect(await client.optionalQuery.get({ optional: undefined })).toEqual({});
+    expect(fetch).toHaveBeenCalledWith(
+      "https://example.com/api/optionalQuery",
+      { method: "GET" },
+    );
+  });
 });
