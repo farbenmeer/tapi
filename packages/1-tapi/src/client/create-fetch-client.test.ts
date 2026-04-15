@@ -179,4 +179,15 @@ describe("createFetchClient", () => {
       { method: "GET" },
     );
   });
+
+  test("errors are propagated", async () => {
+    const observable = client.error["not-found"].get();
+
+    const cb = vi.fn();
+    observable.subscribe(cb);
+
+    await expect(observable).rejects.toThrow();
+
+    expect(cb).not.toHaveBeenCalled();
+  });
 });
