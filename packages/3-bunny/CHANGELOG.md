@@ -1,5 +1,13 @@
 # @farbenmeer/bunny
 
+## 0.6.2
+
+### Patch Changes
+
+- 502140d: no default port so environment variable actually works
+- Updated dependencies [837c536]
+  - @farbenmeer/tapi@0.10.6
+
 ## 0.6.1
 
 ### Patch Changes
