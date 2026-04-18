@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.10.6
+
+### Patch Changes
+
+- 837c536: undefined query parameters are ignored
+
 ## 0.10.5
 
 ### Patch Changes

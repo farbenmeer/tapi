@@ -1,5 +1,11 @@
 # @farbenmeer/tapi-website
 
+## 0.4.2
+
+### Patch Changes
+
+- d287f62: docs for tapi usage with native bun http
+
 ## 0.4.1
 
 ### Patch Changes
