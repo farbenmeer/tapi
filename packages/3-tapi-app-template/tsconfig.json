@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
+    "types": ["node", "vite/client"],
+    "baseUrl": "src",
+    "paths": {
+      "#imports": ["./node_modules/.nitro/types/nitro-imports.d.ts"]
+    }
+  },
+  "include": ["src", "vite.config.ts", "vite.sw.config.ts", "nitro.config.ts"]
+}

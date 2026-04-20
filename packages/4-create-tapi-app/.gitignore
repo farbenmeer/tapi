@@ -1,0 +1,4 @@
+dist
+template.tgz
+node_modules
+*.log

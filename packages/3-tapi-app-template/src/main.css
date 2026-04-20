@@ -1,0 +1,11 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+main { text-align: center; padding: 2rem; }
+h1 { font-size: 2.25rem; margin-bottom: 1rem; }
