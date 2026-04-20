@@ -14,11 +14,11 @@ pnpm preview  # preview the production build
 ## Project layout
 
 ```
+server.ts                             # Nitro server entry: forwards /api/** to TApi
 src/
 ├── api.ts                            # TApi root: defineApi().route(...)
 ├── handlers/                         # TApi route handlers
 │   └── hello.ts
-├── api/[...].ts                      # Nitro catch-all → TApi
 ├── routes/                           # Nitro routes (non-/api)
 │   ├── __tapi/invalidations.get.ts   # Cache-invalidation stream
 │   └── .well-known/openapi.json.get.ts
@@ -32,8 +32,8 @@ src/
 ## How the pieces connect
 
 - **Vite** bundles the React client. `nitro/vite` plugs Nitro into the same dev/build pipeline.
-- **Nitro** scans `src/api/**` (mounted at `/api`) and `src/routes/**` (mounted at `/`) thanks to `serverDir: "src"` in `nitro.config.ts`.
-- **TApi** owns everything under `/api`. The single Nitro file at `src/api/[...].ts` forwards every request to TApi's `createRequestHandler`. TApi handlers live in `src/handlers/` to stay out of Nitro's auto-scan path.
+- **Nitro** auto-detects `server.ts` at the project root as the server entry handler (mounted at `/**`), and scans `src/routes/**` (mounted at `/`) thanks to `serverDir: "src"` in `nitro.config.ts`. More-specific scanned routes take precedence over `server.ts`.
+- **TApi** owns everything under `/api`. `server.ts` checks the path and forwards `/api/**` requests to TApi's `createRequestHandler`; everything else falls through to the scanned routes or the renderer (SPA fallback). TApi handlers live in `src/handlers/`.
 - **Service worker** is built by `vite.sw.config.ts` into `.cache/sw/sw.js` (lib mode), then registered as a Nitro public asset via `publicAssets` in `nitro.config.ts`. The client registers it from `src/index.tsx` only in production.
 
 ## Deployment

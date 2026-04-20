@@ -8,6 +8,7 @@
     "src",
     "index.html",
     "nitro.config.ts",
+    "server.ts",
     "vite.config.ts",
     "vite.sw.config.ts",
     "tsconfig.json",

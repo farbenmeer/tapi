@@ -17,5 +17,5 @@
       "#imports": ["./node_modules/.nitro/types/nitro-imports.d.ts"]
     }
   },
-  "include": ["src", "vite.config.ts", "vite.sw.config.ts", "nitro.config.ts"]
+  "include": ["src", "server.ts", "vite.config.ts", "vite.sw.config.ts", "nitro.config.ts"]
 }
