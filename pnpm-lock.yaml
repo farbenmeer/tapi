@@ -406,6 +406,28 @@ importers:
         specifier: ^4.0.16
         version: 4.1.4(@types/node@25.6.0)(@vitest/browser-playwright@4.1.4)(happy-dom@20.9.0)(vite@8.0.9(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0))
 
+  packages/3-vite-plugin-tapi:
+    dependencies:
+      srvx:
+        specifier: ^0.11.15
+        version: 0.11.15
+      typescript:
+        specifier: ^5 || ^6.0.0
+        version: 6.0.3
+    devDependencies:
+      '@farbenmeer/tapi':
+        specifier: workspace:^
+        version: link:../1-tapi
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.6.0
+      vite:
+        specifier: ^8.0.9
+        version: 8.0.9(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)
+      vitest:
+        specifier: ^4.0.16
+        version: 4.1.4(@types/node@25.6.0)(@vitest/browser-playwright@4.1.4)(happy-dom@20.9.0)(vite@8.0.9(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0))
+
   packages/4-bunny-boilerplate:
     dependencies:
       '@farbenmeer/bunny':
@@ -4142,6 +4164,11 @@ packages:
   sqlstring@2.3.3:
     resolution: {integrity: sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==}
     engines: {node: '>= 0.6'}
+
+  srvx@0.11.15:
+    resolution: {integrity: sha512-iXsux0UcOjdvs0LCMa2Ws3WwcDUozA3JN3BquNXkaFPP7TpRqgunKdEgoZ/uwb1J6xaYHfxtz9Twlh6yzwM6Tg==}
+    engines: {node: '>=20.16.0'}
+    hasBin: true
 
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
@@ -8654,6 +8681,8 @@ snapshots:
   sprintf-js@1.0.3: {}
 
   sqlstring@2.3.3: {}
+
+  srvx@0.11.15: {}
 
   stackback@0.0.2: {}
 
