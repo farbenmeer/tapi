@@ -51,11 +51,12 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
               format: "esm",
               entryFileNames: "server.mjs",
             },
-            external: standalone
-              ? []
-              : ["srvx", /^@farbenmeer\/tapi(\/.*)?$/],
+            ...(standalone
+              ? {}
+              : { external: ["srvx", /^@farbenmeer\/tapi(\/.*)?$/] }),
           },
         },
+        ssr: standalone ? { noExternal: true } : undefined,
       };
     },
 
