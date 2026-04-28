@@ -242,7 +242,7 @@ importers:
         version: 0.4.5
       '@electric-sql/pglite-socket':
         specifier: ^0.1.1
-        version: 0.1.4(@electric-sql/pglite@0.4.5)
+        version: 0.1.5(@electric-sql/pglite@0.4.5)
       '@types/better-sqlite3':
         specifier: ^7.6.0
         version: 7.6.13
@@ -591,11 +591,11 @@ packages:
     peerDependencies:
       '@electric-sql/pglite': 0.4.1
 
-  '@electric-sql/pglite-socket@0.1.4':
-    resolution: {integrity: sha512-2LuMFxJPE2FbjWDrWpylWwhZ5uT03rQfBLM7g2AdZmiG3JjC8sbYFkFR4ZeoqVcn22wKzpJTXFV22mQ+s4Oueg==}
+  '@electric-sql/pglite-socket@0.1.5':
+    resolution: {integrity: sha512-/RAye+3EPKfO9nY4tljzxXmkT7yIpFDm0L3F+c28b+Z6uxPOjy/Zz/QEHYHXcrfuUC88/a9S72EO0+3E0j97wQ==}
     hasBin: true
     peerDependencies:
-      '@electric-sql/pglite': 0.4.4
+      '@electric-sql/pglite': 0.4.5
 
   '@electric-sql/pglite-tools@0.3.1':
     resolution: {integrity: sha512-C+T3oivmy9bpQvSxVqXA1UDY8cB9Eb9vZHL9zxWwEUfDixbXv4G3r2LjoTdR33LD8aomR3O9ZXEO3XEwr/cUCA==}
@@ -4926,7 +4926,7 @@ snapshots:
     dependencies:
       '@electric-sql/pglite': 0.4.1
 
-  '@electric-sql/pglite-socket@0.1.4(@electric-sql/pglite@0.4.5)':
+  '@electric-sql/pglite-socket@0.1.5(@electric-sql/pglite@0.4.5)':
     dependencies:
       '@electric-sql/pglite': 0.4.5
 
