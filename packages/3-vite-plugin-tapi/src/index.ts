@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { loadEnv, type Plugin, type ViteDevServer } from "vite";
 import { serve, type ServerHandler, type Server } from "srvx";
@@ -42,21 +43,36 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
     config(_userConfig, env) {
       if (env.command !== "build") return;
       return {
-        build: {
-          ssr: true,
-          outDir: "dist",
-          rolldownOptions: {
-            input: VIRTUAL_ID,
-            output: {
-              format: "esm",
-              entryFileNames: "server.mjs",
+        environments: {
+          ssr: {
+            build: {
+              // Client build runs first and empties dist; ssr appends server.mjs.
+              emptyOutDir: false,
+              rolldownOptions: {
+                input: VIRTUAL_ID,
+                output: {
+                  format: "esm",
+                  entryFileNames: "server.mjs",
+                },
+                ...(standalone
+                  ? {}
+                  : { external: ["srvx", /^@farbenmeer\/tapi(\/.*)?$/] }),
+              },
             },
-            ...(standalone
-              ? {}
-              : { external: ["srvx", /^@farbenmeer\/tapi(\/.*)?$/] }),
+            resolve: standalone ? { noExternal: true } : undefined,
           },
         },
-        ssr: standalone ? { noExternal: true } : undefined,
+        builder: {
+          async buildApp(builder) {
+            const hasClient = fs.existsSync(
+              path.join(builder.config.root, "index.html"),
+            );
+            if (hasClient) {
+              await builder.build(builder.environments.client);
+            }
+            await builder.build(builder.environments.ssr);
+          },
+        },
       };
     },
 
@@ -139,7 +155,7 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         },
       });
       await server.ready();
-      console.info(`[vite-plugin-tapi] dev server on ${server.url}`);
+      console.info(`[vite-plugin-tapi] api server on ${server.url}`);
 
       const onChange = async () => {
         vite.moduleGraph.invalidateAll();
