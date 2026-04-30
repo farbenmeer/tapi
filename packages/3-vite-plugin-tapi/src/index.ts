@@ -64,13 +64,17 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         },
         builder: {
           async buildApp(builder) {
+            const ssr = builder.environments.ssr;
+            if (!ssr) throw new Error("[vite-plugin-tapi] missing ssr environment");
+
             const hasClient = fs.existsSync(
               path.join(builder.config.root, "index.html"),
             );
             if (hasClient) {
-              await builder.build(builder.environments.client);
+              const client = builder.environments.client;
+              if (client) await builder.build(client);
             }
-            await builder.build(builder.environments.ssr);
+            await builder.build(ssr);
           },
         },
       };
