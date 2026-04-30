@@ -365,12 +365,12 @@ describe("useParams", () => {
 
       await screen.getByText("Go to post").click();
 
-      expect(
-        screen.container.querySelector('[data-testid="param-id"]')
-      ).toBeNull();
       await expect
         .element(screen.getByTestId("param-slug"), { timeout: 100 })
         .toHaveTextContent("hello-world");
+      expect(
+        screen.container.querySelector('[data-testid="param-id"]')
+      ).toBeNull();
     });
   });
 });
