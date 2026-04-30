@@ -93,18 +93,15 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
 
     load(id) {
       if (id !== RESOLVED_VIRTUAL_ID) return null;
-      const entryImport = JSON.stringify(resolvedEntry);
       return [
-        `import { serve } from "srvx";`,
-        `import { createRequestHandler } from "@farbenmeer/tapi/server";`,
-        `import { api } from ${entryImport};`,
+        `import { startServer } from "@farbenmeer/vite-plugin-tapi/runtime";`,
+        `import { api } from ${JSON.stringify(resolvedEntry)};`,
         ``,
-        `const fetch = createRequestHandler(api, { basePath: ${JSON.stringify(basePath)} });`,
-        `const port = Number(process.env.PORT) || ${options.port ?? 3000};`,
-        ``,
-        `const server = serve({ port, fetch });`,
-        `await server.ready();`,
-        `console.info(\`[tapi] server listening on \${server.url}\`);`,
+        `await startServer({`,
+        `  api,`,
+        `  basePath: ${JSON.stringify(basePath)},`,
+        `  port: Number(process.env.PORT) || ${options.port ?? 3000},`,
+        `});`,
         ``,
       ].join("\n");
     },
