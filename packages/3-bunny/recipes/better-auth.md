@@ -8,6 +8,16 @@ To setup [better-auth](https://better-auth.com/) with bunny:
 pnpm add better-auth
 ```
 
+* Put your secrets in `.env` at the project root. With `@farbenmeer/vite-plugin-tapi` they are auto-loaded into `process.env` in dev; bunny apps typically rely on the same convention.
+
+```
+BETTER_AUTH_SECRET=...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+```
+
+For production deploys, set the same vars via your runtime (Docker, systemd, PaaS) — `.env` is a dev convenience, not a deploy artifact.
+
 * Create your better-auth configuration file at `src/lib/auth.ts` and follow the better-auth [documentation](https://better-auth.com/docs) to configure it.
 
 * Create your better-auth request handler at `src/api/auth.ts` as follows:

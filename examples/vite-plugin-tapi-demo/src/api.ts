@@ -53,4 +53,12 @@ export const api = defineApi()
         return TResponse.json({ greeting: `hello, ${name}` });
       },
     ),
+  })
+  .route("/whoami", {
+    GET: defineHandler({ authorize: () => true }, async () => {
+      return TResponse.json({
+        foo: process.env.FOO ?? null,
+        bar: process.env.BAR ?? null,
+      });
+    }),
   });

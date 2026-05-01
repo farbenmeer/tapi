@@ -25,7 +25,8 @@ export default defineConfig({
   webServer: [
     {
       command: "pnpm dev",
-      env: { PORT: "3200" },
+      // FOO is also set in .env.development; the shell value must win.
+      env: { PORT: "3200", FOO: "fromShell" },
       port: 3200,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
