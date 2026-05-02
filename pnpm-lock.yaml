@@ -77,6 +77,49 @@ importers:
         specifier: ^19
         version: 19.2.3(@types/react@19.2.14)
 
+  examples/tables:
+    dependencies:
+      '@farbenmeer/react-tapi':
+        specifier: workspace:^
+        version: link:../../packages/2-react-tapi
+      '@farbenmeer/tapi':
+        specifier: workspace:^
+        version: link:../../packages/1-tapi
+      '@farbenmeer/vite-plugin-tapi':
+        specifier: workspace:^
+        version: link:../../packages/3-vite-plugin-tapi
+      react:
+        specifier: ^19.2.5
+        version: 19.2.5
+      react-dom:
+        specifier: ^19.2.5
+        version: 19.2.5(react@19.2.5)
+      srvx:
+        specifier: ^0.11.15
+        version: 0.11.15
+      typescript:
+        specifier: ^5 || ^6.0.0
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.9
+        version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)
+      zod:
+        specifier: ^4.0.17
+        version: 4.3.6
+    devDependencies:
+      '@playwright/test':
+        specifier: ^1.58.1
+        version: 1.59.1
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.6.0
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+
   examples/todo-list:
     dependencies:
       '@farbenmeer/bunny':
