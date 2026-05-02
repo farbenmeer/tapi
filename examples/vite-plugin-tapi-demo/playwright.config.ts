@@ -13,13 +13,15 @@ export default defineConfig({
   projects: [
     {
       name: "dev",
-      testDir: "./e2e/dev",
       use: { baseURL: "http://localhost:3208" },
     },
     {
       name: "prod",
-      testDir: "./e2e/prod",
       use: { baseURL: "http://localhost:3209" },
+    },
+    {
+      name: "preview",
+      use: { baseURL: "http://localhost:3210" },
     },
   ],
   webServer: [
@@ -34,6 +36,13 @@ export default defineConfig({
       command: "pnpm build && pnpm start",
       env: { PORT: "3209" },
       port: 3209,
+      reuseExistingServer: !process.env.CI,
+      stdout: "pipe",
+    },
+    {
+      command: "pnpm build && vite preview",
+      env: { PORT: "3210" },
+      port: 3210,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
     },

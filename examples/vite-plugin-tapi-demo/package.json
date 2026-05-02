@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "vite preview",
+    "start": "srvx --prod -s ../client dist/server/server.js",
     "test": "playwright test",
     "test:dev": "playwright test --project=dev",
     "test:prod": "playwright test --project=prod",
+    "test:preview": "playwright test --project=preview",
     "ci-setup": "playwright install --with-deps"
   },
   "dependencies": {
