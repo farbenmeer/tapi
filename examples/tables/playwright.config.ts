@@ -14,26 +14,26 @@ export default defineConfig({
     {
       name: "dev",
       testDir: "./e2e/dev",
-      use: { baseURL: "http://localhost:3200" },
+      use: { baseURL: "http://localhost:3210" },
     },
     {
       name: "prod",
       testDir: "./e2e/prod",
-      use: { baseURL: "http://localhost:3201" },
+      use: { baseURL: "http://localhost:3211" },
     },
   ],
   webServer: [
     {
       command: "pnpm dev",
-      env: { PORT: "3200" },
-      port: 3200,
+      env: { PORT: "3210" },
+      port: 3210,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
     },
     {
       command: "pnpm build && pnpm start",
-      env: { PORT: "3201" },
-      port: 3201,
+      env: { PORT: "3211" },
+      port: 3211,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
     },

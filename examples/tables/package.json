@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "node dist/server.mjs",
+    "start": "vite preview",
     "test": "playwright test",
     "ci-setup": "playwright install --with-deps"
   },
