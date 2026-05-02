@@ -1,28 +1,30 @@
 {
-  "name": "@farbenmeer/vite-plugin-tapi-example-demo",
-  "version": "0.0.0",
+  "name": "@farbenmeer/tapi-example-tables",
+  "version": "0.1.0",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "srvx --prod -s ../client dist/server/server.js",
+    "start": "vite preview",
     "test": "playwright test",
-    "test:dev": "playwright test --project=dev",
-    "test:prod": "playwright test --project=prod",
-    "test:preview": "playwright test --project=preview",
     "ci-setup": "playwright install --with-deps"
   },
   "dependencies": {
     "@farbenmeer/tapi": "workspace:^",
     "@farbenmeer/vite-plugin-tapi": "workspace:^",
+    "@farbenmeer/react-tapi": "workspace:^",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "srvx": "^0.11.15",
     "vite": "^8.0.9",
     "zod": "^4.0.17"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.1",
-    "@types/node": "^25.0.3"
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
   },
   "peerDependencies": {
     "typescript": "^5 || ^6.0.0"

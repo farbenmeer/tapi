@@ -1,7 +1,8 @@
 import path from "node:path";
-import type { Plugin, ViteDevServer } from "vite";
-import { serve, type ServerHandler, type Server } from "srvx";
+import type { Plugin } from "vite";
 import { createRequestHandler } from "@farbenmeer/tapi/server";
+import { createApiMiddleware } from "./createApiMiddleware.js";
+import type { ApiHandler } from "./ApiHandler.js";
 
 export interface TapiPluginOptions {
   /**
@@ -14,49 +15,47 @@ export interface TapiPluginOptions {
    */
   basePath?: string;
   /**
-   * Port for the dev server. Default: `PORT` env var or `3000`.
+   * Default port for Vite's dev/preview server. Falls back to the `PORT`
+   * environment variable when set.
    */
   port?: number;
   /**
-   * If `true`, the production build inlines `srvx` and `@farbenmeer/tapi`
-   * into the output so it runs without `node_modules`. Default: `false`.
+   * Packages to keep external in the server bundle.
+   * Passed directly to `rolldownOptions.external`.
+   * Default: `[]` — everything is bundled.
    */
-  standalone?: boolean;
+  external?: (string | RegExp)[];
 }
-
-const VIRTUAL_ID = "virtual:tapi-server";
-const RESOLVED_VIRTUAL_ID = "\0" + VIRTUAL_ID;
 
 export default function tapi(options: TapiPluginOptions = {}): Plugin {
   const entryOption = options.entry ?? "src/api.ts";
   const basePath = options.basePath ?? "/api";
-  const standalone = options.standalone ?? false;
 
+  let userOutDirBase = "dist";
   let resolvedEntry = "";
-  let server: Server | undefined;
-  let currentHandler: ServerHandler | undefined;
+  let resolvedRoot = "";
+  let serverOutDir = "";
+  let isBuildCommand = false;
+  let currentHandler: ApiHandler | undefined;
 
   return {
     name: "vite-plugin-tapi",
 
-    config(_userConfig, env) {
-      if (env.command !== "build") return;
+    config(userConfig, _env) {
+      // Capture the user's outDir BEFORE we override it, so we can compute
+      // the parallel server output directory in later hooks.
+      userOutDirBase = userConfig.build?.outDir ?? "dist";
+
+      const port =
+        options.port ??
+        (process.env.PORT ? Number(process.env.PORT) : undefined);
+
+      // Always redirect the client build to <outDir>/client so server code
+      // (written by closeBundle into <outDir>/server) cannot leak into the
+      // static hosting deploy.
       return {
-        build: {
-          ssr: true,
-          outDir: "dist",
-          rolldownOptions: {
-            input: VIRTUAL_ID,
-            output: {
-              format: "esm",
-              entryFileNames: "server.mjs",
-            },
-            ...(standalone
-              ? {}
-              : { external: ["srvx", /^@farbenmeer\/tapi(\/.*)?$/] }),
-          },
-        },
-        ssr: standalone ? { noExternal: true } : undefined,
+        build: { outDir: path.join(userOutDirBase, "client") },
+        ...(port ? { server: { port }, preview: { port } } : {}),
       };
     },
 
@@ -64,29 +63,9 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
       resolvedEntry = path.isAbsolute(entryOption)
         ? entryOption
         : path.resolve(config.root, entryOption);
-    },
-
-    resolveId(id) {
-      if (id === VIRTUAL_ID) return RESOLVED_VIRTUAL_ID;
-      return null;
-    },
-
-    load(id) {
-      if (id !== RESOLVED_VIRTUAL_ID) return null;
-      const entryImport = JSON.stringify(resolvedEntry);
-      return [
-        `import { serve } from "srvx";`,
-        `import { createRequestHandler } from "@farbenmeer/tapi/server";`,
-        `import { api } from ${entryImport};`,
-        ``,
-        `const fetch = createRequestHandler(api, { basePath: ${JSON.stringify(basePath)} });`,
-        `const port = Number(process.env.PORT) || ${options.port ?? 3000};`,
-        ``,
-        `const server = serve({ port, fetch });`,
-        `await server.ready();`,
-        `console.info(\`[tapi] server listening on \${server.url}\`);`,
-        ``,
-      ].join("\n");
+      resolvedRoot = config.root;
+      serverOutDir = path.resolve(config.root, userOutDirBase, "server");
+      isBuildCommand = config.command === "build";
     },
 
     async configureServer(vite) {
@@ -117,20 +96,7 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         console.error("[vite-plugin-tapi] initial load failed:", err);
       }
 
-      const port = options.port ?? (Number(process.env.PORT) || 3000);
-      server = serve({
-        port,
-        fetch: async (req) => {
-          if (!currentHandler) {
-            return new Response("[vite-plugin-tapi] api not loaded", {
-              status: 503,
-            });
-          }
-          return currentHandler(req);
-        },
-      });
-      await server.ready();
-      console.info(`[vite-plugin-tapi] dev server on ${server.url}`);
+      vite.middlewares.use(createApiMiddleware(() => currentHandler, basePath));
 
       const onChange = async () => {
         vite.moduleGraph.invalidateAll();
@@ -144,21 +110,86 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
       vite.watcher.on("change", onChange);
       vite.watcher.on("add", onChange);
       vite.watcher.on("unlink", onChange);
+    },
 
-      registerShutdown(vite);
+    async configurePreviewServer(previewServer) {
+      const serverJsPath = path.join(
+        path.resolve(previewServer.config.root, userOutDirBase, "server"),
+        "server.js",
+      );
+
+      let fetchHandler: ApiHandler | undefined;
+      try {
+        const mod = (await import(serverJsPath)) as {
+          fetch?: ApiHandler;
+          default?: { fetch?: ApiHandler };
+        };
+        fetchHandler = mod.default?.fetch ?? mod.fetch;
+        if (!fetchHandler) {
+          console.warn(
+            "[vite-plugin-tapi] dist/server/server.js has no fetch export — run `vite build` first.",
+          );
+        }
+      } catch (err) {
+        console.error(
+          "[vite-plugin-tapi] failed to import dist/server/server.js for preview:",
+          err,
+        );
+      }
+
+      if (!fetchHandler) return;
+      previewServer.middlewares.use(
+        createApiMiddleware(() => fetchHandler, basePath),
+      );
     },
 
     async closeBundle() {
-      await server?.close();
-      server = undefined;
+      if (!isBuildCommand) return;
+
+      const VIRTUAL_SERVER_ID = "virtual:tapi-server";
+      const RESOLVED_VIRTUAL_SERVER_ID = "\0" + VIRTUAL_SERVER_ID;
+
+      const inlinePlugin = (): Plugin => ({
+        name: "tapi-server-virtual",
+        resolveId(id) {
+          return id === VIRTUAL_SERVER_ID ? RESOLVED_VIRTUAL_SERVER_ID : null;
+        },
+        load(id) {
+          if (id !== RESOLVED_VIRTUAL_SERVER_ID) return null;
+          return [
+            `import { createRequestHandler } from "@farbenmeer/tapi/server";`,
+            `import { api } from ${JSON.stringify(resolvedEntry)};`,
+            ``,
+            `export const fetch = createRequestHandler(api, { basePath: ${JSON.stringify(basePath)} });`,
+            `export default { fetch };`,
+          ].join("\n");
+        },
+      });
+
+      const { build } = await import("vite");
+      await build({
+        root: resolvedRoot,
+        configFile: false,
+        logLevel: "silent",
+        plugins: [inlinePlugin()],
+        // noExternal: true so node_modules are bundled by default;
+        // only packages in options.external are kept external.
+        ssr: { noExternal: true },
+        build: {
+          ssr: true,
+          outDir: serverOutDir,
+          emptyOutDir: false,
+          sourcemap: true,
+          rolldownOptions: {
+            input: { server: VIRTUAL_SERVER_ID },
+            output: {
+              format: "esm",
+              entryFileNames: "[name].js",
+            },
+            external: options.external ?? [],
+          },
+        },
+      });
     },
   };
-
-  function registerShutdown(vite: ViteDevServer) {
-    const close = async () => {
-      await server?.close();
-      server = undefined;
-    };
-    vite.httpServer?.on("close", close);
-  }
 }
