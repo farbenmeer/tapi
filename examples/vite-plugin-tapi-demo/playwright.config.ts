@@ -34,14 +34,14 @@ export default defineConfig({
     },
     {
       command: "pnpm build && pnpm start",
-      env: { PORT: "3209" },
+      env: { PORT: "3209", FOO: "fromShell" },
       port: 3209,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
     },
     {
       command: "pnpm build && vite preview",
-      env: { PORT: "3210" },
+      env: { PORT: "3210", FOO: "fromShell" },
       port: 3210,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",

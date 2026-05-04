@@ -28,9 +28,17 @@ test("api returns json", async ({ request }) => {
 
 test("server sees .env vars; shell env takes precedence", async ({
   request,
-}) => {
-  // .env.development sets FOO=fromEnv, BAR=fromEnv.
-  // playwright.config.ts overrides FOO=fromShell in the dev webServer env.
+}, testInfo) => {
+  // The plugin loads .env files in dev and preview (Vite-managed servers).
+  // The `prod` project runs the built server via srvx, bypassing the plugin,
+  // so .env is not read there — skip.
+  test.skip(
+    testInfo.project.name === "prod",
+    "srvx production server does not load .env",
+  );
+
+  // .env sets FOO=fromEnv, BAR=fromEnv.
+  // playwright.config.ts overrides FOO=fromShell in the webServer env.
   // Expectation: shell wins for FOO, .env supplies BAR.
   const res = await request.get("/whoami");
   expect(res.status()).toBe(200);

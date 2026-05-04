@@ -123,6 +123,18 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
     },
 
     async configurePreviewServer(previewServer) {
+      // Same rationale as configureServer: mirror .env values into process.env
+      // so the bundled server (running in this same Node process) can read
+      // secrets via process.env. Existing process.env wins.
+      const env = loadEnv(
+        previewServer.config.mode,
+        previewServer.config.envDir,
+        "",
+      );
+      for (const [k, v] of Object.entries(env)) {
+        if (process.env[k] === undefined) process.env[k] = v;
+      }
+
       const serverJsPath = path.join(
         path.resolve(previewServer.config.root, userOutDirBase, "server"),
         "server.js",
