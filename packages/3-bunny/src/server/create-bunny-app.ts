@@ -9,7 +9,6 @@ import connect from "connect";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import serveStatic from "serve-static";
-import { INVALIDATIONS_ROUTE } from "../constants.js";
 import { loadEnv } from "../load-env.js";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
 import type { Cache } from "@farbenmeer/tapi/server";
@@ -77,28 +76,6 @@ export function createBunnyApp({
       res.setHeader("Content-Type", "application/json");
       res.write(openApiJson);
       res.end();
-      return;
-    }
-
-    if (url.pathname === INVALIDATIONS_ROUTE) {
-      const response = streamRevalidatedTags({
-        cache: await api().then(({ api }) => api.cache),
-        buildId: apiInfo.buildId,
-      });
-      console.info(`Bunny: Starting Invalidation Stream`);
-      response.headers.forEach((value, key) => {
-        res.appendHeader(key, value);
-      });
-      if (res.closed) {
-        return;
-      }
-      res.flushHeaders();
-      if (response.body) {
-        for await (const chunk of response.body) {
-          res.write(chunk);
-        }
-      }
-      console.info("Bunny: Closed Invalidation Stream");
       return;
     }
 
