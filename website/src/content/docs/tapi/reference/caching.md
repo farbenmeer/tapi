@@ -73,7 +73,7 @@ import { handleTapiRequest } from '@farbenmeer/tapi/worker';
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.host === process.env.BASE_URL && /\/api/.test(url.pathname)) {
-    event.respondWith(handleRequest(process.env.BUILD_ID, event.request));
+    event.respondWith(handleTapiRequest(process.env.BUILD_ID, event.request));
   }
 });
 ```

@@ -27,7 +27,7 @@ export default defineConfig({
   webServer: [
     {
       command: "pnpm dev",
-      env: { PORT: "3208" },
+      env: { PORT: "3208", FOO: "fromShell" },
       port: 3208,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",

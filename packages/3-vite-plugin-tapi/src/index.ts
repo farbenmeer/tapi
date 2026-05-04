@@ -1,8 +1,9 @@
+import { createRequestHandler } from "@farbenmeer/tapi/server";
 import path from "node:path";
 import type { Plugin } from "vite";
-import { createRequestHandler } from "@farbenmeer/tapi/server";
-import { createApiMiddleware } from "./createApiMiddleware.js";
+import { loadEnv } from "vite";
 import type { ApiHandler } from "./ApiHandler.js";
+import { createApiMiddleware } from "./createApiMiddleware.js";
 
 export interface TapiPluginOptions {
   /**
@@ -69,6 +70,15 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
     },
 
     async configureServer(vite) {
+      // Vite injects .env values into `import.meta.env` for the client only;
+      // the api runs in this same Node process and reads `process.env`. Mirror
+      // every var (empty prefix, not just VITE_*) into process.env so server
+      // code sees secrets like BETTER_AUTH_SECRET. Existing process.env wins.
+      const env = loadEnv(vite.config.mode, vite.config.envDir, "");
+      for (const [k, v] of Object.entries(env)) {
+        if (process.env[k] === undefined) process.env[k] = v;
+      }
+
       const loadHandler = async () => {
         const mod = (await vite.ssrLoadModule(resolvedEntry)) as {
           api?: Parameters<typeof createRequestHandler>[0];

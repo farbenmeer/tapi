@@ -12,6 +12,8 @@ pnpm add -D @farbenmeer/vite-plugin-tapi
 pnpm add @farbenmeer/tapi srvx
 ```
 
+Peer-deps: `vite ^8`, `@farbenmeer/tapi`.
+
 ## Usage
 
 `vite.config.ts`:
@@ -39,6 +41,41 @@ In dev (`vite`) and preview (`vite preview`) modes, the plugin attaches a
 middleware to Vite's server that handles requests at the configured
 `basePath` (default `/api`). The same Vite server serves both the frontend
 and the API on a single port.
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `entry` | `string` | `"src/api.ts"` | Path to the file exporting `api`. Resolved against the Vite root. |
+| `basePath` | `string` | `"/api"` | Prefix for API routes. Use `""` to mount at the root. |
+| `port` | `number` | — | Default port for Vite's dev/preview server. Falls back to the `PORT` env var. |
+| `external` | `(string \| RegExp)[]` | `[]` | Packages to keep external in the server bundle. By default everything is bundled. |
+
+## Environment variables
+
+### Dev (`pnpm dev`)
+
+The plugin loads `.env`, `.env.local`, `.env.<mode>`, and `.env.<mode>.local`
+via Vite's `loadEnv` and mirrors every key into `process.env` before the api
+module is loaded. Existing `process.env` values keep precedence, so shell
+vars override `.env` files.
+
+```
+.env                     # all envs
+.env.local               # all envs, ignored by git
+.env.development         # dev only
+.env.development.local   # dev only, ignored by git
+```
+
+This covers server-side libraries that read `process.env.X` directly
+(BetterAuth, DB clients, OAuth secrets). Vite's `import.meta.env` injection
+still applies to client code.
+
+### Production (`srvx dist/server/server.js`)
+
+The built server does **not** load `.env` files. In production, env vars come
+from the runtime — Docker, systemd, or your PaaS. 
+
 
 ## Build output
 
@@ -87,12 +124,3 @@ The path passed to `-s` is resolved **relative to the directory containing
 the entry file** (`dist/server/`), so `../client` points at `dist/client/`.
 API routes are matched first; static files fall through when no API route
 handles the request.
-
-## Options
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `entry` | `string` | `"src/api.ts"` | Path to the file exporting `api`. Resolved against the Vite root. |
-| `basePath` | `string` | `"/api"` | Prefix for API routes. Use `""` to mount at the root. |
-| `port` | `number` | — | Default port for Vite's dev/preview server. Falls back to the `PORT` env var. |
-| `external` | `(string \| RegExp)[]` | `[]` | Packages to keep external in the server bundle. By default everything is bundled. |
