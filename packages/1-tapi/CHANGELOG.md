@@ -1,5 +1,15 @@
 # @farbenmeer/tapi
 
+## 0.10.7
+
+### Patch Changes
+
+- 8bd884a: Refactor Vite Plugin:
+
+  - production deployments should run srvx directly
+  - dev and preview mode work as expected
+  - invalidation stream is served directly by TApi's server handler (under api base path)
+
 ## 0.10.6
 
 ### Patch Changes
