@@ -66,7 +66,7 @@ export function createFetchClient<
   const invalidationsUrl =
     options.invalidationsUrl === false
       ? null
-      : (options.invalidationsUrl ?? INVALIDATIONS_ROUTE);
+      : (options.invalidationsUrl ?? apiUrl + INVALIDATIONS_ROUTE);
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", async (event) => {

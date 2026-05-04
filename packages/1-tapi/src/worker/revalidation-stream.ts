@@ -24,17 +24,17 @@ export async function listenForInvalidations({ url, buildId }: Options) {
     } catch (error) {
       console.warn(
         `TApi: Failed attempt #${retry + 1} to open invalidation stream`,
-        error
+        error,
       );
     }
     await new Promise((resolve) =>
-      setTimeout(resolve, 500 * Math.pow(2, retry))
+      setTimeout(resolve, 500 * Math.pow(2, retry)),
     );
   }
 
   if (!res) {
     console.error(
-      `TApi: Failed to open invalidation stream after ${MAX_ATTEMPTS} attempts, giving up.`
+      `TApi: Failed to open invalidation stream after ${MAX_ATTEMPTS} attempts, giving up.`,
     );
     return;
   }
@@ -44,14 +44,17 @@ export async function listenForInvalidations({ url, buildId }: Options) {
     console.error(
       "TApi: Failed to open invalidation stream. Cleaning up and unregistering service worker.",
       res.status,
-      res.statusText
+      res.statusText,
     );
     await deleteCache(buildId);
     await self.registration.unregister();
     return;
   }
 
-  if (res.headers.get(BUILD_ID_HEADER) !== buildId) {
+  if (
+    res.headers.has(BUILD_ID_HEADER) &&
+    res.headers.get(BUILD_ID_HEADER) !== buildId
+  ) {
     console.info("TApi: Build ID mismatch. Updating service worker.");
     await deleteCache(buildId);
     await self.registration.update();
@@ -95,7 +98,7 @@ export async function listenForInvalidations({ url, buildId }: Options) {
   } catch (error) {
     if (error instanceof Error && error.name === "NetworkError") {
       console.info(
-        "TApi: Network disconnected, retrying revalidation connection..."
+        "TApi: Network disconnected, retrying revalidation connection...",
       );
       setTimeout(() => {
         listenForInvalidations({ buildId, url });

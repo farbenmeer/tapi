@@ -1,5 +1,8 @@
 import { ZodError, z } from "zod/v4";
-import { SESSION_COOKIE_NAME } from "../shared/constants.js";
+import {
+  INVALIDATIONS_ROUTE,
+  SESSION_COOKIE_NAME,
+} from "../shared/constants.js";
 import { HttpError } from "../shared/http-error.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
@@ -9,13 +12,18 @@ import type { ApiDefinition } from "./define-api.js";
 import type { Handler } from "./handler.js";
 import type { TRequest } from "./t-request.js";
 import type { Cache } from "./cache.js";
+import { streamRevalidatedTags } from "./revalidation-stream.js";
 
 interface Options {
+  /** the root path for all API routes */
   basePath?: string;
   hooks?: {
     error?: (error: unknown) => MaybePromise<void>;
   };
+  /** the default maximum time-to-live (TTL) for cached responses */
   defaultTTL?: number;
+  /** pass a build id to enable automatic refreshing of the service worker on new deployments */
+  buildId?: string;
 }
 
 const DEFAULT_TTL = 60 * 60 * 24 * 14;
@@ -49,6 +57,13 @@ export function createRequestHandler(
 
   return async (req: Request) => {
     const url = new URL(req.url);
+
+    if (url.pathname === `${basePath}${INVALIDATIONS_ROUTE}`) {
+      return streamRevalidatedTags({
+        cache: api.cache,
+        buildId: options.buildId,
+      });
+    }
 
     for (const { pattern, route: routePromise } of routes) {
       const match = url.pathname.match(pattern);

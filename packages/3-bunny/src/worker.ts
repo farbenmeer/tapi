@@ -44,7 +44,7 @@ self.addEventListener("fetch", (event) => {
 
 listenForInvalidations({
   buildId: manifest.buildId,
-  url: INVALIDATIONS_ROUTE,
+  url: `/api${INVALIDATIONS_ROUTE}`,
 }).catch((error) =>
-  console.error("Bunny: Failed to listen for invalidations", error)
+  console.error("Bunny: Failed to listen for invalidations", error),
 );

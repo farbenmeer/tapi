@@ -9,7 +9,7 @@ const KEEPALIVE_INTERVAL = 10 * 1000;
 
 interface Options {
   cache: Cache;
-  buildId: string;
+  buildId?: string;
 }
 
 export function streamRevalidatedTags({ cache, buildId }: Options) {
@@ -44,11 +44,14 @@ export function streamRevalidatedTags({ cache, buildId }: Options) {
     },
   });
 
+  const headers = new Headers({
+    "Set-Cookie": `${SESSION_COOKIE_NAME}=${id}; Path=/; HttpOnly; SameSite=Strict`,
+    "Content-Type": TAGS_CONTENT_TYPE,
+  });
+
+  if (buildId) headers.set(BUILD_ID_HEADER, buildId);
+
   return new Response(stream, {
-    headers: {
-      "Set-Cookie": `${SESSION_COOKIE_NAME}=${id}; Path=/; HttpOnly; SameSite=Strict`,
-      "Content-Type": TAGS_CONTENT_TYPE,
-      [BUILD_ID_HEADER]: buildId,
-    },
+    headers,
   });
 }
