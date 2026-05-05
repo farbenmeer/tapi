@@ -1,5 +1,11 @@
 # @farbenmeer/tapi-website
 
+## 0.4.3
+
+### Patch Changes
+
+- 8d6788c: adjust server build output path and add vite plugin docs to website
+
 ## 0.4.2
 
 ### Patch Changes
