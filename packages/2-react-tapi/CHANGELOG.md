@@ -1,6 +1,6 @@
 # @farbenmeer/react-tapi
 
-## 8.0.0
+## 7.0.3
 
 ### Patch Changes
 

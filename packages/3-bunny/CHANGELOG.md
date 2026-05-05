@@ -58,7 +58,7 @@
 - Updated dependencies [8d6788c]
 - Updated dependencies [8d6788c]
   - @farbenmeer/tapi@0.11.0
-  - @farbenmeer/react-tapi@8.0.0
+  - @farbenmeer/react-tapi@7.0.3
 
 ## 0.6.3
 

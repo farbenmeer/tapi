@@ -6,9 +6,9 @@
 
 - Updated dependencies [8d6788c]
 - Updated dependencies [8d6788c]
-  - @farbenmeer/vite-plugin-tapi@1.0.0
+  - @farbenmeer/vite-plugin-tapi@0.2.1
   - @farbenmeer/tapi@0.11.0
-  - @farbenmeer/react-tapi@8.0.0
+  - @farbenmeer/react-tapi@7.0.3
 
 ## 0.2.0
 
