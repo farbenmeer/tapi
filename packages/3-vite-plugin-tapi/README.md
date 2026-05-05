@@ -84,13 +84,12 @@ from the runtime — Docker, systemd, or your PaaS.
 ```
 dist/
 ├── client/        — static frontend assets (HTML, JS, CSS, images)
-└── server/
-    ├── server.js      — bundled server (sourcemap included)
-    └── server.js.map
+├── server.js      — bundled server (sourcemap included)
+└── server.js.map
 ```
 
 The split exists for safety: server-only code (database credentials,
-third-party API keys, server-side libraries) lives in `dist/server/` and
+third-party API keys, server-side libraries) lives in `dist/server.js` and
 **must not** be deployed to a public static host. Treating `dist/client/` as
 the static-deploy root makes it impossible to leak the server bundle by
 accident.
@@ -177,7 +176,7 @@ The server bundle is a fetch-handler module. Serve it in production with the
 [srvx](https://srvx.h3.dev) CLI:
 
 ```bash
-srvx --prod dist/server/server.js
+srvx --prod dist/server.js
 ```
 
 `srvx` picks up `PORT`, `HOST`, and other settings from environment variables.
@@ -193,10 +192,10 @@ If you don't want a separate static host, srvx can serve them too with the
 `-s` flag:
 
 ```bash
-srvx --prod -s ../client dist/server/server.js
+srvx --prod -s client dist/server.js
 ```
 
 The path passed to `-s` is resolved **relative to the directory containing
-the entry file** (`dist/server/`), so `../client` points at `dist/client/`.
+the entry file** (`dist/`), so `client` points at `dist/client/`.
 API routes are matched first; static files fall through when no API route
 handles the request.

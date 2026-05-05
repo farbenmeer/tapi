@@ -87,6 +87,17 @@ export default defineConfig({
           ],
         },
         {
+          label: "Vite Plugin TApi",
+          collapsed: true,
+          items: [
+            { label: "Introduction", slug: "vite-plugin-tapi" },
+            {
+              label: "Guides",
+              autogenerate: { directory: "vite-plugin-tapi/guides" },
+            },
+          ],
+        },
+        {
           label: "Tag-Based Cache",
           collapsed: true,
           items: [
