@@ -1,5 +1,4 @@
 import {
-  BUILD_ID_HEADER,
   INVALIDATION_POST_EVENT,
   TAGS_CONTENT_TYPE,
 } from "../shared/constants";
@@ -8,11 +7,10 @@ import { deleteCache, expireAll, invalidateTags } from "./cache";
 declare const self: ServiceWorkerGlobalScope;
 
 interface Options {
-  buildId: string;
   url: string;
 }
 
-export async function listenForInvalidations({ url, buildId }: Options) {
+export async function listenForInvalidations({ url }: Options) {
   console.info("TApi: Listening for invalidations...");
 
   let res: Response | null = null;
@@ -46,25 +44,15 @@ export async function listenForInvalidations({ url, buildId }: Options) {
       res.status,
       res.statusText,
     );
-    await deleteCache(buildId);
+    await deleteCache();
     await self.registration.unregister();
-    return;
-  }
-
-  if (
-    res.headers.has(BUILD_ID_HEADER) &&
-    res.headers.get(BUILD_ID_HEADER) !== buildId
-  ) {
-    console.info("TApi: Build ID mismatch. Updating service worker.");
-    await deleteCache(buildId);
-    await self.registration.update();
     return;
   }
 
   console.info("TApi: Invalidation Stream Connection Established");
 
   try {
-    const tags = await expireAll(buildId);
+    const tags = await expireAll();
     const clients = await self.clients.matchAll();
     for (const client of clients) {
       client.postMessage({ type: INVALIDATION_POST_EVENT, tags });
@@ -89,7 +77,7 @@ export async function listenForInvalidations({ url, buildId }: Options) {
         if (!rawTags) continue;
         const tags = rawTags.split(" ");
         console.info("TApi: Remote-Invalidating tags", tags);
-        await invalidateTags(buildId, tags);
+        await invalidateTags(tags);
         for (const client of clients) {
           client.postMessage({ type: INVALIDATION_POST_EVENT, tags });
         }
@@ -101,7 +89,7 @@ export async function listenForInvalidations({ url, buildId }: Options) {
         "TApi: Network disconnected, retrying revalidation connection...",
       );
       setTimeout(() => {
-        listenForInvalidations({ buildId, url });
+        listenForInvalidations({ url });
       }, 5000);
     }
     console.error("TApi: Failed to read invalidation stream", error);

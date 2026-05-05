@@ -193,7 +193,6 @@ Bun.serve({
     if (path === "/api/revalidate") {
       return streamRevalidatedTags({
         cache: api.cache,
-        buildId: process.env.BUILD_ID!,
       });
     }
 
@@ -215,7 +214,6 @@ Bun.serve({
     "/api/revalidate": () =>
       streamRevalidatedTags({
         cache: api.cache,
-        buildId: process.env.BUILD_ID!,
       }),
     "/api/*": (req) => handler(req),
   },
@@ -224,7 +222,5 @@ Bun.serve({
   },
 });
 ```
-
-Set `BUILD_ID` to a value that changes on every deployment (e.g. a git commit hash) so the service worker cache is fresh after each deploy.
 
 For setting up a service worker that connects to this endpoint, see the [Service Worker guide](/tapi/guides/service-worker). For details on how the cache layers interact, see [Caching Strategies](/tapi/reference/caching).

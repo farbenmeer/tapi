@@ -22,8 +22,6 @@ interface Options {
   };
   /** the default maximum time-to-live (TTL) for cached responses */
   defaultTTL?: number;
-  /** pass a build id to enable automatic refreshing of the service worker on new deployments */
-  buildId?: string;
 }
 
 const DEFAULT_TTL = 60 * 60 * 24 * 14;
@@ -61,7 +59,6 @@ export function createRequestHandler(
     if (url.pathname === `${basePath}${INVALIDATIONS_ROUTE}`) {
       return streamRevalidatedTags({
         cache: api.cache,
-        buildId: options.buildId,
       });
     }
 

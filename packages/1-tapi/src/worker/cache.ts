@@ -1,13 +1,13 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants";
 import { deleteDB, openDB } from "./idb";
 
-const DB_NAME_PREFIX = "tapi-cache-meta-";
-const CACHE_NAME_PREFIX = "tapi-cache-";
+const DB_NAME = "tapi-cache-meta";
+const CACHE_NAME = "tapi-cache";
 const DB_VERSION = 1;
-const META_STORE_NAME = "meta";
-const TAGS_STORE_NAME = "tags";
+export const META_STORE_NAME = "meta";
+export const TAGS_STORE_NAME = "tags";
 
-interface CacheMeta {
+export interface CacheMeta {
   tags: string[];
   expiresAt: number | null;
 }
@@ -15,10 +15,10 @@ interface CacheMeta {
 let metaDb: Promise<IDBDatabase> | null = null;
 let cache: Promise<Cache> | null = null;
 
-function openCacheMetaDB(buildId: string) {
+export function openCacheMetaDB() {
   if (metaDb) return metaDb;
 
-  metaDb = openDB(DB_NAME_PREFIX + buildId, DB_VERSION, (db) => {
+  metaDb = openDB(DB_NAME, DB_VERSION, (db) => {
     db.createObjectStore(META_STORE_NAME);
     db.createObjectStore(TAGS_STORE_NAME);
   });
@@ -26,31 +26,22 @@ function openCacheMetaDB(buildId: string) {
   return metaDb;
 }
 
-function openCache(buildId: string) {
+export function openCache() {
   if (cache) return cache;
 
-  cache = self.caches.open(CACHE_NAME_PREFIX + buildId);
+  cache = self.caches.open(CACHE_NAME);
 
   return cache;
 }
 
-export async function deleteCache(buildId: string) {
+export async function deleteCache() {
   metaDb = null;
-  await Promise.all([
-    deleteDB(DB_NAME_PREFIX + buildId),
-    self.caches.delete(CACHE_NAME_PREFIX + buildId),
-  ]);
+  cache = null;
+  await Promise.all([deleteDB(DB_NAME), self.caches.delete(CACHE_NAME)]);
 }
 
-export async function storeCacheEntry(
-  buildId: string,
-  req: Request,
-  res: Response
-) {
-  const [metaDb, cache] = await Promise.all([
-    openCacheMetaDB(buildId),
-    openCache(buildId),
-  ]);
+export async function storeCacheEntry(req: Request, res: Response) {
+  const [metaDb, cache] = await Promise.all([openCacheMetaDB(), openCache()]);
 
   const url = req.url;
   const expiresAt = res.headers.get(EXPIRES_AT_HEADER);
@@ -84,11 +75,8 @@ export async function storeCacheEntry(
   await cache.put(req, res.clone());
 }
 
-export async function deleteCacheEntry(buildId: string, req: Request) {
-  const [metaDb, cache] = await Promise.all([
-    openCacheMetaDB(buildId),
-    openCache(buildId),
-  ]);
+export async function deleteCacheEntry(req: Request) {
+  const [metaDb, cache] = await Promise.all([openCacheMetaDB(), openCache()]);
   const url = req.url;
 
   await new Promise<void>((resolve, reject) => {
@@ -124,8 +112,8 @@ export async function deleteCacheEntry(buildId: string, req: Request) {
   await cache.delete(req);
 }
 
-export async function getMetadata(buildId: string, url: string) {
-  const db = await openCacheMetaDB(buildId);
+export async function getMetadata(url: string) {
+  const db = await openCacheMetaDB();
   return new Promise<CacheMeta | null>((resolve, reject) => {
     const tx = db.transaction(META_STORE_NAME, "readonly");
     const metaStore = tx.objectStore(META_STORE_NAME);
@@ -136,16 +124,13 @@ export async function getMetadata(buildId: string, url: string) {
   });
 }
 
-export async function getCachedEntry(buildId: string, req: Request) {
-  const cache = await openCache(buildId);
+export async function getCachedEntry(req: Request) {
+  const cache = await openCache();
   return cache.match(req);
 }
 
-export async function invalidateTags(buildId: string, tags: string[]) {
-  const [metaDb, cache] = await Promise.all([
-    openCacheMetaDB(buildId),
-    openCache(buildId),
-  ]);
+export async function invalidateTags(tags: string[]) {
+  const [metaDb, cache] = await Promise.all([openCacheMetaDB(), openCache()]);
   return new Promise<void>((resolve, reject) => {
     const deletes: Promise<boolean>[] = [];
     const tx = metaDb.transaction(
@@ -174,8 +159,8 @@ export async function invalidateTags(buildId: string, tags: string[]) {
   });
 }
 
-export async function expireAll(buildId: string) {
-  const metaDb = await openCacheMetaDB(buildId);
+export async function expireAll() {
+  const metaDb = await openCacheMetaDB();
 
   return new Promise<string[]>((resolve, reject) => {
     const tags = new Set<string>();

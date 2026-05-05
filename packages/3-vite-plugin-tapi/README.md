@@ -95,6 +95,82 @@ third-party API keys, server-side libraries) lives in `dist/server/` and
 the static-deploy root makes it impossible to leak the server bundle by
 accident.
 
+## Service worker
+
+To get tapi's offline / tag-based revalidation behavior, add a service
+worker built by [`vite-plugin-pwa`](https://vite-pwa-org.netlify.app/) in
+`injectManifest` mode. The two plugins compose cleanly: `tapi()` redirects
+the client build to `dist/client/`, which is exactly where VitePWA emits
+`sw.js`, and the production server bundle is built separately so
+nothing leaks across.
+
+```bash
+pnpm add -D vite-plugin-pwa
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import tapi from "@farbenmeer/vite-plugin-tapi";
+import { VitePWA } from "vite-plugin-pwa";
+
+export default defineConfig({
+  plugins: [
+    tapi(),
+    VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "service-worker.ts",
+      injectRegister: "auto",
+      devOptions: { enabled: true, type: "module" },
+      // optional, pass-through to VitePWA:
+      // manifest: { name: "My App", short_name: "App", ... },
+    }),
+  ],
+});
+```
+
+```ts
+// src/service-worker.ts
+import {
+  handleTapiRequest,
+  listenForInvalidations,
+  cleanup,
+} from "@farbenmeer/tapi/worker";
+
+declare const self: ServiceWorkerGlobalScope;
+
+self.addEventListener("activate", (event) => {
+  // Drop cache entries that have been expired longer than 7 days,
+  // remove orphans, and rebuild the tags index.
+  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
+});
+
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  if (
+    url.pathname.startsWith("/api") &&
+    !url.pathname.startsWith("/api/__tapi")
+  ) {
+    event.respondWith(handleTapiRequest(event.request));
+  }
+});
+
+listenForInvalidations({ url: "/api/__tapi/invalidations" });
+```
+
+Notes:
+
+- Add `"WebWorker"` to your `tsconfig.json` `lib` array so TypeScript
+  recognizes `ServiceWorkerGlobalScope` and friends.
+- `devOptions.enabled: true` makes the SW run during `vite dev` too;
+  otherwise it only runs in `vite preview` and production.
+- Adjust the `/api` checks in the SW to match the `basePath` you pass to
+  `tapi()`.
+- `cleanup`'s `maximumStaleAge` is the grace period (in seconds) past a
+  cache entry's `expiresAt` before it's actually deleted on next SW
+  activation.
+
 ## Deployment
 
 The server bundle is a fetch-handler module. Serve it in production with the

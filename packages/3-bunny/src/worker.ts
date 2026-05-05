@@ -1,4 +1,5 @@
 import {
+  cleanup,
   handleTapiRequest,
   listenForInvalidations,
 } from "@farbenmeer/tapi/worker";
@@ -19,6 +20,12 @@ self.addEventListener("install", (event) => {
   event.waitUntil(cacheStaticFiles(manifest).then(() => self.skipWaiting()));
 });
 
+self.addEventListener("activate", (event) => {
+  // Drop tapi cache entries expired longer than 7 days, remove orphans,
+  // and rebuild the tags index from meta.
+  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
+});
+
 const staticFilePaths = new Set(manifest.staticCachedFiles);
 
 self.addEventListener("fetch", (event) => {
@@ -35,7 +42,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (apiPathPattern.test(url.pathname)) {
-    event.respondWith(handleTapiRequest(manifest.buildId, event.request));
+    event.respondWith(handleTapiRequest(event.request));
     return;
   }
 
@@ -43,7 +50,6 @@ self.addEventListener("fetch", (event) => {
 });
 
 listenForInvalidations({
-  buildId: manifest.buildId,
   url: `/api${INVALIDATIONS_ROUTE}`,
 }).catch((error) =>
   console.error("Bunny: Failed to listen for invalidations", error),

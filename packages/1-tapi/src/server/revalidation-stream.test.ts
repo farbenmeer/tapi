@@ -6,7 +6,7 @@ import { SESSION_COOKIE_NAME } from "../shared/constants";
 describe("revalidation stream", () => {
   test("should set session cookie", async () => {
     const cache = new PubSub();
-    const response = streamRevalidatedTags({ cache, buildId: "1337" });
+    const response = streamRevalidatedTags({ cache });
 
     expect(
       response.headers.get("Set-Cookie")?.startsWith(`${SESSION_COOKIE_NAME}=`)
@@ -15,7 +15,7 @@ describe("revalidation stream", () => {
 
   test("should send revalidated tags", async () => {
     const cache = new PubSub();
-    const response = streamRevalidatedTags({ cache, buildId: "1337" });
+    const response = streamRevalidatedTags({ cache });
 
     await cache.delete(["tag1"]);
 

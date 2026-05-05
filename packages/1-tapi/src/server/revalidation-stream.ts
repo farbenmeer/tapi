@@ -1,5 +1,4 @@
 import {
-  BUILD_ID_HEADER,
   SESSION_COOKIE_NAME,
   TAGS_CONTENT_TYPE,
 } from "../shared/constants.js";
@@ -9,10 +8,9 @@ const KEEPALIVE_INTERVAL = 10 * 1000;
 
 interface Options {
   cache: Cache;
-  buildId?: string;
 }
 
-export function streamRevalidatedTags({ cache, buildId }: Options) {
+export function streamRevalidatedTags({ cache }: Options) {
   const id = crypto.randomUUID();
   let interval: ReturnType<typeof setInterval> | null = null;
   let unsubscribe = () => {};
@@ -48,8 +46,6 @@ export function streamRevalidatedTags({ cache, buildId }: Options) {
     "Set-Cookie": `${SESSION_COOKIE_NAME}=${id}; Path=/; HttpOnly; SameSite=Strict`,
     "Content-Type": TAGS_CONTENT_TYPE,
   });
-
-  if (buildId) headers.set(BUILD_ID_HEADER, buildId);
 
   return new Response(stream, {
     headers,

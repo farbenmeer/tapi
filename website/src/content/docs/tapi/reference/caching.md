@@ -55,10 +55,8 @@ Set up a separate route for the long-polling endpoint, reading the cache from th
 import { streamRevalidatedTags } from '@farbenmeer/tapi/server';
 import { api } from './api';
 
-const GET = () => streamRevalidatedTags({ cache: api.cache, buildId: process.env.BUILD_ID })
+const GET = () => streamRevalidatedTags({ cache: api.cache })
 ```
-
-where `process.env.BUILD_ID` is a unique identifier for your build. This is used to notify the TApi service worker when it needs to reload.
 
 *Caveat*: The default Pub/Sub implementation only works on a single host. If you need to run TApi across multiple hosts, the only ready-to-use solution for now is the [RedisCache](/tag-based-cache/reference/redis-cache).
 
@@ -73,23 +71,33 @@ import { handleTapiRequest } from '@farbenmeer/tapi/worker';
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.host === process.env.BASE_URL && /\/api/.test(url.pathname)) {
-    event.respondWith(handleTapiRequest(process.env.BUILD_ID, event.request));
+    event.respondWith(handleTapiRequest(event.request));
   }
 });
 ```
 
-This will store responses in a cache (where the cache name is dependent on the `buildId` so the cache will be fresh on every update of your application) and serve them from the cache until they expire or get revalidated through tag-based revalidation.
+This will store responses in a cache and serve them from the cache until they expire or get revalidated through tag-based revalidation.
 
 Additionally, the service worker can listen to the invalidation stream from the server using `listenForInvalidations`:
 
 ```ts
 import { listenForInvalidations } from '@farbenmeer/tapi/worker';
 
-listenForInvalidations({ url: process.env.INVALIDATION_ROUTE, buildId: process.env.BUILD_ID });
+listenForInvalidations({ url: process.env.INVALIDATION_ROUTE });
 ```
-where you need to make sure that the `process.env.INVALIDATION_ROUTE` is set to the correct route that was set up to respond using `streamRevalidatedTags` and `process.env.BUILD_ID` needs to match the `buildId` passed to `streamRevalidatedTags` on the server.
+where you need to make sure that the `process.env.INVALIDATION_ROUTE` is set to the correct route that was set up to respond using `streamRevalidatedTags`.
 
-when listening for invalidations, the worker will mark all of it's cached entries as expired and notify it's clients to reload them as soon as it manages to connect to the invalidation stream.
+When listening for invalidations, the worker will mark all of its cached entries as expired and notify its clients to reload them as soon as it manages to connect to the invalidation stream.
+
+To bound long-term cache growth, call `cleanup({ maximumStaleAge })` from the service worker's `activate` event. It deletes cache entries whose `expiresAt` is older than `maximumStaleAge` seconds, removes any cache entries that no longer have a meta record, and rebuilds the tags index from the surviving meta records:
+
+```ts
+import { cleanup } from '@farbenmeer/tapi/worker';
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
+});
+```
 
 
 ### Client cache
