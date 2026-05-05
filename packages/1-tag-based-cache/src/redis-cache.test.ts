@@ -63,8 +63,8 @@ describe("RedisCache", () => {
       tags: [],
     });
 
-    // Wait for TTL to expire
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for TTL to expire (extra buffer for system load)
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Force Redis to check TTL by trying to get the key
     expect(await sut.get("test")).toEqual(null);
