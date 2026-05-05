@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "srvx --prod -s ../client dist/server.js",
+    "start": "srvx --prod -s client dist/server.js",
     "test": "playwright test",
     "test:dev": "playwright test --project=dev",
     "test:prod": "playwright test --project=prod",
