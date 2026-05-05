@@ -37,7 +37,7 @@ importers:
         version: 5.9.3
       zod:
         specifier: ^4
-        version: 4.4.2
+        version: 4.4.3
     devDependencies:
       '@playwright/test':
         specifier: ^1.58.1
@@ -105,7 +105,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)
       zod:
         specifier: ^4.0.17
-        version: 4.4.2
+        version: 4.4.3
     devDependencies:
       '@playwright/test':
         specifier: ^1.58.1
@@ -136,7 +136,7 @@ importers:
         version: 5.9.3
       zod:
         specifier: ^4
-        version: 4.4.2
+        version: 4.4.3
     devDependencies:
       '@playwright/test':
         specifier: ^1.58.1
@@ -173,7 +173,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)
       zod:
         specifier: ^4.0.17
-        version: 4.4.2
+        version: 4.4.3
     devDependencies:
       '@playwright/test':
         specifier: ^1.58.1
@@ -287,7 +287,7 @@ importers:
         version: 6.0.3
       zod-openapi:
         specifier: ^5.4.0
-        version: 5.4.6(zod@4.4.2)
+        version: 5.4.6(zod@4.4.3)
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
@@ -297,7 +297,7 @@ importers:
         version: 4.1.5(@types/node@25.6.0)(@vitest/browser-playwright@4.1.5)(happy-dom@20.9.0)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0))
       zod:
         specifier: ^4.0.17
-        version: 4.4.2
+        version: 4.4.3
 
   packages/1-workflow:
     dependencies:
@@ -380,7 +380,7 @@ importers:
         version: 4.1.5(@types/node@25.6.0)(@vitest/browser-playwright@4.1.5)(happy-dom@20.9.0)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0))
       zod:
         specifier: ^4.1.5
-        version: 4.4.2
+        version: 4.4.3
 
   packages/2-skeleton:
     dependencies:
@@ -512,7 +512,7 @@ importers:
         version: 6.0.3
       zod:
         specifier: ^4
-        version: 4.4.2
+        version: 4.4.3
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
@@ -4719,8 +4719,8 @@ packages:
     peerDependencies:
       zod: ^3.25.74 || ^4.0.0
 
-  zod@4.4.2:
-    resolution: {integrity: sha512-IynmDyxsEsb9RKzO3J9+4SxXnl2FTFSzNBaKKaMV6tsSk0rw9gYw9gs+JFCq/qk2LCZ78KDwyj+Z289TijSkUw==}
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -4788,7 +4788,7 @@ snapshots:
     dependencies:
       sitemap: 9.0.1
       stream-replace-string: 2.0.0
-      zod: 4.4.2
+      zod: 4.4.3
 
   '@astrojs/starlight@0.38.4(astro@6.2.1(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.2)(tsx@4.21.0)(typescript@5.9.3))':
     dependencies:
@@ -6287,7 +6287,7 @@ snapshots:
       vitefu: 1.1.3(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0))
       xxhash-wasm: 1.1.0
       yargs-parser: 22.0.0
-      zod: 4.4.2
+      zod: 4.4.3
     optionalDependencies:
       sharp: 0.34.5
     transitivePeerDependencies:
@@ -7322,7 +7322,7 @@ snapshots:
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
-      zod: 4.4.2
+      zod: 4.4.3
     optionalDependencies:
       better-sqlite3: 12.9.0
       mysql2: 3.15.3
@@ -9049,10 +9049,10 @@ snapshots:
       grammex: 3.1.12
       graphmatch: 1.1.1
 
-  zod-openapi@5.4.6(zod@4.4.2):
+  zod-openapi@5.4.6(zod@4.4.3):
     dependencies:
-      zod: 4.4.2
+      zod: 4.4.3
 
-  zod@4.4.2: {}
+  zod@4.4.3: {}
 
   zwitch@2.0.4: {}
