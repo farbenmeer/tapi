@@ -1,0 +1,65 @@
+---
+title: Vite Plugin TApi
+description: Bundle a TApi REST API alongside your Vite frontend in a single project.
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+`@farbenmeer/vite-plugin-tapi` bundles a [TApi](/tapi) REST API alongside your Vite frontend in a single project. In dev and preview modes the API is served as middleware on the same port as the frontend. For production, `vite build` emits a deployable server bundle.
+
+## Installation
+
+```bash
+pnpm add -D @farbenmeer/vite-plugin-tapi
+pnpm add @farbenmeer/tapi srvx
+```
+
+## Quick Start
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import tapi from "@farbenmeer/vite-plugin-tapi";
+
+export default defineConfig({
+  plugins: [tapi()],
+});
+```
+
+The plugin expects `src/api.ts` to export `api` (an `ApiDefinition`):
+
+```ts
+// src/api.ts
+import { defineApi, defineHandler, TResponse } from "@farbenmeer/tapi/server";
+
+export const api = defineApi().route("/hello", {
+  GET: defineHandler({ authorize: () => true }, async () => {
+    return TResponse.json({ message: "hello" });
+  }),
+});
+```
+
+## Features
+
+<CardGrid>
+  <Card title="Single Port Dev" icon="laptop">
+    Frontend and API are served on the same port in dev and preview — no CORS configuration needed.
+  </Card>
+  <Card title="Isolated Build Output" icon="document">
+    `vite build` writes `dist/client/` (static assets) and `dist/server/` (server bundle) separately, so secrets never leak to the static host.
+  </Card>
+  <Card title="Env File Support" icon="setting">
+    `.env` files are loaded and mirrored into `process.env` during development, covering server-side libraries that read `process.env` directly.
+  </Card>
+  <Card title="Service Worker Ready" icon="rocket">
+    Composes cleanly with `vite-plugin-pwa` to add offline support and tag-based cache revalidation.
+  </Card>
+</CardGrid>
+
+## Guides
+
+<CardGrid>
+  <LinkCard title="Getting Started" href="/vite-plugin-tapi/guides/getting-started" description="Set up the plugin and configure your API entry point." />
+  <LinkCard title="Service Worker" href="/vite-plugin-tapi/guides/service-worker" description="Add offline support with vite-plugin-pwa." />
+  <LinkCard title="Deployment" href="/vite-plugin-tapi/guides/deployment" description="Serve the production bundle with srvx." />
+</CardGrid>

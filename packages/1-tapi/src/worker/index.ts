@@ -3,19 +3,21 @@ import { getCachedEntry, getMetadata } from "./cache";
 import { mutateAndInvalidate } from "./mutate-and-invalidate";
 import { serveFromNetwork } from "./serve-from-network";
 export { listenForInvalidations } from "./revalidation-stream";
+export { cleanup } from "./cleanup";
+export type { CleanupOptions } from "./cleanup";
 
-export async function handleTapiRequest(buildId: string, req: Request) {
+export async function handleTapiRequest(req: Request) {
   if (isMutation(req)) {
-    return mutateAndInvalidate(buildId, req);
+    return mutateAndInvalidate(req);
   } else {
-    const cachedResponse = await getCachedEntry(buildId, req);
+    const cachedResponse = await getCachedEntry(req);
 
     if (!cachedResponse) {
       // no cached response, serve from network
-      return serveFromNetwork(buildId, req);
+      return serveFromNetwork(req);
     }
 
-    const meta = await getMetadata(buildId, req.url);
+    const meta = await getMetadata(req.url);
 
     if (meta?.expiresAt) {
       if (meta.expiresAt > Date.now()) {
@@ -25,7 +27,7 @@ export async function handleTapiRequest(buildId: string, req: Request) {
         // cached response is expired
         try {
           // try to serve from network
-          return serveFromNetwork(buildId, req);
+          return serveFromNetwork(req);
         } catch (error) {
           // probably network not available, serve old response
           console.error("TApi Worker fetch failed", error);

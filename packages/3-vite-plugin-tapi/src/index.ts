@@ -65,7 +65,7 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         ? entryOption
         : path.resolve(config.root, entryOption);
       resolvedRoot = config.root;
-      serverOutDir = path.resolve(config.root, userOutDirBase, "server");
+      serverOutDir = path.resolve(config.root, userOutDirBase);
       isBuildCommand = config.command === "build";
     },
 
@@ -136,7 +136,7 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
       }
 
       const serverJsPath = path.join(
-        path.resolve(previewServer.config.root, userOutDirBase, "server"),
+        path.resolve(previewServer.config.root, userOutDirBase),
         "server.js",
       );
 
