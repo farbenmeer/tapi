@@ -1,5 +1,14 @@
 # @farbenmeer/vite-plugin-tapi
 
+## 1.0.0
+
+### Patch Changes
+
+- 8d6788c: adjust server build output path and add vite plugin docs to website
+- Updated dependencies [8d6788c]
+- Updated dependencies [8d6788c]
+  - @farbenmeer/tapi@0.11.0
+
 ## 0.2.0
 
 ### Minor Changes
