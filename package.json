@@ -10,5 +10,5 @@
     "@changesets/cli": "^2.29.6",
     "typescript": "^6.0.0"
   },
-  "packageManager": "pnpm@11.0.9"
+  "packageManager": "pnpm@11.1.0"
 }
