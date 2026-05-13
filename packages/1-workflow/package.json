@@ -13,7 +13,9 @@
     "./adapter-postgres": "./dist/adapter-postgres/adapter-postgres.js",
     "./adapter-inmemory": "./dist/adapter-inmemory.js",
     "./adapter-drizzle-better-sqlite": "./dist/adapter-drizzle-better-sqlite/adapter.js",
-    "./adapter-drizzle-node-postgres": "./dist/adapter-drizzle-node-postgres/adapter.js"
+    "./adapter-drizzle-better-sqlite/schema": "./dist/adapter-drizzle-better-sqlite/schema.js",
+    "./adapter-drizzle-node-postgres": "./dist/adapter-drizzle-node-postgres/adapter.js",
+    "./adapter-drizzle-node-postgres/schema": "./dist/adapter-drizzle-node-postgres/schema.js"
   },
   "license": "MIT",
   "repository": {
