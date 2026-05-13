@@ -4,9 +4,9 @@ export type {
   StepState,
   Page,
   ListOptions,
-} from "./adapter";
-export { startEngine } from "./engine";
-export type { Engine } from "./engine";
-export { workflow } from "./workflow";
-export { step } from "./step";
-export { FatalError } from "./fatal-error";
+} from "./adapter.js";
+export { startEngine } from "./engine.js";
+export type { Engine } from "./engine.js";
+export { workflow } from "./workflow.js";
+export { step } from "./step.js";
+export { FatalError } from "./fatal-error.js";

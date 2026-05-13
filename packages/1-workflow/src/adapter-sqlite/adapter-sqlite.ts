@@ -12,8 +12,8 @@ import type {
   Page,
   StepState,
   WorkflowState,
-} from "../adapter";
-import type { DB } from "./types";
+} from "../adapter.js";
+import type { DB } from "./types.js";
 
 export interface SqliteDatabase {
   prepare(sql: string): {

@@ -1,4 +1,4 @@
-import type { StepState } from "./adapter";
+import type { StepState } from "./adapter.js";
 
 export interface Context {
   stepState: Map<string, StepState>;
