@@ -4,6 +4,15 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@playwright/test':
+      specifier: ^1.59.1
+      version: 1.59.1
+    playwright:
+      specifier: ^1.59.1
+      version: 1.59.1
+
 importers:
 
   .:
@@ -11,6 +20,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.29.6
         version: 2.31.0(@types/node@25.6.2)
+      '@playwright/test':
+        specifier: 'catalog:'
+        version: 1.59.1
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
@@ -40,7 +52,7 @@ importers:
         version: 4.4.3
     devDependencies:
       '@playwright/test':
-        specifier: ^1.58.1
+        specifier: 'catalog:'
         version: 1.59.1
       '@types/node':
         specifier: ^25.0.3
@@ -108,7 +120,7 @@ importers:
         version: 4.4.3
     devDependencies:
       '@playwright/test':
-        specifier: ^1.58.1
+        specifier: 'catalog:'
         version: 1.59.1
       '@types/node':
         specifier: ^25.0.3
@@ -139,7 +151,7 @@ importers:
         version: 4.4.3
     devDependencies:
       '@playwright/test':
-        specifier: ^1.58.1
+        specifier: 'catalog:'
         version: 1.59.1
       '@types/node':
         specifier: ^25.0.3
@@ -176,7 +188,7 @@ importers:
         version: 4.4.3
     devDependencies:
       '@playwright/test':
-        specifier: ^1.58.1
+        specifier: 'catalog:'
         version: 1.59.1
       '@types/node':
         specifier: ^25.0.3
@@ -253,7 +265,7 @@ importers:
         specifier: ^4.0.16
         version: 4.1.6(playwright@1.59.1)(vite@8.0.12(@types/node@25.6.2)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.21.0))(vitest@4.1.6)
       playwright:
-        specifier: ^1.58.1
+        specifier: 'catalog:'
         version: 1.59.1
       react:
         specifier: ^19.1.1
