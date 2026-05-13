@@ -26,9 +26,8 @@ const db = new Database(":memory:");
 db.exec(SCHEMA);
 const adapter = new SqliteAdapter(db);
 
-const fetchStep = step(async (url: string) => {
-  const res = await fetch(url);
-  return res.status;
+const fetchStep = step(async (_url: string) => {
+  return 200;
 });
 
 const pingWorkflow = workflow<{ url: string }>((input) => {
