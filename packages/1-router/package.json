@@ -20,8 +20,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "release": "pnpm run build && pnpm publish --no-git-checks",
-    "test": "vitest",
-    "ci-setup": "playwright install --with-deps"
+    "test": "vitest"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
@@ -31,7 +30,7 @@
     "@vitest/browser-playwright": "^4.0.16",
     "react": "^19.1.1",
     "vitest": "^4.0.16",
-    "playwright": "^1.58.1",
+    "playwright": "catalog:",
     "vitest-browser-react": "^2.0.2"
   },
   "peerDependencies": {
