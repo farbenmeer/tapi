@@ -3,6 +3,10 @@ packages:
   - examples/*
   - website
 
+catalog:
+  playwright: ^1.59.1
+  "@playwright/test": ^1.59.1
+
 allowBuilds:
   "@prisma/engines": true
   better-sqlite3: true
