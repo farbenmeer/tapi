@@ -1,5 +1,11 @@
 # @farbenmeer/workflow
 
+## 0.1.2
+
+### Patch Changes
+
+- d071db4: export schema files
+
 ## 0.1.1
 
 ### Patch Changes
