@@ -201,7 +201,7 @@ importers:
         version: link:../../packages/1-workflow
       better-sqlite3:
         specifier: ^12.0.0
-        version: 12.9.0
+        version: 12.10.0
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.0
