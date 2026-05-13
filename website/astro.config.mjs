@@ -22,11 +22,11 @@ export default defineConfig({
             { label: "Introduction", slug: "tapi" },
             {
               label: "Guides",
-              autogenerate: { directory: "tapi/guides" },
+              items: [{ autogenerate: { directory: "tapi/guides" } }],
             },
             {
               label: "Reference",
-              autogenerate: { directory: "tapi/reference" },
+              items: [{ autogenerate: { directory: "tapi/reference" } }],
             },
           ],
         },
@@ -37,7 +37,7 @@ export default defineConfig({
             { label: "Introduction", slug: "lacy" },
             {
               label: "Reference",
-              autogenerate: { directory: "lacy/reference" },
+              items: [{ autogenerate: { directory: "lacy/reference" } }],
             },
           ],
         },
@@ -48,11 +48,11 @@ export default defineConfig({
             { label: "Introduction", slug: "router" },
             {
               label: "Guides",
-              autogenerate: { directory: "router/guides" },
+              items: [{ autogenerate: { directory: "router/guides" } }],
             },
             {
               label: "Reference",
-              autogenerate: { directory: "router/reference" },
+              items: [{ autogenerate: { directory: "router/reference" } }],
             },
           ],
         },
@@ -63,15 +63,15 @@ export default defineConfig({
             { label: "Introduction", slug: "bunny" },
             {
               label: "Guides",
-              autogenerate: { directory: "bunny/guides" },
+              items: [{ autogenerate: { directory: "bunny/guides" } }],
             },
             {
               label: "Conventions",
-              autogenerate: { directory: "bunny/conventions" },
+              items: [{ autogenerate: { directory: "bunny/conventions" } }],
             },
             {
               label: "Reference",
-              autogenerate: { directory: "bunny/reference" },
+              items: [{ autogenerate: { directory: "bunny/reference" } }],
             },
           ],
         },
@@ -82,7 +82,9 @@ export default defineConfig({
             { label: "Introduction", slug: "prisma-migrate-test" },
             {
               label: "Reference",
-              autogenerate: { directory: "prisma-migrate-test/reference" },
+              items: [
+                { autogenerate: { directory: "prisma-migrate-test/reference" } },
+              ],
             },
           ],
         },
@@ -93,7 +95,9 @@ export default defineConfig({
             { label: "Introduction", slug: "vite-plugin-tapi" },
             {
               label: "Guides",
-              autogenerate: { directory: "vite-plugin-tapi/guides" },
+              items: [
+                { autogenerate: { directory: "vite-plugin-tapi/guides" } },
+              ],
             },
           ],
         },
@@ -104,7 +108,9 @@ export default defineConfig({
             { label: "Introduction", slug: "tag-based-cache" },
             {
               label: "Reference",
-              autogenerate: { directory: "tag-based-cache/reference" },
+              items: [
+                { autogenerate: { directory: "tag-based-cache/reference" } },
+              ],
             },
           ],
         },
