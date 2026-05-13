@@ -31,7 +31,7 @@
     "generate": "tsx scripts/generate.ts"
   },
   "dependencies": {
-    "kysely": "^0.28.0"
+    "kysely": "^0.29.0"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.4.0",

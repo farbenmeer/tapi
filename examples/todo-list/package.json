@@ -15,8 +15,7 @@
     "start": "bunny start",
     "test": "playwright test",
     "test:dev": "playwright test --project=dev",
-    "test:prod": "playwright test --project=prod",
-    "ci-setup": "playwright install --with-deps"
+    "test:prod": "playwright test --project=prod"
   },
   "dependencies": {
     "@farbenmeer/bunny": "workspace:^",
@@ -29,7 +28,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
-    "@playwright/test": "^1.58.1"
+    "@playwright/test": "catalog:"
   },
   "peerDependencies": {
     "typescript": "^5"
