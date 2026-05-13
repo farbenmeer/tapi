@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
-import { context } from "./context";
-import type { Adapter, StepState } from "./adapter";
-import { FatalError } from "./fatal-error";
+import { context } from "./context.js";
+import type { Adapter, StepState } from "./adapter.js";
+import { FatalError } from "./fatal-error.js";
 
 interface StepConfig {
   attempts?: number;
