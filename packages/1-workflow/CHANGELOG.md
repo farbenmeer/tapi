@@ -1,5 +1,13 @@
 # @farbenmeer/workflow
 
+## 0.2.0
+
+### Minor Changes
+
+- f12c743: list workflows and steps
+- 9c33a47: In-Workflow error handling
+- 9c33a47: stop-method
+
 ## 0.1.2
 
 ### Patch Changes
