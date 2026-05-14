@@ -1,5 +1,11 @@
 # @farbenmeer/workflow
 
+## 0.2.1
+
+### Patch Changes
+
+- 5f0a81c: missing js extension in imports
+
 ## 0.2.0
 
 ### Minor Changes
