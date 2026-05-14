@@ -1,4 +1,10 @@
-import type { Adapter, WorkflowState } from "./adapter.js";
+import type {
+  Adapter,
+  ListOptions,
+  Page,
+  StepState,
+  WorkflowState,
+} from "./adapter.js";
 import { consoleLogger, type Logger } from "./logger.js";
 import { Workflow } from "./workflow.js";
 
@@ -98,6 +104,15 @@ class RawEngine {
 
       next = await this.storage.getNextWorkflow(this.leaseDuration);
     }
+  }
+
+  public async listWorkflows(options?: ListOptions): Promise<Page> {
+    return await this.storage.listWorkflows(options);
+  }
+
+  public async listSteps(runId: string): Promise<StepState[]> {
+    const steps = await this.storage.getSteps(runId);
+    return Array.from(steps.values());
   }
 
   private async start(workflowId: string, input: unknown) {
