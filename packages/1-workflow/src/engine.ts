@@ -1,10 +1,4 @@
-import type {
-  Adapter,
-  ListOptions,
-  Page,
-  StepState,
-  WorkflowState,
-} from "./adapter.js";
+import type { Adapter, ListOptions, Page, WorkflowState } from "./adapter.js";
 import { consoleLogger, type Logger } from "./logger.js";
 import { Workflow } from "./workflow.js";
 

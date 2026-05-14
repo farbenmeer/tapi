@@ -35,4 +35,7 @@ const engine = startEngine({
 await engine.ping({ url: "https://example.com" });
 
 await new Promise((resolve) => setTimeout(resolve, 500));
+
+engine.stop();
+
 process.exit(0);

@@ -22,7 +22,7 @@ export class Workflow<I> {
         return;
       } catch (v) {
         if (v instanceof Step) {
-          const stepState: StepState = {
+          const stepState: StepState & { errorObject?: unknown } = {
             runId: state.runId,
             stepId: v.id(),
             result: null,
@@ -30,7 +30,11 @@ export class Workflow<I> {
             attempt: 0,
           };
           steps.set(v.id(), stepState);
-          await v.run(storage, stepState, abortSignal);
+          try {
+            await v.run(storage, stepState, abortSignal);
+          } catch (e) {
+            stepState.errorObject = e;
+          }
           continue;
         }
 

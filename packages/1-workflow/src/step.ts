@@ -88,6 +88,9 @@ export function step<I, O>(
   return (input: I) => {
     const step = new Step(run, input, config);
     const state = context.stepState.get(step.id());
+    if (state?.errorObject) {
+      throw state.errorObject;
+    }
     if (state && !state.error) {
       return state.result as O;
     }
