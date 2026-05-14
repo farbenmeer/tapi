@@ -15,7 +15,9 @@
     "./adapter-drizzle-better-sqlite": "./dist/adapter-drizzle-better-sqlite/adapter.js",
     "./adapter-drizzle-better-sqlite/schema": "./dist/adapter-drizzle-better-sqlite/schema.js",
     "./adapter-drizzle-node-postgres": "./dist/adapter-drizzle-node-postgres/adapter.js",
-    "./adapter-drizzle-node-postgres/schema": "./dist/adapter-drizzle-node-postgres/schema.js"
+    "./adapter-drizzle-node-postgres/schema": "./dist/adapter-drizzle-node-postgres/schema.js",
+    "./sql/sqlite.sql": "./sql/sqlite.sql",
+    "./sql/postgres.sql": "./sql/postgres.sql"
   },
   "license": "MIT",
   "repository": {
@@ -50,6 +52,15 @@
   },
   "peerDependencies": {
     "better-sqlite3": "^12.8.0",
+    "drizzle-orm": "^0.45.2",
     "typescript": "^5 || ^6.0.0"
+  },
+  "peerDependenciesMeta": {
+    "better-sqlite3": {
+      "optional": true
+    },
+    "drizzle-orm": {
+      "optional": true
+    }
   }
 }

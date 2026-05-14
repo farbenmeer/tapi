@@ -1,30 +1,22 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { startEngine, step, workflow } from "@farbenmeer/workflow";
+import { DrizzleBetterSqliteAdapter } from "@farbenmeer/workflow/adapter-drizzle-better-sqlite";
 import Database from "better-sqlite3";
-import { startEngine, workflow, step } from "@farbenmeer/workflow";
-import { SqliteAdapter } from "@farbenmeer/workflow/adapter-sqlite";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { workflowState, workflowStepState } from "./schema.js";
 
-const SCHEMA = `
-  CREATE TABLE IF NOT EXISTS workflow_state (
-    workflow_id TEXT NOT NULL,
-    run_id TEXT PRIMARY KEY NOT NULL,
-    error TEXT,
-    input TEXT,
-    lease_expired_at INTEGER NOT NULL,
-    started_at INTEGER NOT NULL,
-    finished_at INTEGER
-  );
-  CREATE TABLE IF NOT EXISTS workflow_step_state (
-    run_id TEXT NOT NULL,
-    step_id TEXT NOT NULL,
-    result TEXT,
-    error TEXT,
-    attempt INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (run_id, step_id)
-  );
-`;
+const migrationsFolder = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../drizzle",
+);
 
-const db = new Database(":memory:");
-db.exec(SCHEMA);
-const adapter = new SqliteAdapter(db);
+const sqliteDb = new Database(":memory:");
+const db = drizzle(sqliteDb, { schema: { workflowState, workflowStepState } });
+migrate(db, { migrationsFolder });
+
+const adapter = new DrizzleBetterSqliteAdapter(db);
 
 const fetchStep = step(async (_url: string) => {
   return 200;
