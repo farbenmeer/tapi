@@ -64,6 +64,10 @@ export class Step<I = unknown> {
 
     return hash.digest("hex");
   }
+
+  [Symbol.toPrimitive]() {
+    return `[Step id=${this.id()} if you are seeing this you are probably catching an error in a workflow and need to call rethrowSuspense before your own error handling]`;
+  }
 }
 
 interface StepImpl<I, O> {
