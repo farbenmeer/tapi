@@ -1,9 +1,9 @@
 import { describe, expect, test, vi } from "vitest";
-import { InMemoryAdapter } from "./adapter-inmemory";
-import { startEngine } from "./engine";
-import { rethrowSuspense } from "./rethrow-suspense";
-import { step } from "./step";
-import { workflow } from "./workflow";
+import { InMemoryAdapter } from "./adapter-inmemory.js";
+import { startEngine } from "./engine.js";
+import { rethrowSuspense } from "./rethrow-suspense.js";
+import { step } from "./step.js";
+import { workflow } from "./workflow.js";
 
 describe("engine", () => {
   const logger = {

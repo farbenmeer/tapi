@@ -32,12 +32,14 @@
     "build": "tsc --noEmit false",
     "release": "pnpm run build && pnpm publish --no-git-checks",
     "test": "vitest",
+    "lint": "biome lint",
     "generate": "tsx scripts/generate.ts"
   },
   "dependencies": {
     "kysely": "^0.29.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
     "@electric-sql/pglite": "^0.4.0",
     "@electric-sql/pglite-socket": "^0.1.1",
     "@types/better-sqlite3": "^7.6.0",

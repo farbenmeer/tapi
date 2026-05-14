@@ -1,6 +1,6 @@
 import type { Adapter, ListOptions, Page, WorkflowState } from "./adapter.js";
 import { consoleLogger, type Logger } from "./logger.js";
-import { Workflow } from "./workflow.js";
+import type { Workflow } from "./workflow.js";
 
 interface Options<W extends Record<string, unknown>> {
   storage: Adapter;

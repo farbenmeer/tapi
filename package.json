@@ -4,7 +4,8 @@
   "scripts": {
     "build": "pnpm run -r build",
     "release": "pnpm -r --no-bail release",
-    "test": "pnpm run -r test"
+    "test": "pnpm run -r test",
+    "lint": "pnpm run -r lint"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6",

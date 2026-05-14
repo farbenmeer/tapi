@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
 import { describe, expect, test, vi } from "vitest";
-import { StepState } from "./adapter";
-import { InMemoryAdapter } from "./adapter-inmemory";
-import { FatalError } from "./fatal-error";
-import { step } from "./step";
+import type { StepState } from "./adapter.js";
+import { InMemoryAdapter } from "./adapter-inmemory.js";
+import { FatalError } from "./fatal-error.js";
+import { step } from "./step.js";
 
 describe("step", () => {
   async function runStep(step: () => void, storage = new InMemoryAdapter()) {

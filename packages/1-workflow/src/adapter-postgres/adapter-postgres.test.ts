@@ -2,10 +2,10 @@ import { PGlite } from "@electric-sql/pglite";
 import { beforeEach, afterEach, describe, expect, test, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { startEngine } from "../engine";
-import { step } from "../step";
-import { workflow } from "../workflow";
-import { PostgresAdapter } from "./adapter-postgres";
+import { startEngine } from "../engine.js";
+import { step } from "../step.js";
+import { workflow } from "../workflow.js";
+import { PostgresAdapter } from "./adapter-postgres.js";
 
 const SCHEMA = readFileSync(
   path.resolve(process.cwd(), "sql/postgres.sql"),

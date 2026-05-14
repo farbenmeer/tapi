@@ -1,4 +1,4 @@
-import { Step } from "./step";
+import { Step } from "./step.js";
 
 export function rethrowSuspense(e: unknown) {
   if (e instanceof Step) {

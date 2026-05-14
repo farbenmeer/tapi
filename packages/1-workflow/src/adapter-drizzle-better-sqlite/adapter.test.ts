@@ -2,10 +2,10 @@ import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { startEngine } from "../engine";
-import { step } from "../step";
-import { workflow } from "../workflow";
-import { DrizzleBetterSqliteAdapter } from "./adapter";
+import { startEngine } from "../engine.js";
+import { step } from "../step.js";
+import { workflow } from "../workflow.js";
+import { DrizzleBetterSqliteAdapter } from "./adapter.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 

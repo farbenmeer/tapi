@@ -45,12 +45,12 @@ export class Step<I = unknown> {
         await storage.putStep(state);
       }
 
-      const delay = this.baseTimeout * Math.pow(2, state.attempt - 1);
+      const delay = this.baseTimeout * 2 ** (state.attempt - 1);
 
       await storage.lease(state.runId, delay);
 
       await new Promise((resolve) =>
-        setTimeout(resolve, this.baseTimeout * Math.pow(2, state.attempt - 1)),
+        setTimeout(resolve, this.baseTimeout * 2 ** (state.attempt - 1)),
       );
     }
   }
@@ -70,13 +70,9 @@ export class Step<I = unknown> {
   }
 }
 
-interface StepImpl<I, O> {
-  (input: I): Promise<O>;
-}
+type StepImpl<I, O> = (input: I) => Promise<O>
 
-interface RunStep<I, O> {
-  (input: I): O;
-}
+type RunStep<I, O> = (input: I) => O
 
 export function step<I, O>(
   config: StepConfig,

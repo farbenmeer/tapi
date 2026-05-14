@@ -1,9 +1,9 @@
 import Database from "better-sqlite3";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { startEngine } from "../engine";
-import { step } from "../step";
-import { workflow } from "../workflow";
-import { SqliteAdapter } from "./adapter-sqlite";
+import { startEngine } from "../engine.js";
+import { step } from "../step.js";
+import { workflow } from "../workflow.js";
+import { SqliteAdapter } from "./adapter-sqlite.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
