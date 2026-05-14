@@ -17,6 +17,10 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
     public cache: Cache,
   ) {}
 
+  async invalidate(tags: string[]) {
+    await this.cache.delete(tags)
+  }
+
   route<
     Path extends BasePath,
     GetResponse = never,
