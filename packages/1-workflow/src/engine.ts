@@ -11,6 +11,7 @@ import { Workflow } from "./workflow.js";
 interface Options<W extends Record<string, unknown>> {
   storage: Adapter;
   workflows: Workflows<W>;
+  /** How long to lease a workflow for, in seconds. */
   leaseDuration?: number;
   logger?: Logger;
 }
@@ -22,7 +23,7 @@ type Workflows<W extends Record<string, unknown>> = {
 export function startEngine<W extends Record<string, unknown>>({
   storage,
   workflows,
-  leaseDuration = 60_000,
+  leaseDuration = 60,
   logger = consoleLogger,
 }: Options<W>) {
   return new RawEngine(storage, workflows, leaseDuration, logger) as Engine<W>;
@@ -38,6 +39,7 @@ export type Engine<W extends Record<string, unknown>> = RawEngine & {
 };
 
 class RawEngine {
+  private running: boolean;
   constructor(
     private storage: Adapter,
     private workflows: Record<string, Workflow<any>>,
@@ -62,6 +64,7 @@ class RawEngine {
         },
       });
     });
+    this.running = true;
   }
 
   async run() {
@@ -69,7 +72,7 @@ class RawEngine {
     let next: WorkflowState | null;
     next = await this.storage.getNextWorkflow(this.leaseDuration);
 
-    while (next) {
+    while (next && this.running) {
       this.logger.debug(`Next workflow: ${next.workflowId}`, {
         input: next.input,
       });
@@ -110,11 +113,6 @@ class RawEngine {
     return await this.storage.listWorkflows(options);
   }
 
-  public async listSteps(runId: string): Promise<StepState[]> {
-    const steps = await this.storage.getSteps(runId);
-    return Array.from(steps.values());
-  }
-
   private async start(workflowId: string, input: unknown) {
     await this.storage.createWorkflow({
       workflowId,
@@ -127,6 +125,7 @@ class RawEngine {
     input: unknown,
     interval: number,
   ): Promise<void> {
+    if (!this.running) return;
     const lastRun = await this.storage.getLatestRun(
       workflowId as string,
       input,
@@ -146,5 +145,9 @@ class RawEngine {
     }
 
     setTimeout(() => this.runScheduled(workflowId, input, interval), nextRunIn);
+  }
+
+  public stop() {
+    this.running = false;
   }
 }
