@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.11.1
+
+### Patch Changes
+
+- 8cd5914: api.invalidate API
+
 ## 0.11.0
 
 ### Minor Changes
