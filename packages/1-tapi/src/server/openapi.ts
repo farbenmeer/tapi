@@ -14,7 +14,7 @@ interface Options {
 
 export async function generateOpenAPISchema(
   apiDefinition: ApiDefinition<Record<Path, MaybePromise<BaseRoute>>>,
-  options: Options
+  options: Options,
 ): Promise<ReturnType<typeof createDocument>> {
   return createDocument({
     openapi: "3.1.1",
@@ -30,37 +30,37 @@ export async function generateOpenAPISchema(
                   entry[1] != null &&
                   typeof entry[1] === "object" &&
                   "schema" in entry[1] &&
-                  "handler" in entry[1]
+                  "handler" in entry[1],
               )
               .map(([method, handler]) => [
-              method.toLowerCase(),
-              {
-                requestParams: {
-                  path: z.object(handler.schema.params),
-                  query: z.object(handler.schema.query),
-                },
-                requestBody: handler.schema.body && {
-                  content: {
-                    "application/json": {
-                      schema: handler.schema.body,
-                    },
+                method.toLowerCase(),
+                {
+                  requestParams: {
+                    path: z.object(handler.schema.params),
+                    query: z.object(handler.schema.query),
                   },
-                },
-                responses: {
-                  "200": {
-                    description: "200 OK",
+                  requestBody: handler.schema.body && {
                     content: {
                       "application/json": {
-                        schema: handler.schema.response || z.any(),
+                        schema: handler.schema.body,
+                      },
+                    },
+                  },
+                  responses: {
+                    "200": {
+                      description: "200 OK",
+                      content: {
+                        "application/json": {
+                          schema: handler.schema.response || z.any(),
+                        },
                       },
                     },
                   },
                 },
-              },
-            ])
+              ]),
           ),
-        ])
-      )
+        ]),
+      ),
     ),
   });
 }
@@ -68,6 +68,6 @@ export async function generateOpenAPISchema(
 function transformPath(path: string) {
   return path
     .split("/")
-    .map((segment) => segment.replace(/^\[(.+)\]$/, "{$1}"))
+    .map((segment) => segment.replace(/^:(.+)$/, "{$1}"))
     .join("/");
 }
