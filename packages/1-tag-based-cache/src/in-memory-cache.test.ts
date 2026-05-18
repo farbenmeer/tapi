@@ -89,4 +89,16 @@ describe("InMemoryCache", () => {
       attachment: new Uint8Array(numbers),
     });
   });
+
+  test("duplicate set does not poison the connection", async () => {
+    const sut = new InMemoryCache();
+
+    await sut.set({ key: "k", data: { v: 1 }, ttl: 1000, tags: ["t1"] });
+    await sut.set({ key: "k", data: { v: 2 }, ttl: 1000, tags: ["t1", "t2"] });
+
+    expect(await sut.get("k")).toEqual({ data: { v: 2 }, attachment: null });
+
+    await expect(sut.delete(["t2"])).resolves.toBeUndefined();
+    expect(await sut.get("k")).toEqual(null);
+  });
 });

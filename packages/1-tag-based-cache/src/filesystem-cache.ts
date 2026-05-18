@@ -76,47 +76,61 @@ export class FilesystemCache implements Cache {
     tags: string[];
   }): Promise<void> {
     this.db.exec("BEGIN;");
-    this.db
-      .prepare(
-        `
-          INSERT INTO entries (key, data, attachment, added_at, expires_at)
-          VALUES (?, ?, ?, ?, ?);
-        `
-      )
-      .run(
-        key,
-        data ? JSON.stringify(data) : null,
-        attachment ?? null,
-        Date.now(),
-        Date.now() + ttl * 1000
-      );
+    try {
+      this.db
+        .prepare(
+          `
+            INSERT OR REPLACE INTO entries (key, data, attachment, added_at, expires_at)
+            VALUES (?, ?, ?, ?, ?);
+          `
+        )
+        .run(
+          key,
+          data ? JSON.stringify(data) : null,
+          attachment ?? null,
+          Date.now(),
+          Date.now() + ttl * 1000
+        );
 
-    const stmt = this.db.prepare(`
-      INSERT INTO tags (key, tag) VALUES (?, ?)
-    `);
+      const stmt = this.db.prepare(`
+        INSERT OR IGNORE INTO tags (key, tag) VALUES (?, ?)
+      `);
 
-    for (const tag of tags) {
-      stmt.run(key, tag);
+      for (const tag of tags) {
+        stmt.run(key, tag);
+      }
+      this.db.exec("COMMIT;");
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK;");
+      } catch {}
+      throw e;
     }
-    this.db.exec("COMMIT;");
 
     return Promise.resolve();
   }
 
   delete(tags: string[], meta?: Json): Promise<void> {
     this.db.exec("BEGIN;");
-    const stmt = this.db.prepare(
-      `
-        DELETE FROM entries WHERE key IN
-          (SELECT key FROM tags WHERE tag = ?);
-      `
-    );
+    try {
+      const stmt = this.db.prepare(
+        `
+          DELETE FROM entries WHERE key IN
+            (SELECT key FROM tags WHERE tag = ?);
+        `
+      );
 
-    for (const tag of tags) {
-      stmt.run(tag);
+      for (const tag of tags) {
+        stmt.run(tag);
+      }
+
+      this.db.exec("COMMIT;");
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK;");
+      } catch {}
+      throw e;
     }
-
-    this.db.exec("COMMIT;");
 
     for (const callback of this.subscribers) {
       callback(tags, meta);
@@ -126,31 +140,42 @@ export class FilesystemCache implements Cache {
   }
 
   gc() {
-    this.db.exec("BEGIN;");
-    const stmt = this.db.prepare(
-      `
-        DELETE FROM entries WHERE expires_at < ?;
-      `
-    );
+    try {
+      this.db.exec("BEGIN;");
+      let changes = 0;
+      try {
+        const result = this.db
+          .prepare(
+            `
+              DELETE FROM entries WHERE expires_at < ?;
+            `
+          )
+          .run(Date.now());
+        changes = result.changes as number;
+        this.db.exec("COMMIT;");
+      } catch (e) {
+        try {
+          this.db.exec("ROLLBACK;");
+        } catch {}
+        throw e;
+      }
 
-    const result = stmt.run(Date.now());
-    this.db.exec("COMMIT;");
-
-    if (result.changes > 100) {
-      this.gcTimeout = Math.max(
-        Math.floor(this.gcTimeout * (1 - GC_TIMEOUT_STEP)),
-        MIN_GC_TIMEOUT
-      );
-    } else if (result.changes < 10) {
-      this.gcTimeout = Math.min(
-        Math.floor(this.gcTimeout * (1 + GC_TIMEOUT_STEP)),
-        MAX_GC_TIMEOUT
-      );
+      if (changes > 100) {
+        this.gcTimeout = Math.max(
+          Math.floor(this.gcTimeout * (1 - GC_TIMEOUT_STEP)),
+          MIN_GC_TIMEOUT
+        );
+      } else if (changes < 10) {
+        this.gcTimeout = Math.min(
+          Math.floor(this.gcTimeout * (1 + GC_TIMEOUT_STEP)),
+          MAX_GC_TIMEOUT
+        );
+      }
+    } finally {
+      setTimeout(() => {
+        this.gc();
+      }, this.gcTimeout);
     }
-
-    setTimeout(() => {
-      this.gc();
-    }, this.gcTimeout);
   }
 
   subscribe(callback: Subscription): () => void {
