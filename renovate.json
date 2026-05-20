@@ -1,13 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "prConcurrentLimit": 5,
+  "prConcurrentLimit": 8,
   "rebaseWhen": "conflicted",
-  "minimumReleaseAge": "1 day",
+  "minimumReleaseAge": "3 days",
+  "schedule": ["* 0-6 * * 1-5"],
   "lockFileMaintenance": {
     "enabled": true,
     "rebaseStalePrs": true,
-    "schedule": ["before 4am on monday"],
     "groupName": "lockFileMaintenance",
     "automerge": true
   },
