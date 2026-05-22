@@ -182,5 +182,86 @@ describe("useQuery", () => {
 
       expect(screen.getByTestId("sut")).toHaveTextContent('["test","foo"]');
     });
+
+    test("shows correct data when observable switches to an already-cached query", async () => {
+      let aTitle = "Item A";
+
+      const api = defineApi()
+        .route("/a", {
+          GET: defineHandler(
+            { authorize: () => true },
+            async () =>
+              TResponse.json({ title: aTitle }, { cache: { tags: ["a"] } })
+          ),
+          POST: defineHandler(
+            { authorize: () => true },
+            async () => {
+              aTitle = "Item A updated";
+              return TResponse.json(null, { cache: { tags: ["a"] } });
+            }
+          ),
+        })
+        .route("/b", {
+          GET: defineHandler(
+            { authorize: () => true },
+            async () => TResponse.json({ title: "Item B" })
+          ),
+        });
+
+      const handler = createRequestHandler(api);
+      const client = createFetchClient<typeof api.routes>(
+        "http://localhost:3000",
+        {
+          async fetch(url, init) {
+            return handler(new Request(url, init));
+          },
+        }
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      function Sut({ item }: { item: "a" | "b" }) {
+        const data = useQuery(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          item === "a" ? (client as any).a.get() : (client as any).b.get()
+        ) as { title: string };
+        return <div data-testid="sut">{data.title}</div>;
+      }
+
+      // Pre-load B into cache
+      const { unmount: unmountB } = await act(() =>
+        render(
+          <Suspense fallback={null}>
+            <Sut item="b" />
+          </Suspense>
+        )
+      );
+      unmountB();
+
+      // Render A
+      const { rerender } = await act(() =>
+        render(
+          <Suspense fallback={<div>Loading...</div>}>
+            <Sut item="a" />
+          </Suspense>
+        )
+      );
+      expect(screen.getByTestId("sut")).toHaveTextContent("Item A");
+
+      // Revalidate A — this fires the subscribe callback and sets data state
+      await act(async () => {
+        await (client as any).a.post().revalidated;
+      });
+      expect(screen.getByTestId("sut")).toHaveTextContent("Item A updated");
+
+      // Switch to B (already cached) — without the fix this showed "Item A updated"
+      await act(() =>
+        rerender(
+          <Suspense fallback={<div>Loading...</div>}>
+            <Sut item="b" />
+          </Suspense>
+        )
+      );
+      expect(screen.getByTestId("sut")).toHaveTextContent("Item B");
+    });
   });
 });

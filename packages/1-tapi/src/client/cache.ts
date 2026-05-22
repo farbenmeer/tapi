@@ -98,6 +98,10 @@ export class Cache {
           // so it doesn't miss the update.
           if (entry.next && entry.next !== observable) {
             callback(entry.next);
+          } else if (entry.current && entry.current.value !== observable) {
+            // A revalidation completed between cache.request() returning this
+            // observable and subscribe() being called — notify with the newer value.
+            callback(entry.current.value);
           }
 
           return () => {
