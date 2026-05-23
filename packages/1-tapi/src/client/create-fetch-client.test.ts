@@ -190,4 +190,21 @@ describe("createFetchClient", () => {
 
     expect(cb).not.toHaveBeenCalled();
   });
+
+  test("subscribe notifies of newer resolved value when revalidation completed before subscribe", async () => {
+    // Get the observable and wait for it to resolve so entry.current is set
+    const observable = client.books.get();
+    await observable;
+
+    // Trigger a revalidation and wait for it to fully complete so entry.current
+    // is updated to the new observable and entry.next is cleared
+    await client.books.revalidate();
+
+    // Now subscribe to the *original* observable — a new subscriber that missed
+    // the revalidation. The callback should fire immediately with the newer value.
+    const cb = vi.fn();
+    observable.subscribe(cb);
+
+    expect(cb).toHaveBeenCalledTimes(1);
+  });
 });
