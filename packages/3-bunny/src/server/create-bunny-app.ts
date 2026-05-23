@@ -34,11 +34,7 @@ export function createBunnyApp({
   const apiRequestHandler = api().then(async ({ api }) =>
     createRequestHandler(api, {
       basePath: "/api",
-      hooks: {
-        error: (error) => {
-          console.error(error);
-        },
-      },
+      logger: api.logger ?? { error: (error) => console.error(error) },
     }),
   );
   let openApiJson: string | undefined;

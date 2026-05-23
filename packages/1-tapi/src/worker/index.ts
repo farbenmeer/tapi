@@ -1,12 +1,16 @@
 import { isMutation } from "../shared/is-mutation";
+import type { Logger } from "../shared/logger";
 import { getCachedEntry, getMetadata } from "./cache";
 import { mutateAndInvalidate } from "./mutate-and-invalidate";
 import { serveFromNetwork } from "./serve-from-network";
 export { listenForInvalidations } from "./revalidation-stream";
 export { cleanup } from "./cleanup";
 export type { CleanupOptions } from "./cleanup";
+export type { Logger } from "../shared/logger";
 
-export async function handleTapiRequest(req: Request) {
+export async function handleTapiRequest(req: Request, options?: { logger?: Logger }) {
+  const errorLog = options?.logger?.error ?? ((err: unknown) => console.error("TApi Worker fetch failed", err));
+
   if (isMutation(req)) {
     return mutateAndInvalidate(req);
   } else {
@@ -30,7 +34,7 @@ export async function handleTapiRequest(req: Request) {
           return serveFromNetwork(req);
         } catch (error) {
           // probably network not available, serve old response
-          console.error("TApi Worker fetch failed", error);
+          errorLog(error);
           return cachedResponse;
         }
       }

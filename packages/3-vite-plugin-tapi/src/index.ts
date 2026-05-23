@@ -90,7 +90,7 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         }
         currentHandler = createRequestHandler(mod.api, {
           basePath,
-          hooks: {
+          logger: {
             error: (error) => {
               if (error instanceof Error) vite.ssrFixStacktrace(error);
               console.error(error);

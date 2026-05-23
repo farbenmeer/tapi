@@ -79,7 +79,7 @@ describe("createRequestHandler", () => {
           },
         ),
       }),
-      { hooks: { error: errorHook } },
+      { logger: { error: errorHook } },
     );
     const response = await sut(new Request("http://localhost:3000"));
     expect(response.status).toBe(500);
@@ -103,7 +103,7 @@ describe("createRequestHandler", () => {
           },
         ),
       }),
-      { hooks: { error: errorHook } },
+      { logger: { error: errorHook } },
     );
     const response = await sut(
       new Request("http://localhost:3000", {
@@ -166,7 +166,7 @@ describe("createRequestHandler", () => {
           },
         ),
       }),
-      { hooks: { error: errorHook } },
+      { logger: { error: errorHook } },
     );
     const response = await sut(new Request("http://localhost:3000"));
     expect(await response.json()).toEqual({ auth: "foo" });

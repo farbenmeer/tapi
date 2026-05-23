@@ -73,11 +73,7 @@ export const dev = new Command()
       tapi.api = api;
       tapi.apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
-        hooks: {
-          error: (error) => {
-            console.error(error);
-          },
-        },
+        logger: api.logger ?? { error: (error) => console.error(error) },
       });
       const packageJson = JSON.parse(
         await readFile(path.join(process.cwd(), "package.json"), "utf8"),
