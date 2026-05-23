@@ -88,14 +88,16 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
             `[vite-plugin-tapi] ${resolvedEntry} must export \`api\` (an ApiDefinition).`,
           );
         }
-        currentHandler = createRequestHandler(mod.api, {
-          basePath,
-          logger: {
+        if (!mod.api.logger) {
+          mod.api.logger = {
             error: (error) => {
               if (error instanceof Error) vite.ssrFixStacktrace(error);
               console.error(error);
             },
-          },
+          };
+        }
+        currentHandler = createRequestHandler(mod.api, {
+          basePath,
         });
       };
 
