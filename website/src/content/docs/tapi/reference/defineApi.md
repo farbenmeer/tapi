@@ -42,6 +42,10 @@ interface Logger {
 
 Pass any object that implements this shape — for example, a Pino or Winston instance, or a custom function that ships errors to your observability platform.
 
+:::note
+The `Logger` interface currently only exposes `error`. Additional methods (`log`, `info`, `warn`, …) may be added in future minor releases. Implementations should treat unknown methods as optional and ignore them.
+:::
+
 ```ts
 import { defineApi } from "@farbenmeer/tapi/server";
 
