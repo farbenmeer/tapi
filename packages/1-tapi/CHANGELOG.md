@@ -1,5 +1,12 @@
 # @farbenmeer/tapi
 
+## 0.11.2
+
+### Patch Changes
+
+- 1913536: fix openapi path conversion function
+- 0847839: fix: notify new subscribers of already-resolved value in cache
+
 ## 0.11.1
 
 ### Patch Changes
