@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import serveStatic from "serve-static";
 import { loadEnv } from "../load-env.js";
+import { bunnyLogger } from "./bunny-logger.js";
 import { fromResponse, toRequest } from "./node-http-adapter.js";
 import type { Cache } from "@farbenmeer/tapi/server";
 import type { ServerConfig } from "../config.js";
@@ -31,12 +32,12 @@ export function createBunnyApp({
 }: BunnyServerOptions) {
   loadEnv("production");
   const app = connect();
-  const apiRequestHandler = api().then(async ({ api }) =>
-    createRequestHandler(api, {
+  const apiRequestHandler = api().then(async ({ api }) => {
+    if (!api.logger) api.logger = bunnyLogger;
+    return createRequestHandler(api, {
       basePath: "/api",
-      logger: api.logger ?? { error: (error) => console.error(error) },
-    }),
-  );
+    });
+  });
   let openApiJson: string | undefined;
 
   app.use(async (req, res, next) => {

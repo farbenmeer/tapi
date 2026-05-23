@@ -5,7 +5,6 @@ import {
 } from "../shared/constants.js";
 import { HttpError } from "../shared/http-error.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
-import type { Logger } from "../shared/logger.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
 import { CookieStore } from "./cookie-store.js";
@@ -18,7 +17,6 @@ import { streamRevalidatedTags } from "./revalidation-stream.js";
 interface Options {
   /** the root path for all API routes */
   basePath?: string;
-  logger?: Logger;
   /** the default maximum time-to-live (TTL) for cached responses */
   defaultTTL?: number;
 }
@@ -37,7 +35,6 @@ export function createRequestHandler(
   options: Options = {},
 ) {
   const errorLog =
-    options.logger?.error ??
     api.logger?.error ??
     ((error) => {
       console.error(error);
