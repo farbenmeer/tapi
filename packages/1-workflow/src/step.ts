@@ -28,6 +28,7 @@ async function runWithRetries<I, O>(
   storage: Adapter,
   abortSignal: AbortSignal,
 ): Promise<O> {
+  let lastError: unknown;
   while (state.attempt < attempts) {
     state.attempt++;
     if (abortSignal.aborted) {
@@ -47,19 +48,19 @@ async function runWithRetries<I, O>(
         await storage.putStep(state);
         throw cause;
       }
+      lastError = error;
       state.error = String(error);
       await storage.putStep(state);
-      if (state.attempt === attempts) {
-        throw error;
-      }
     }
+
+    if (state.attempt >= attempts) break;
 
     const delay = baseTimeout * 2 ** (state.attempt - 1);
     await storage.lease(state.runId, delay);
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
-  throw new Error("Step retry budget exhausted");
+  throw lastError;
 }
 
 export function step<I, O>(
