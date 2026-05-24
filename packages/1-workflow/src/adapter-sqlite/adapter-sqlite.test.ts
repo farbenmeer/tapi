@@ -94,9 +94,9 @@ describe("SqliteAdapter", () => {
     const engine = startEngine({
       storage: new SqliteAdapter(db),
       workflows: {
-        test: workflow(function testWorkflow(who: string) {
-          const message = helloStep(who);
-          returnStep(message);
+        test: workflow(async function testWorkflow(who: string) {
+          const message = await helloStep(who);
+          await returnStep(message);
         }),
       },
     });

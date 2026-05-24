@@ -1,125 +1,178 @@
 import crypto from "node:crypto";
 import { describe, expect, test, vi } from "vitest";
-import type { StepState } from "./adapter.js";
 import { InMemoryAdapter } from "./adapter-inmemory.js";
+import { context, type RunContext } from "./context.js";
 import { FatalError } from "./fatal-error.js";
 import { step } from "./step.js";
 
-describe("step", () => {
-  async function runStep(step: () => void, storage = new InMemoryAdapter()) {
+interface StepResult<T> {
+  ctx: RunContext;
+  result: T | undefined;
+  error: unknown;
+  storage: InMemoryAdapter;
+}
+
+async function withContext<T>(
+  body: () => Promise<T>,
+  storage: InMemoryAdapter = new InMemoryAdapter(),
+): Promise<StepResult<T>> {
+  const ctx: RunContext = {
+    runId: crypto.randomUUID(),
+    storage,
+    abortSignal: AbortSignal.timeout(5000),
+    stepState: new Map(),
+    callIndex: 0,
+  };
+
+  let result: T | undefined;
+  let error: unknown;
+  await context.run(ctx, async () => {
     try {
-      step();
-    } catch (step: any) {
-      const stepState: StepState = {
-        runId: crypto.randomUUID(),
-        stepId: step.id(),
-        result: null,
-        error: null,
-        attempt: 0,
-      };
-
-      await step.run(storage, stepState, AbortSignal.timeout(1000));
-
-      return stepState;
+      result = await body();
+    } catch (e) {
+      error = e;
     }
+  });
 
-    throw new Error("Unreachable");
-  }
+  return { ctx, result, error, storage };
+}
 
+describe("step", () => {
   test("regular step", async () => {
-    const storage = new InMemoryAdapter();
-
     const fn = vi.fn(() => Promise.resolve("foo"));
     const sut = step<void, string>(fn);
 
-    const stepState = await runStep(sut, storage);
+    const { ctx, result, storage } = await withContext(() => sut());
 
-    expect(stepState.result).toBe("foo");
-    expect(await storage.getSteps(stepState.runId)).toEqual(
-      new Map([[stepState.stepId, stepState]]),
+    expect(result).toBe("foo");
+    const [stepState] = ctx.stepState.values();
+    expect(stepState?.result).toBe("foo");
+    expect(await storage.getSteps(ctx.runId)).toEqual(
+      new Map([[stepState!.stepId, stepState]]),
     );
   });
 
   test("resolve on first retry", async () => {
-    const fn = vi.fn(() => Promise.resolve("foo"));
-    fn.mockThrowOnce(new Error("NEIN"));
+    let calls = 0;
+    const fn = vi.fn(() => {
+      calls++;
+      if (calls === 1) return Promise.reject(new Error("NEIN"));
+      return Promise.resolve("foo");
+    });
+    const sut = step<void, string>({ baseTimeout: 1 }, fn);
 
-    const sut = step<void, string>(fn);
+    const { ctx, result } = await withContext(() => sut());
 
-    const stepState = await runStep(sut);
-
-    expect(stepState.result).toBe("foo");
-    expect(stepState.attempt).toBe(2);
+    expect(result).toBe("foo");
+    const [stepState] = ctx.stepState.values();
+    expect(stepState?.attempt).toBe(2);
   });
 
   test("fails after n retries", async () => {
-    const storage = new InMemoryAdapter();
     const fn = vi.fn(() => Promise.reject("NEIN"));
     const sut = step<void, string>({ baseTimeout: 1 }, fn);
 
-    const runId = crypto.randomUUID();
-    let stepId = "";
+    const { error, ctx, storage } = await withContext(() => sut());
 
-    try {
-      sut();
-    } catch (s: any) {
-      stepId = s.id();
-      const stepState: StepState = { runId, stepId, result: null, error: null, attempt: 0 };
-      await expect(() =>
-        s.run(storage, stepState, AbortSignal.timeout(1000)),
-      ).rejects.toThrow("NEIN");
-    }
-
-    const steps = await storage.getSteps(runId);
+    expect(String(error)).toContain("NEIN");
+    const steps = await storage.getSteps(ctx.runId);
     const [savedStep] = steps.values();
-
-    expect(savedStep.error).toBe("NEIN");
+    expect(savedStep?.error).toBe("NEIN");
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
   test("fails immediately on fatal error", async () => {
-    const storage = new InMemoryAdapter();
     const fn = vi.fn(() => Promise.reject(new FatalError("NEIN")));
     const sut = step<void, string>({ baseTimeout: 1 }, fn);
 
-    const runId = crypto.randomUUID();
+    const { error, ctx, storage } = await withContext(() => sut());
 
-    try {
-      sut();
-    } catch (s: any) {
-      const stepState: StepState = { runId, stepId: s.id(), result: null, error: null, attempt: 0 };
-      await expect(() =>
-        s.run(storage, stepState, AbortSignal.timeout(1000)),
-      ).rejects.toThrow("NEIN");
-    }
-
-    const steps = await storage.getSteps(runId);
+    expect(error).toBeInstanceOf(FatalError);
+    expect((error as Error).message).toBe("NEIN");
+    const steps = await storage.getSteps(ctx.runId);
     const [savedStep] = steps.values();
-
-    expect(savedStep.error).toBe("FatalError: NEIN");
+    expect(savedStep?.error).toBe("FatalError: NEIN");
+    expect(fn).toHaveBeenCalledTimes(1);
   });
 
   test("throws original error on fatal error", async () => {
-    const storage = new InMemoryAdapter();
     const fn = vi.fn(() =>
       Promise.reject(FatalError.from(new TypeError("NEIN"))),
     );
     const sut = step<void, string>({ baseTimeout: 1 }, fn);
 
-    const runId = crypto.randomUUID();
+    const { error, ctx, storage } = await withContext(() => sut());
 
-    try {
-      sut();
-    } catch (s: any) {
-      const stepState: StepState = { runId, stepId: s.id(), result: null, error: null, attempt: 0 };
-      await expect(() =>
-        s.run(storage, stepState, AbortSignal.timeout(1000)),
-      ).rejects.toThrow(TypeError);
-    }
-
-    const steps = await storage.getSteps(runId);
+    expect(error).toBeInstanceOf(TypeError);
+    const steps = await storage.getSteps(ctx.runId);
     const [savedStep] = steps.values();
+    expect(savedStep?.error).toBe("TypeError: NEIN");
+  });
 
-    expect(savedStep.error).toBe("TypeError: NEIN");
+  test("step() outside of a workflow throws", async () => {
+    const sut = step<void, string>(() => Promise.resolve("foo"));
+    await expect(() => sut()).rejects.toThrow(/inside a workflow/);
+  });
+
+  test("cached successful result is returned without re-running", async () => {
+    const fn = vi.fn(() => Promise.resolve("foo"));
+    const sut = step<void, string>(fn);
+
+    const ctx: RunContext = {
+      runId: crypto.randomUUID(),
+      storage: new InMemoryAdapter(),
+      abortSignal: AbortSignal.timeout(5000),
+      stepState: new Map(),
+      callIndex: 0,
+    };
+
+    await context.run(ctx, async () => {
+      await sut();
+    });
+    expect(fn).toHaveBeenCalledTimes(1);
+
+    ctx.callIndex = 0;
+    let cached: string | undefined;
+    await context.run(ctx, async () => {
+      cached = await sut();
+    });
+    expect(cached).toBe("foo");
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  test("cached error is re-thrown on replay without re-running", async () => {
+    const fn = vi.fn(() => Promise.reject(new Error("NEIN")));
+    const sut = step<void, string>({ baseTimeout: 1 }, fn);
+
+    const ctx: RunContext = {
+      runId: crypto.randomUUID(),
+      storage: new InMemoryAdapter(),
+      abortSignal: AbortSignal.timeout(5000),
+      stepState: new Map(),
+      callIndex: 0,
+    };
+
+    let firstError: unknown;
+    await context.run(ctx, async () => {
+      try {
+        await sut();
+      } catch (e) {
+        firstError = e;
+      }
+    });
+    expect((firstError as Error).message).toBe("NEIN");
+    expect(fn).toHaveBeenCalledTimes(3);
+
+    ctx.callIndex = 0;
+    let replayError: unknown;
+    await context.run(ctx, async () => {
+      try {
+        await sut();
+      } catch (e) {
+        replayError = e;
+      }
+    });
+    expect((replayError as Error).message).toBe("Error: NEIN");
+    expect(fn).toHaveBeenCalledTimes(3);
   });
 });

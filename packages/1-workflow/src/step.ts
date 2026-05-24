@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
-import { context } from "./context.js";
 import type { Adapter, StepState } from "./adapter.js";
+import { context } from "./context.js";
 import { FatalError } from "./fatal-error.js";
 
 interface StepConfig {
@@ -8,92 +8,108 @@ interface StepConfig {
   baseTimeout?: number;
 }
 
-export class Step<I = unknown> {
-  private attempts: number;
-  private baseTimeout: number;
+type StepImpl<I, O> = (input: I) => Promise<O>;
+type StepRunner<I, O> = (input: I) => Promise<O>;
 
-  constructor(
-    private fn: (input: I) => Promise<unknown>,
-    private input: I,
-    { attempts = 3, baseTimeout = 250 }: StepConfig,
-  ) {
-    this.attempts = attempts;
-    this.baseTimeout = baseTimeout;
-  }
-
-  async run(storage: Adapter, state: StepState, abortSignal: AbortSignal) {
-    while (state.attempt < this.attempts) {
-      state.attempt++;
-      if (abortSignal.aborted) {
-        throw new Error(abortSignal.reason);
-      }
-
-      try {
-        state.result = await this.fn(this.input);
-        state.error = null;
-        return;
-      } catch (error) {
-        if (error instanceof FatalError) {
-          state.error = String(error.cause ?? error);
-          throw error.cause ?? error;
-        }
-        state.error = String(error);
-        if (state.attempt === this.attempts) {
-          throw error;
-        }
-      } finally {
-        await storage.putStep(state);
-      }
-
-      const delay = this.baseTimeout * 2 ** (state.attempt - 1);
-
-      await storage.lease(state.runId, delay);
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, this.baseTimeout * 2 ** (state.attempt - 1)),
-      );
-    }
-  }
-
-  id() {
-    const hash = crypto.createHash("md5");
-
-    if (this.fn.name) hash.update(this.fn.name);
-    if (this.fn.toString()) hash.update(this.fn.toString());
-    if (this.input) hash.update(JSON.stringify(this.input));
-
-    return hash.digest("hex");
-  }
-
-  [Symbol.toPrimitive]() {
-    return `[Step id=${this.id()} if you are seeing this you are probably catching an error in a workflow and need to call rethrowSuspense before your own error handling]`;
-  }
+function hashStep(fn: (...args: any[]) => unknown, input: unknown): string {
+  const hash = crypto.createHash("md5");
+  if (fn.name) hash.update(fn.name);
+  if (fn.toString()) hash.update(fn.toString());
+  if (input !== undefined) hash.update(JSON.stringify(input));
+  return hash.digest("hex");
 }
 
-type StepImpl<I, O> = (input: I) => Promise<O>
+async function runWithRetries<I, O>(
+  fn: StepImpl<I, O>,
+  input: I,
+  attempts: number,
+  baseTimeout: number,
+  state: StepState,
+  storage: Adapter,
+  abortSignal: AbortSignal,
+): Promise<O> {
+  while (state.attempt < attempts) {
+    state.attempt++;
+    if (abortSignal.aborted) {
+      throw new Error(abortSignal.reason);
+    }
 
-type RunStep<I, O> = (input: I) => O
+    try {
+      const result = await fn(input);
+      state.result = result;
+      state.error = null;
+      await storage.putStep(state);
+      return result;
+    } catch (error) {
+      if (error instanceof FatalError) {
+        const cause = error.cause ?? error;
+        state.error = String(cause);
+        await storage.putStep(state);
+        throw cause;
+      }
+      state.error = String(error);
+      await storage.putStep(state);
+      if (state.attempt === attempts) {
+        throw error;
+      }
+    }
+
+    const delay = baseTimeout * 2 ** (state.attempt - 1);
+    await storage.lease(state.runId, delay);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  throw new Error("Step retry budget exhausted");
+}
 
 export function step<I, O>(
   config: StepConfig,
   run: StepImpl<I, O>,
-): RunStep<I, O>;
-export function step<I, O>(run: StepImpl<I, O>): RunStep<I, O>;
+): StepRunner<I, O>;
+export function step<I, O>(run: StepImpl<I, O>): StepRunner<I, O>;
 export function step<I, O>(
   arg0: StepConfig | StepImpl<I, O>,
   arg1?: StepImpl<I, O>,
-) {
+): StepRunner<I, O> {
   const config = typeof arg0 === "function" ? {} : arg0;
-  const run = typeof arg0 === "function" ? arg0 : arg1!;
-  return (input: I) => {
-    const step = new Step(run, input, config);
-    const state = context.stepState.get(step.id());
-    if (state?.errorObject) {
-      throw state.errorObject;
+  const fn = typeof arg0 === "function" ? arg0 : arg1!;
+  const attempts = config.attempts ?? 3;
+  const baseTimeout = config.baseTimeout ?? 250;
+
+  return async (input: I): Promise<O> => {
+    const ctx = context.getStore();
+    if (!ctx) {
+      throw new Error("step() must be called from inside a workflow");
     }
-    if (state && !state.error) {
-      return state.result as O;
+
+    const callIndex = ctx.callIndex++;
+    const stepId = `${hashStep(fn, input)}:${callIndex}`;
+
+    const cached = ctx.stepState.get(stepId);
+    if (cached) {
+      if (cached.error !== null) {
+        throw new Error(cached.error);
+      }
+      return cached.result as O;
     }
-    throw step;
+
+    const state: StepState = {
+      runId: ctx.runId,
+      stepId,
+      result: null,
+      error: null,
+      attempt: 0,
+    };
+    ctx.stepState.set(stepId, state);
+
+    return await runWithRetries(
+      fn,
+      input,
+      attempts,
+      baseTimeout,
+      state,
+      ctx.storage,
+      ctx.abortSignal,
+    );
   };
 }

@@ -26,9 +26,9 @@ const sendEmail = step(async (email: string) => {
 const engine = startEngine({
   storage: new InMemoryAdapter(),
   workflows: {
-    onboardUser: workflow((userId: string) => {
-      const user = fetchUser(userId);
-      sendEmail(user.email);
+    onboardUser: workflow(async (userId: string) => {
+      const user = await fetchUser(userId);
+      await sendEmail(user.email);
     }),
   },
 });
@@ -39,12 +39,15 @@ await engine.onboardUser("user-123");
 
 ## How it works
 
-Workflows are synchronous generator-like functions. Each `step()` call either returns a cached result (if the step already succeeded) or throws internally to trigger execution. The engine catches this, runs the step's async function with retries, persists the result, then replays the workflow from the top. This means:
+Workflows are async functions. Each `step()` returns a Promise that either resolves to a cached result (if the step already succeeded in a previous attempt of this run) or runs the underlying async function with retries and persistence. The engine binds an [`AsyncLocalStorage`](https://nodejs.org/api/async_context.html) run context around the workflow, so steps find their cached state through normal `await`s without needing any sync replay trickery. This means:
 
-- Steps that already succeeded are skipped on replay (their cached result is returned)
-- Failed steps are retried with exponential backoff
-- Workflows survive process restarts since all state is persisted
-- Multiple workers can poll for work using lease-based concurrency
+- Workflows can `await` anything, not just steps. Plain promises, helpers, libraries — all fine.
+- Failed steps are retried with exponential backoff; on retry exhaustion the step's promise rejects and your `try/catch` runs.
+- After a worker restart, the workflow function is replayed from the top. Steps that already succeeded resolve immediately with their cached result; steps that previously exhausted retries throw deterministically. Execution effectively resumes where it left off.
+- Parallel work composes naturally: `await Promise.all([stepA(input), stepB(input)])` runs both steps concurrently.
+- Multiple workers can poll for work using lease-based concurrency.
+
+**Determinism note.** Because workflows are replayed from the top, the workflow function itself should be deterministic — its branching and the order in which it invokes steps must be reproducible across replays. Put any non-determinism (timestamps, random numbers, external lookups) inside a `step()` so its result is persisted.
 
 ### Steps
 
