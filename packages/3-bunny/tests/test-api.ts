@@ -13,11 +13,6 @@ export async function testApi(
         api,
       }),
     dist: "./dist",
-    apiInfo: {
-      title: "Bunny Test API",
-      version: "1.0.0",
-      buildId: "testBuildId",
-    },
   });
 
   const { req, res } = httpMocks.createMocks(requestOptions);

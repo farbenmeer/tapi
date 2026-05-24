@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Command } from "commander";
 import esbuild from "esbuild";
@@ -60,19 +60,11 @@ export const build = new Command()
       },
     });
 
-    const packageJson = JSON.parse(
-      await readFile(path.join(process.cwd(), "package.json"), "utf8"),
-    );
-
     if (options.standalone) {
       const serverBuild = await esbuild.build({
         stdin: {
           contents: generateServer(
             path.join(srcDir, "api.ts"),
-            {
-              title: packageJson.name,
-              version: packageJson.version,
-            },
             config.server,
           ),
           sourcefile: path.join(bunnyDir, "virtual", "server.js"),

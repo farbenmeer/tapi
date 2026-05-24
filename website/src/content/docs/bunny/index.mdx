@@ -32,7 +32,7 @@ npm run dev
     Built-in offline support, static file caching, and tag-based cache invalidation — zero configuration.
   </Card>
   <Card title="OpenAPI" icon="document">
-    An OpenAPI schema is auto-generated and served at `/.well-known/openapi.json`.
+    Pass `openapi: { title, version }` to `defineApi` and Bunny serves the generated schema at `/api/__tapi/openapi.json`.
   </Card>
   <Card title="Standalone Builds" icon="setting">
     Bundle your entire app and all its dependencies into a single file for easy deployment anywhere.
