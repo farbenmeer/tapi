@@ -4,3 +4,4 @@ export const TAGS_CONTENT_TYPE = "text/tapi-tags";
 export const SESSION_COOKIE_NAME = "__tapi-session";
 export const INVALIDATION_POST_EVENT = "TAPI_INVALIDATE_TAGS";
 export const INVALIDATIONS_ROUTE = "/__tapi/invalidations";
+export const OPENAPI_ROUTE = "/__tapi/openapi.json";

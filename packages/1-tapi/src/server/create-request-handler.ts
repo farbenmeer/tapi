@@ -1,6 +1,7 @@
 import { ZodError, z } from "zod/v4";
 import {
   INVALIDATIONS_ROUTE,
+  OPENAPI_ROUTE,
   SESSION_COOKIE_NAME,
 } from "../shared/constants.js";
 import { HttpError } from "../shared/http-error.js";
@@ -12,6 +13,7 @@ import type { ApiDefinition } from "./define-api.js";
 import type { Handler } from "./handler.js";
 import type { TRequest } from "./t-request.js";
 import type { Cache } from "./cache.js";
+import { generateOpenAPISchema } from "./openapi.js";
 import { streamRevalidatedTags } from "./revalidation-stream.js";
 
 interface Options {
@@ -53,12 +55,24 @@ export function createRequestHandler(
     routes.push({ pattern, route });
   }
 
+  let openapiJson: string | undefined;
+
   return async (req: Request) => {
     const url = new URL(req.url);
 
     if (url.pathname === `${basePath}${INVALIDATIONS_ROUTE}`) {
       return streamRevalidatedTags({
         cache: api.cache,
+      });
+    }
+
+    if (api.openapi && url.pathname === `${basePath}${OPENAPI_ROUTE}`) {
+      if (!openapiJson) {
+        const spec = await generateOpenAPISchema(api, { info: api.openapi });
+        openapiJson = JSON.stringify(spec);
+      }
+      return new Response(openapiJson, {
+        headers: { "Content-Type": "application/json" },
       });
     }
 

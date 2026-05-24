@@ -172,3 +172,74 @@ describe("createRequestHandler", () => {
     expect(await response.json()).toEqual({ auth: "foo" });
   });
 });
+
+describe("openapi.json route", () => {
+  test("serves the generated spec when openapi config is provided", async () => {
+    const sut = createRequestHandler(
+      defineApi({ openapi: { title: "My API", version: "1.2.3" } }).route(
+        "/things",
+        {
+          GET: defineHandler({ authorize: () => true }, async () =>
+            TResponse.json([]),
+          ),
+        },
+      ),
+      { basePath: "/api" },
+    );
+    const response = await sut(
+      new Request("http://localhost:3000/api/__tapi/openapi.json"),
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Content-Type")).toBe("application/json");
+    const body = await response.json();
+    expect(body.info.title).toBe("My API");
+    expect(body.info.version).toBe("1.2.3");
+    expect(body.paths["/things"].get).toBeDefined();
+  });
+
+  test("falls through to 404 when openapi config is not provided", async () => {
+    const sut = createRequestHandler(
+      defineApi().route("/things", {
+        GET: defineHandler({ authorize: () => true }, async () =>
+          TResponse.json([]),
+        ),
+      }),
+    );
+    const response = await sut(
+      new Request("http://localhost:3000/__tapi/openapi.json"),
+    );
+    expect(response.status).toBe(404);
+  });
+
+  test("respects basePath", async () => {
+    const sut = createRequestHandler(
+      defineApi({ openapi: { title: "T", version: "0.0.1" } }).route("/x", {
+        GET: defineHandler({ authorize: () => true }, async () =>
+          TResponse.json([]),
+        ),
+      }),
+      { basePath: "/api" },
+    );
+    const response = await sut(
+      new Request("http://localhost:3000/__tapi/openapi.json"),
+    );
+    expect(response.status).toBe(404);
+  });
+
+  test("memoizes the spec across requests", async () => {
+    const sut = createRequestHandler(
+      defineApi({ openapi: { title: "T", version: "0.0.1" } }).route("/x", {
+        GET: defineHandler({ authorize: () => true }, async () =>
+          TResponse.json([]),
+        ),
+      }),
+    );
+    const first = await sut(
+      new Request("http://localhost:3000/__tapi/openapi.json"),
+    );
+    const second = await sut(
+      new Request("http://localhost:3000/__tapi/openapi.json"),
+    );
+    expect(await first.text()).toBe(await second.text());
+  });
+});
