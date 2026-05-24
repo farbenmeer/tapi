@@ -1,9 +1,12 @@
-import type { StepState } from "./adapter.js";
+import { AsyncLocalStorage } from "node:async_hooks";
+import type { Adapter, StepState } from "./adapter.js";
 
-export interface Context {
-  stepState: Map<string, StepState & { errorObject?: unknown }>;
+export interface RunContext {
+  runId: string;
+  storage: Adapter;
+  abortSignal: AbortSignal;
+  stepState: Map<string, StepState>;
+  callIndex: number;
 }
 
-export const context: Context = {
-  stepState: new Map(),
-};
+export const context = new AsyncLocalStorage<RunContext>();
