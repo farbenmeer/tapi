@@ -5,7 +5,7 @@ const cache = new InMemoryCache();
 
 export const api = defineApi({
   cache,
-  openapi: { title: "Contact Book", version: "1.0.0" },
+  oas: { title: "Contact Book", version: "1.0.0" },
 })
   .route("/contacts", import("./api/contacts"))
   .route("/contacts/:id", import("./api/contact"));

@@ -174,9 +174,9 @@ describe("createRequestHandler", () => {
 });
 
 describe("openapi.json route", () => {
-  test("serves the generated spec when openapi config is provided", async () => {
+  test("serves the generated spec when oas config is provided", async () => {
     const sut = createRequestHandler(
-      defineApi({ openapi: { title: "My API", version: "1.2.3" } }).route(
+      defineApi({ oas: { title: "My API", version: "1.2.3" } }).route(
         "/things",
         {
           GET: defineHandler({ authorize: () => true }, async () =>
@@ -197,7 +197,7 @@ describe("openapi.json route", () => {
     expect(body.paths["/things"].get).toBeDefined();
   });
 
-  test("falls through to 404 when openapi config is not provided", async () => {
+  test("falls through to 404 when oas config is not provided", async () => {
     const sut = createRequestHandler(
       defineApi().route("/things", {
         GET: defineHandler({ authorize: () => true }, async () =>
@@ -213,7 +213,7 @@ describe("openapi.json route", () => {
 
   test("respects basePath", async () => {
     const sut = createRequestHandler(
-      defineApi({ openapi: { title: "T", version: "0.0.1" } }).route("/x", {
+      defineApi({ oas: { title: "T", version: "0.0.1" } }).route("/x", {
         GET: defineHandler({ authorize: () => true }, async () =>
           TResponse.json([]),
         ),
@@ -228,7 +228,7 @@ describe("openapi.json route", () => {
 
   test("memoizes the spec across requests", async () => {
     const sut = createRequestHandler(
-      defineApi({ openapi: { title: "T", version: "0.0.1" } }).route("/x", {
+      defineApi({ oas: { title: "T", version: "0.0.1" } }).route("/x", {
         GET: defineHandler({ authorize: () => true }, async () =>
           TResponse.json([]),
         ),

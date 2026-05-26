@@ -66,9 +66,9 @@ export function createRequestHandler(
       });
     }
 
-    if (api.openapi && url.pathname === `${basePath}${OPENAPI_ROUTE}`) {
+    if (api.oas && url.pathname === `${basePath}${OPENAPI_ROUTE}`) {
       if (!openapiJson) {
-        const spec = await generateOpenAPISchema(api, { info: api.openapi });
+        const spec = await generateOpenAPISchema(api, { info: api.oas });
         openapiJson = JSON.stringify(spec);
       }
       return new Response(openapiJson, {

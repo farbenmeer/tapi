@@ -3,25 +3,25 @@ import type { Path as BasePath, StrictParams } from "../shared/path.js";
 import type { Route } from "../shared/route.js";
 import { type Cache, PubSub } from "./cache.js";
 
-export interface OpenAPIInfo {
+export interface OasInfo {
   title: string;
   version: string;
 }
 
 interface Options {
   cache?: Cache;
-  openapi?: OpenAPIInfo;
+  oas?: OasInfo;
 }
 
 export function defineApi(options: Options = {}) {
-  return new ApiDefinition({}, options?.cache ?? new PubSub(), options?.openapi);
+  return new ApiDefinition({}, options?.cache ?? new PubSub(), options?.oas);
 }
 
 export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
   constructor(
     public routes: Routes,
     public cache: Cache,
-    public openapi?: OpenAPIInfo,
+    public oas?: OasInfo,
   ) {}
 
   async invalidate(tags: string[]) {
