@@ -26,7 +26,7 @@ npm install @farbenmeer/tapi
     Request and response validation powered by [Zod](https://zod.dev/). Define your schema once, get validation and types together.
   </Card>
   <Card title="Automatic OpenAPI" icon="document">
-    An OpenAPI schema is auto-generated from your route definitions and served at `/.well-known/openapi.json`.
+    An OpenAPI schema is auto-generated from your route definitions. Pass `oas: { title, version }` to `defineApi` to serve it at `<basePath>/__tapi/openapi.json`.
   </Card>
   <Card title="Tag-Based Caching" icon="rocket">
     Integrated support for tag-based cache invalidation via `@farbenmeer/tag-based-cache`.

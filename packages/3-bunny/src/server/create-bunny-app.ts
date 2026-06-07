@@ -1,7 +1,6 @@
 import type { ApiDefinition } from "@farbenmeer/tapi/server";
 import {
   createRequestHandler,
-  generateOpenAPISchema,
   PubSub,
   streamRevalidatedTags,
 } from "@farbenmeer/tapi/server";
@@ -20,14 +19,12 @@ import { readFile } from "node:fs/promises";
 interface BunnyServerOptions {
   api: () => Promise<{ api: ApiDefinition<any>; cache?: Cache }>;
   dist: string;
-  apiInfo: { title: string; version: string; buildId: string };
   serverConfig?: ServerConfig;
 }
 
 export function createBunnyApp({
   api,
   dist,
-  apiInfo,
   serverConfig,
 }: BunnyServerOptions) {
   loadEnv("production");
@@ -59,20 +56,6 @@ export function createBunnyApp({
         );
       }
       await fromResponse(res, response);
-      return;
-    }
-
-    if (url.pathname === "/.well-known/openapi.json") {
-      if (!openApiJson) {
-        openApiJson = JSON.stringify(
-          await generateOpenAPISchema((await api()).api, {
-            info: apiInfo,
-          }),
-        );
-      }
-      res.setHeader("Content-Type", "application/json");
-      res.write(openApiJson);
-      res.end();
       return;
     }
 

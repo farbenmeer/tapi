@@ -30,8 +30,7 @@ bunny dev --port 3000
 Runs Vite in middleware mode for the frontend with hot module replacement. The API code (`src/api.ts`) is watched and rebuilt with esbuild — changes are hot-reloaded without restarting the server.
 
 Routes:
-- `/api/*` — API endpoints handled by TApi.
-- `/.well-known/openapi.json` — Auto-generated OpenAPI schema.
+- `/api/*` — API endpoints handled by TApi. When `oas: { title, version }` is passed to `defineApi`, the schema is served at `/api/__tapi/openapi.json`.
 - Everything else — Served by Vite.
 
 The service worker is disabled during development to prevent caching issues.

@@ -11,9 +11,6 @@ export const start = new Command()
   .option("--port <number>", "Port number (default: 3000)")
   .action(async (options) => {
     const bunnyDir = path.join(process.cwd(), ".bunny", "prod");
-    const packageJson = JSON.parse(
-      await readFile(path.join(process.cwd(), "package.json"), "utf-8"),
-    );
 
     process.env.NODE_ENV = "production";
     loadEnv("production");
@@ -26,11 +23,6 @@ export const start = new Command()
     createBunnyApp({
       api: () => import(path.join(bunnyDir, "api.cjs")),
       dist: path.join(bunnyDir, "dist"),
-      apiInfo: {
-        title: packageJson.name,
-        version: packageJson.version,
-        buildId,
-      },
       serverConfig: config.server,
     }).listen(parseInt(options.port ?? process.env.PORT ?? "3000", 10));
   });

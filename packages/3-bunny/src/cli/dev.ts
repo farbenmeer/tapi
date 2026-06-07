@@ -1,6 +1,5 @@
 import {
   createRequestHandler,
-  generateOpenAPISchema,
   streamRevalidatedTags,
   type ApiDefinition,
 } from "@farbenmeer/tapi/server";
@@ -8,7 +7,7 @@ import { Command } from "commander";
 import connect from "connect";
 import esbuild from "esbuild";
 import { existsSync } from "node:fs";
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react";
@@ -64,7 +63,6 @@ export const dev = new Command()
 
     const tapi: {
       apiRequestHandler?: (req: Request) => Promise<Response>;
-      openAPISchema?: string;
       api?: ApiDefinition<any>;
     } = {};
 
@@ -76,16 +74,6 @@ export const dev = new Command()
       tapi.apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
       });
-      const packageJson = JSON.parse(
-        await readFile(path.join(process.cwd(), "package.json"), "utf8"),
-      );
-      const schema = await generateOpenAPISchema(api, {
-        info: {
-          title: packageJson.name,
-          version: packageJson.version,
-        },
-      });
-      tapi.openAPISchema = JSON.stringify(schema);
     }
 
     const esbuildContext = await esbuild.context({
@@ -155,13 +143,6 @@ export const dev = new Command()
         await fromResponse(res, response);
         return;
       }
-      if (url.pathname === "/.well-known/openapi.json") {
-        res.setHeader("Content-Type", "application/json");
-        res.write(tapi.openAPISchema);
-        res.end();
-        return;
-      }
-
       if (url.pathname === "/sw.js") {
         res.appendHeader("Cache-Control", "no-store");
         res.write(`
