@@ -16,7 +16,7 @@ interface Options {
 }
 
 export function defineApi(options: Options = {}) {
-  return new ApiDefinition({}, options?.cache ?? new PubSub(), options?.logger, options?.oas);
+  return new ApiDefinition({}, options?.cache ?? new PubSub(), options?.oas, options?.logger);
 }
 
 export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
