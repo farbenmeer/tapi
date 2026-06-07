@@ -1,4 +1,5 @@
 import type { MaybePromise } from "../shared/maybe-promise.js";
+import type { Logger } from "../shared/logger.js";
 import type { Path as BasePath, StrictParams } from "../shared/path.js";
 import type { Route } from "../shared/route.js";
 import { type Cache, PubSub } from "./cache.js";
@@ -11,10 +12,11 @@ export interface OasInfo {
 interface Options {
   cache?: Cache;
   oas?: OasInfo;
+  logger?: Logger;
 }
 
 export function defineApi(options: Options = {}) {
-  return new ApiDefinition({}, options?.cache ?? new PubSub(), options?.oas);
+  return new ApiDefinition({}, options?.cache ?? new PubSub(), options?.logger, options?.oas);
 }
 
 export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
@@ -22,6 +24,7 @@ export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
     public routes: Routes,
     public cache: Cache,
     public oas?: OasInfo,
+    public logger?: Logger,
   ) {}
 
   async invalidate(tags: string[]) {

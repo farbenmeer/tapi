@@ -3,6 +3,7 @@ import {
   INVALIDATIONS_ROUTE,
   TAGS_HEADER,
 } from "../shared/constants.js";
+import type { Logger } from "../shared/logger.js";
 import type { MaybePromise } from "../shared/maybe-promise.js";
 import type { Path as BasePath } from "../shared/path.js";
 import type { BaseRoute } from "../shared/route.js";
@@ -40,15 +41,11 @@ async function listenForInvalidations(url: string, cache: Cache) {
   }
 }
 
-interface Hooks {
-  error?: (error: unknown) => void | Promise<void>;
-}
-
 interface Options {
   fetch?: (url: string, init: RequestInit) => Promise<Response>;
   minTTL?: number;
   maxOverdueTTL?: number;
-  hooks?: Hooks;
+  logger?: Logger;
   invalidationsUrl?: string | false;
 }
 
@@ -60,7 +57,7 @@ export function createFetchClient<
   const cache = new Cache({
     minTTL: options.minTTL,
     maxOverdueTTL: options.maxOverdueTTL,
-    hooks: options.hooks,
+    logger: options.logger,
   });
 
   const invalidationsUrl =
@@ -138,7 +135,7 @@ export function createFetchClient<
       res
         .then((res) => handleResponse(res))
         .catch(async (error) => {
-          await options?.hooks?.error?.(error);
+          await options?.logger?.error?.(error);
           throw error;
         }),
       {

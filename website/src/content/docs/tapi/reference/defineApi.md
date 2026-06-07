@@ -20,7 +20,7 @@ export const api = defineApi()
 ## Signature
 
 ```ts
-function defineApi(options?: { cache?: Cache }): ApiDefinition<{}>
+function defineApi(options?: { cache?: Cache; logger?: Logger }): ApiDefinition<{}>
 ```
 
 Returns an empty `ApiDefinition` instance.
@@ -30,6 +30,31 @@ Returns an empty `ApiDefinition` instance.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `cache` | `Cache` | `new PubSub()` | The cache/pub-sub instance used for tag-based revalidation. Defaults to an in-process `PubSub`. Pass a `RedisCache` or other shared implementation when running multiple server instances. |
+| `logger` | `Logger` | `console.error` | Logger used by the request handler to report errors thrown by route handlers and cache operations. When omitted, errors are logged via `console.error`. Bunny installs its own default logger if you don't provide one. |
+
+### Logger interface
+
+```ts
+interface Logger {
+  error?: (error: unknown) => void | Promise<void>;
+}
+```
+
+Pass any object that implements this shape — for example, a Pino or Winston instance, or a custom function that ships errors to your observability platform.
+
+:::note
+The `Logger` interface currently only exposes `error`. Additional methods (`log`, `info`, `warn`, …) may be added in future minor releases. Implementations should treat unknown methods as optional and ignore them.
+:::
+
+```ts
+import { defineApi } from "@farbenmeer/tapi/server";
+
+export const api = defineApi({
+  logger: {
+    error: (error) => reportToSentry(error),
+  },
+});
+```
 
 ## Methods
 

@@ -1,4 +1,5 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "../shared/constants.js";
+import type { Logger } from "../shared/logger.js";
 import type { Observable } from "./client-types.js";
 import { handleResponse } from "./handle-response.js";
 
@@ -18,14 +19,10 @@ interface CacheEntry {
   timeout: ReturnType<typeof setTimeout> | null;
 }
 
-interface Hooks {
-  error: (error: unknown) => void | Promise<void>;
-}
-
 interface Options {
   minTTL?: number;
   maxOverdueTTL?: number;
-  hooks?: Partial<Hooks>;
+  logger?: Logger;
 }
 
 const DEFAULT_MIN_TTL = 5 * 1000;
@@ -36,14 +33,12 @@ export class Cache {
   private tagIndex = new Map<string, Set<string>>();
   private minTTL: number;
   private maxOverdueTTL: number;
-  private hooks: Hooks;
+  private errorLog: (error: unknown) => void | Promise<void>;
 
   constructor(options: Options) {
     this.minTTL = options.minTTL ?? DEFAULT_MIN_TTL;
     this.maxOverdueTTL = options.maxOverdueTTL ?? DEFAULT_MAX_OVERDUE_TTL;
-    this.hooks = {
-      error: options.hooks?.error ?? console.error,
-    };
+    this.errorLog = options.logger?.error ?? console.error;
   }
 
   private emplace(url: string, fetch: () => Promise<Response>) {
@@ -176,7 +171,7 @@ export class Cache {
         }
         // there is a current valid value, we'll keep that an drop the error
         entry.next = undefined;
-        await this.hooks.error(error);
+        await this.errorLog(error);
       } finally {
         if (entry.subscriptions.size === 0) {
           // clear response after minTTL if no subscribers active

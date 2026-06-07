@@ -19,9 +19,6 @@ import { streamRevalidatedTags } from "./revalidation-stream.js";
 interface Options {
   /** the root path for all API routes */
   basePath?: string;
-  hooks?: {
-    error?: (error: unknown) => MaybePromise<void>;
-  };
   /** the default maximum time-to-live (TTL) for cached responses */
   defaultTTL?: number;
 }
@@ -39,11 +36,10 @@ export function createRequestHandler(
   api: ApiDefinition<Record<BasePath, MaybePromise<BaseRoute>>>,
   options: Options = {},
 ) {
-  const errorHook =
-    options.hooks?.error ??
+  const errorLog =
+    api.logger?.error ??
     ((error) => {
       console.error(error);
-      return error;
     });
 
   const basePath = options.basePath ?? "";
@@ -107,7 +103,7 @@ export function createRequestHandler(
               }
             } catch (error) {
               // caches errors while retrieving from cache
-              errorHook(error);
+              errorLog(error);
             }
 
             const handler = route[req.method];
@@ -138,17 +134,17 @@ export function createRequestHandler(
                         tags: res.cache.tags ?? [],
                       })
                       // catches errors while caching if cache.set is async (redis cache)
-                      .catch(errorHook);
+                      .catch(errorLog);
                   } catch (error) {
                     // catches errors while caching if cache.set is sync (in-memory cache)
-                    errorHook(error);
+                    errorLog(error);
                   }
                 }
               }
               return res;
             } catch (error) {
               // catches errors while actually handling the request
-              await errorHook(error);
+              await errorLog(error);
               return handleError(error);
             }
           }
@@ -175,14 +171,14 @@ export function createRequestHandler(
                       res.cache.tags,
                       clientId ? { clientId: clientId.value } : undefined,
                     )
-                    .catch(errorHook);
+                    .catch(errorLog);
                 } catch (error) {
-                  errorHook(error);
+                  errorLog(error);
                 }
               }
               return res;
             } catch (error) {
-              await errorHook(error);
+              await errorLog(error);
               return handleError(error);
             }
           }
@@ -214,14 +210,14 @@ export function createRequestHandler(
                       res.cache.tags,
                       clientId ? { clientId: clientId.value } : undefined,
                     )
-                    .catch(errorHook);
+                    .catch(errorLog);
                 } catch (error) {
-                  errorHook(error);
+                  errorLog(error);
                 }
               }
               return res;
             } catch (error) {
-              await errorHook(error);
+              await errorLog(error);
               return handleError(error);
             }
           }

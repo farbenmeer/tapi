@@ -12,6 +12,7 @@ import path from "node:path";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react";
 import { loadEnv } from "../load-env.js";
+import { bunnyLogger } from "../server/bunny-logger.js";
 import { fromResponse, toRequest } from "../server/node-http-adapter.js";
 import { readConfig } from "./read-config.js";
 import { parseURL } from "../server/parse-url.js";
@@ -68,14 +69,10 @@ export const dev = new Command()
     async function reload(entryPoint: string) {
       console.log("Loading", entryPoint);
       const { api } = await import(entryPoint);
+      if (!api.logger) api.logger = bunnyLogger;
       tapi.api = api;
       tapi.apiRequestHandler = createRequestHandler(api, {
         basePath: "/api",
-        hooks: {
-          error: (error) => {
-            console.error(error);
-          },
-        },
       });
     }
 
