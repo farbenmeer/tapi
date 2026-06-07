@@ -1,20 +1,23 @@
 import type { MaybePromise } from "../shared/maybe-promise.js";
+import type { Logger } from "../shared/logger.js";
 import type { Path as BasePath, StrictParams } from "../shared/path.js";
 import type { Route } from "../shared/route.js";
 import { type Cache, PubSub } from "./cache.js";
 
 interface Options {
   cache?: Cache;
+  logger?: Logger;
 }
 
 export function defineApi(options: Options = {}) {
-  return new ApiDefinition({}, options?.cache ?? new PubSub());
+  return new ApiDefinition({}, options?.cache ?? new PubSub(), options?.logger);
 }
 
 export class ApiDefinition<Routes extends Record<BasePath, unknown>> {
   constructor(
     public routes: Routes,
     public cache: Cache,
+    public logger?: Logger,
   ) {}
 
   async invalidate(tags: string[]) {

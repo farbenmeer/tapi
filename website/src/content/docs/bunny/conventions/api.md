@@ -57,3 +57,17 @@ It provides three options:
 - `MemoryCache`: A simple in-memory cache implementation. Should be sufficient for single-server deployments.
 - `FileCache`: A file-based cache implementation. Persists data as an sqlite database. Use this for single-server deployments where a lot of data needs to be cached or the cache needs to be persisted across server restarts.
 - `RedisCache`: A Redis-based cache implementation. Use this for multi-server deployments.
+
+### Logging
+
+By default, Bunny installs a logger that forwards request handler errors to `console.error`. To send errors elsewhere (Sentry, Pino, etc.), pass a `logger` to `defineApi`:
+
+```ts
+export const api = defineApi({
+  logger: {
+    error: (error) => reportToSentry(error),
+  },
+});
+```
+
+See [`defineApi`](/tapi/reference/defineapi) for the full `Logger` interface.
