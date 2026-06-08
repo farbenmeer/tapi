@@ -7,7 +7,7 @@
   "schedule": ["* 0-6 * * 1-5"],
   "lockFileMaintenance": {
     "enabled": true,
-    "rebaseStalePrs": true,
+    "rebaseWhen": "behind-base-branch",
     "groupName": "lockFileMaintenance",
     "automerge": true
   },
