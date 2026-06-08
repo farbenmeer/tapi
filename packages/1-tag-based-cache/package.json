@@ -40,7 +40,7 @@
     "@types/node": "^25.0.3",
     "vitest": "^4.0.16",
     "typescript": "^6.0.0",
-    "@redis/client": "^5.10.0"
+    "@redis/client": "^6.0.0"
   },
   "repository": {
     "type": "git",
