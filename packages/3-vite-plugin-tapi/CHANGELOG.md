@@ -1,5 +1,13 @@
 # @farbenmeer/vite-plugin-tapi
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [311f7b8]
+- Updated dependencies [30b0ac8]
+  - @farbenmeer/tapi@0.12.0
+
 ## 0.2.1
 
 ### Patch Changes

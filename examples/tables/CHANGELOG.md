@@ -1,5 +1,15 @@
 # @farbenmeer/tapi-example-tables
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [311f7b8]
+- Updated dependencies [30b0ac8]
+  - @farbenmeer/tapi@0.12.0
+  - @farbenmeer/react-tapi@8.0.0
+  - @farbenmeer/vite-plugin-tapi@1.0.0
+
 ## 0.2.1
 
 ### Patch Changes
