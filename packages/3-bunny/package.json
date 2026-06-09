@@ -49,7 +49,7 @@
     "@farbenmeer/router": "workspace:^",
     "@farbenmeer/tapi": "workspace:^",
     "@vitejs/plugin-react": "^6.0.0",
-    "commander": "^14.0.0",
+    "commander": "^15.0.0",
     "connect": "^3.7.0",
     "esbuild": "^0.28.0",
     "serve-static": "^2.2.1",
