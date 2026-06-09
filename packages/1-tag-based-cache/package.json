@@ -47,6 +47,6 @@
     "url": "git+https://github.com/farbenmeer/tapi.git"
   },
   "peerDependencies": {
-    "@redis/client": "^5.10.0"
+    "@redis/client": "^5.10.0 || ^6.0.0"
   }
 }
