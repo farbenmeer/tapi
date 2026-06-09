@@ -1,5 +1,11 @@
 # @farbenmeer/workflow
 
+## 0.3.0
+
+### Minor Changes
+
+- 135c9a8: Workflows are now async functions backed by AsyncLocalStorage: `step()` returns a Promise, parallel steps via `Promise.all` are supported, and `rethrowSuspense` is removed.
+
 ## 0.2.1
 
 ### Patch Changes

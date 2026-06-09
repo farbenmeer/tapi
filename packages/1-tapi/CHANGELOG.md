@@ -1,5 +1,17 @@
 # @farbenmeer/tapi
 
+## 0.12.0
+
+### Minor Changes
+
+- 311f7b8: Drop the `logger` option from `createRequestHandler`. Configure the logger on the API definition instead via `defineApi({ logger })`. Bunny installs a default logger on the API when one isn't provided.
+
+### Patch Changes
+
+- 30b0ac8: Serve the generated OpenAPI spec at `<basePath>/__tapi/openapi.json` when `oas: { title, version }` is passed to `defineApi`.
+
+  Removed Bunny's `/.well-known/openapi.json` route in favor of the new TApi route. `createBunnyApp` no longer accepts an `apiInfo` option — pass `oas: { title, version }` to your `defineApi` call instead to expose the spec.
+
 ## 0.11.2
 
 ### Patch Changes
