@@ -63,8 +63,10 @@ describe("RedisCache", () => {
       tags: [],
     });
 
-    // Wait for TTL to expire
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for TTL to expire. The TTL is set with Redis second-granularity
+    // (EX: 1), so wait comfortably beyond the 1s boundary to avoid a race with
+    // the expiry instead of polling right at it.
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Force Redis to check TTL by trying to get the key
     expect(await sut.get("test")).toEqual(null);
