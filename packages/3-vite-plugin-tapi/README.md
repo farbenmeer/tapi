@@ -50,6 +50,7 @@ and the API on a single port.
 | `basePath` | `string` | `"/api"` | Prefix for API routes. Use `""` to mount at the root. |
 | `port` | `number` | — | Default port for Vite's dev/preview server. Falls back to the `PORT` env var. |
 | `external` | `(string \| RegExp)[]` | `[]` | Packages to keep external in the server bundle. By default everything is bundled. |
+| `static` | `boolean \| { fallback?: boolean \| string }` | `true` | Whether the production server (`dist/server.js`) serves the client build + SPA fallback. `false` keeps it API-only (dedicated static host / CDN). See [Deployment](#deployment). |
 
 ## Environment variables
 
@@ -71,7 +72,7 @@ This covers server-side libraries that read `process.env.X` directly
 (BetterAuth, DB clients, OAuth secrets). Vite's `import.meta.env` injection
 still applies to client code.
 
-### Production (`srvx dist/server/server.js`)
+### Production (`srvx serve --entry dist/server.js`)
 
 The built server does **not** load `.env` files. In production, env vars come
 from the runtime — Docker, systemd, or your PaaS. 
@@ -172,30 +173,35 @@ Notes:
 
 ## Deployment
 
-The server bundle is a fetch-handler module. Serve it in production with the
-[srvx](https://srvx.h3.dev) CLI:
+The server bundle is a fetch-handler module. By default it is a complete
+single-host server: it serves the API under `basePath`, the static client from
+the sibling `dist/client/`, and falls back to `index.html` for unmatched
+navigations so history-routed SPAs survive deep-links and reloads. Serve it in
+production with the [srvx](https://srvx.h3.dev) CLI:
 
 ```bash
-srvx --prod dist/server.js
+srvx serve --entry dist/server.js
 ```
 
-`srvx` picks up `PORT`, `HOST`, and other settings from environment variables.
+No `-s` flag and no separate static host are needed — the bundle serves its own
+client. `srvx` picks up `PORT`, `HOST`, and other settings from environment
+variables.
 
-### Static assets
+> Static serving uses `node:fs`, so it requires a Node/Bun/Deno runtime with
+> filesystem access.
 
-Static frontend assets in `dist/client/` should ideally be served by a
-dedicated static host — nginx, Caddy, or an S3-compatible bucket fronted by a
-CDN. Dedicated static hosts give you better caching, compression, HTTP/2,
-and offload the load from your Node.js server.
+### Serving static assets elsewhere
 
-If you don't want a separate static host, srvx can serve them too with the
-`-s` flag:
+To put the static frontend on a dedicated static host instead — nginx, Caddy,
+or an S3-compatible bucket fronted by a CDN, for better caching, compression,
+and HTTP/2 — set `static: false` so `dist/server.js` stays API-only and deploy
+`dist/client/` separately:
 
-```bash
-srvx --prod -s client dist/server.js
+```ts
+tapi({ static: false });
 ```
 
-The path passed to `-s` is resolved **relative to the directory containing
-the entry file** (`dist/`), so `client` points at `dist/client/`.
-API routes are matched first; static files fall through when no API route
-handles the request.
+The `static` option also accepts `{ fallback: false }` (serve static files but
+`404` instead of the SPA fallback, for multi-page apps) and
+`{ fallback: "404.html" }` (use a custom fallback file, resolved relative to
+`dist/client/`).

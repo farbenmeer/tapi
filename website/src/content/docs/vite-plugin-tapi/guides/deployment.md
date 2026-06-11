@@ -18,25 +18,25 @@ Server-only code (database credentials, API keys, server-side libraries) lives i
 
 ## Running the Server
 
-The server bundle is a fetch-handler module. Serve it with the [srvx](https://srvx.h3.dev) CLI:
+The server bundle is a fetch-handler module. By default it is a complete single-host server: it serves the API under `basePath`, the static client from the sibling `dist/client/`, and falls back to `index.html` for unmatched navigations so history-routed SPAs survive deep-links and reloads. Serve it with the [srvx](https://srvx.h3.dev) CLI:
 
 ```bash
-srvx --prod dist/server.js
+srvx serve --entry dist/server.js
 ```
 
-`srvx` picks up `PORT`, `HOST`, and other settings from environment variables.
+No `-s` flag and no separate static host are needed — the bundle serves its own client. `srvx` picks up `PORT`, `HOST`, and other settings from environment variables.
 
-## Serving Static Assets
+Static serving uses `node:fs`, so it requires a Node/Bun/Deno runtime with filesystem access.
 
-Static assets in `dist/client/` should ideally be served by a dedicated static host — nginx, Caddy, or an S3-compatible bucket fronted by a CDN — for better caching, compression, and HTTP/2.
+## Serving Static Assets Elsewhere
 
-If you don't need a separate static host, srvx can serve them too with the `-s` flag:
+To put the static frontend on a dedicated static host instead — nginx, Caddy, or an S3-compatible bucket fronted by a CDN, for better caching, compression, and HTTP/2 — set `static: false` so `dist/server.js` stays API-only, and deploy `dist/client/` separately:
 
-```bash
-srvx --prod -s client dist/server.js
+```ts
+tapi({ static: false });
 ```
 
-The path passed to `-s` is resolved relative to the directory containing the entry file (`dist/`), so `client` points at `dist/client/`. API routes are matched first; static files fall through when no API route handles the request.
+The `static` option also accepts `{ fallback: false }` (serve static files but `404` instead of the SPA fallback, for multi-page apps) and `{ fallback: "404.html" }` (use a custom fallback file, resolved relative to `dist/client/`).
 
 ## Environment Variables
 

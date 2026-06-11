@@ -26,11 +26,140 @@ export interface TapiPluginOptions {
    * Default: `[]` — everything is bundled.
    */
   external?: (string | RegExp)[];
+  /**
+   * How the production server (`dist/server.js`) serves the client build.
+   *
+   * By default the bundled server serves the static client
+   * (`<outDir>/client`, a sibling of `server.js`) and, for navigations that
+   * match no file, falls back to `index.html` so history-routed SPAs survive
+   * deep-links and reloads. This makes `srvx serve --entry dist/server.js` a
+   * complete single-host deployment — no `-s` flag, no separate static host.
+   *
+   * Static serving uses `node:fs`, so it requires a Node/Bun/Deno runtime
+   * with filesystem access (the documented `srvx` deployment).
+   *
+   * - `true` (default): serve static files + SPA fallback to `index.html`.
+   * - `false`: API only — the client is served by a dedicated static host /
+   *   CDN, or a runtime without filesystem access (Workers).
+   * - `{ fallback: false }`: serve static files but `404` instead of the SPA
+   *   fallback (multi-page apps without client-side routing).
+   * - `{ fallback: "404.html" }`: serve that file (relative to the client
+   *   dir) for unmatched navigations instead of `index.html`.
+   *
+   * Default: `true`.
+   */
+  static?: boolean | { fallback?: boolean | string };
+}
+
+/**
+ * Generate the source of the bundled production server (`dist/server.js`).
+ *
+ * `serveClient: false` reproduces the historical API-only handler. Otherwise
+ * the handler composes three layers, in order:
+ *   1. API routes under `basePath` (handled by `createRequestHandler`),
+ *   2. static files from `./client` (the sibling client build), and
+ *   3. an `index.html` SPA fallback for unmatched GET/HEAD navigations.
+ *
+ * With an empty `basePath` the API is root-mounted, so static files are tried
+ * first and the API gets a chance before the SPA fallback.
+ */
+function buildServerModule(opts: {
+  resolvedEntry: string;
+  basePath: string;
+  serveClient: boolean;
+  spaFallback: string | null;
+}): string {
+  const { resolvedEntry, basePath, serveClient, spaFallback } = opts;
+
+  if (!serveClient) {
+    return [
+      `import { createRequestHandler } from "@farbenmeer/tapi/server";`,
+      `import { api } from ${JSON.stringify(resolvedEntry)};`,
+      ``,
+      `export const fetch = createRequestHandler(api, { basePath: ${JSON.stringify(basePath)} });`,
+      `export default { fetch };`,
+    ].join("\n");
+  }
+
+  return [
+    `import { createRequestHandler } from "@farbenmeer/tapi/server";`,
+    `import { serveStatic } from "srvx/static";`,
+    `import { readFileSync } from "node:fs";`,
+    `import { fileURLToPath } from "node:url";`,
+    `import { api } from ${JSON.stringify(resolvedEntry)};`,
+    ``,
+    `const basePath = ${JSON.stringify(basePath)};`,
+    `const apiFetch = createRequestHandler(api, { basePath });`,
+    ``,
+    // The client build is emitted next to this module as ./client.
+    `const clientDir = fileURLToPath(new URL("./client", import.meta.url));`,
+    `const serveAsset = serveStatic({ dir: clientDir });`,
+    ``,
+    `const fallbackFile = ${JSON.stringify(spaFallback)};`,
+    `let fallbackHtml;`,
+    `if (fallbackFile) {`,
+    `  try {`,
+    `    fallbackHtml = readFileSync(new URL("./client/" + fallbackFile, import.meta.url));`,
+    `  } catch {`,
+    // No index.html shipped (e.g. API-only client dir) — skip the fallback.
+    `    fallbackHtml = undefined;`,
+    `  }`,
+    `}`,
+    ``,
+    // Sentinel so a static miss is distinguishable from a real Response.
+    `const MISS = Symbol("tapi:static-miss");`,
+    ``,
+    `export const fetch = async (request) => {`,
+    `  const { pathname } = new URL(request.url);`,
+    ``,
+    // A non-empty basePath cleanly separates API routes from static assets.
+    `  if (basePath && (pathname === basePath || pathname.startsWith(basePath + "/"))) {`,
+    `    return apiFetch(request);`,
+    `  }`,
+    ``,
+    `  const asset = await serveAsset(request, () => MISS);`,
+    `  if (asset !== MISS) return asset;`,
+    ``,
+    // Root-mounted API: let it answer before we reach for the SPA fallback.
+    `  if (!basePath) {`,
+    `    const apiResponse = await apiFetch(request);`,
+    `    if (apiResponse.status !== 404) return apiResponse;`,
+    `  }`,
+    ``,
+    `  if (fallbackHtml && (request.method === "GET" || request.method === "HEAD")) {`,
+    `    return new Response(fallbackHtml, {`,
+    `      headers: {`,
+    `        "content-type": "text/html; charset=utf-8",`,
+    // The shell references hashed assets; never cache the shell itself.
+    `        "cache-control": "no-cache",`,
+    `      },`,
+    `    });`,
+    `  }`,
+    ``,
+    `  return new Response("Not Found", { status: 404 });`,
+    `};`,
+    `export default { fetch };`,
+  ].join("\n");
 }
 
 export default function tapi(options: TapiPluginOptions = {}): Plugin {
   const entryOption = options.entry ?? "src/api.ts";
   const basePath = options.basePath ?? "/api";
+
+  // Resolve the `static` option into the production server's behavior:
+  // `serveClient` toggles static file serving, `spaFallback` is the file
+  // served for unmatched navigations (or `null` to 404 instead).
+  const staticOption = options.static ?? true;
+  const serveClient = staticOption !== false;
+  const spaFallback: string | null = !serveClient
+    ? null
+    : staticOption === true || staticOption.fallback === undefined
+      ? "index.html"
+      : staticOption.fallback === true
+        ? "index.html"
+        : staticOption.fallback === false
+          ? null
+          : staticOption.fallback;
 
   let userOutDirBase = "dist";
   let resolvedEntry = "";
@@ -151,12 +280,12 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         fetchHandler = mod.default?.fetch ?? mod.fetch;
         if (!fetchHandler) {
           console.warn(
-            "[vite-plugin-tapi] dist/server/server.js has no fetch export — run `vite build` first.",
+            "[vite-plugin-tapi] dist/server.js has no fetch export — run `vite build` first.",
           );
         }
       } catch (err) {
         console.error(
-          "[vite-plugin-tapi] failed to import dist/server/server.js for preview:",
+          "[vite-plugin-tapi] failed to import dist/server.js for preview:",
           err,
         );
       }
@@ -180,13 +309,12 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         },
         load(id) {
           if (id !== RESOLVED_VIRTUAL_SERVER_ID) return null;
-          return [
-            `import { createRequestHandler } from "@farbenmeer/tapi/server";`,
-            `import { api } from ${JSON.stringify(resolvedEntry)};`,
-            ``,
-            `export const fetch = createRequestHandler(api, { basePath: ${JSON.stringify(basePath)} });`,
-            `export default { fetch };`,
-          ].join("\n");
+          return buildServerModule({
+            resolvedEntry,
+            basePath,
+            serveClient,
+            spaFallback,
+          });
         },
       });
 

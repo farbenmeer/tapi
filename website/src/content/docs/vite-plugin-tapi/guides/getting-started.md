@@ -49,6 +49,7 @@ In dev (`vite`) and preview (`vite preview`) the API is mounted as middleware at
 | `basePath` | `string` | `"/api"` | Prefix for API routes. Use `""` to mount at the root. |
 | `port` | `number` | — | Default port for Vite's dev/preview server. Falls back to the `PORT` env var. |
 | `external` | `(string \| RegExp)[]` | `[]` | Packages to keep external in the server bundle. |
+| `static` | `boolean \| { fallback?: boolean \| string }` | `true` | Whether `dist/server.js` serves the client build + SPA fallback. `false` keeps it API-only (dedicated static host / CDN). See [Deployment](./deployment). |
 
 ## Environment Variables
 
