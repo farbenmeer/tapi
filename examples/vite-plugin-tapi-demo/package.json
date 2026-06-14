@@ -10,7 +10,8 @@
     "test": "playwright test",
     "test:dev": "playwright test --project=dev",
     "test:prod": "playwright test --project=prod",
-    "test:preview": "playwright test --project=preview"
+    "test:preview": "playwright test --project=preview",
+    "test:docker": "playwright test --config=playwright.docker.config.ts"
   },
   "dependencies": {
     "@farbenmeer/tapi": "workspace:^",

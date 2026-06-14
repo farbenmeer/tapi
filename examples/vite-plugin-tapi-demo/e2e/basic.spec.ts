@@ -21,7 +21,7 @@ test("greets a custom name", async ({ page }) => {
 });
 
 test("api returns json", async ({ request }) => {
-  const res = await request.get("/greet?name=api");
+  const res = await request.get("/api/greet?name=api");
   expect(res.status()).toBe(200);
   expect(await res.json()).toEqual({ greeting: "hello, api" });
 });
@@ -40,7 +40,7 @@ test("server sees .env vars; shell env takes precedence", async ({
   // .env sets FOO=fromEnv, BAR=fromEnv.
   // playwright.config.ts overrides FOO=fromShell in the webServer env.
   // Expectation: shell wins for FOO, .env supplies BAR.
-  const res = await request.get("/whoami");
+  const res = await request.get("/api/whoami");
   expect(res.status()).toBe(200);
   expect(await res.json()).toEqual({ foo: "fromShell", bar: "fromEnv" });
 });

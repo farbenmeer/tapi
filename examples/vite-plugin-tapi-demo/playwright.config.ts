@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
+  // The Docker image e2e has its own config (playwright.docker.config.ts).
+  testIgnore: /docker\.spec\.ts/,
   fullyParallel: false,
   workers: 1,
   retries: 2,
