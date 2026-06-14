@@ -1,27 +1,22 @@
 # Caddy fronts the demo: it serves the built static client files and reverse
 # proxies API requests to the srvx server that holds the tapi fetch handler.
 #
-# Routing (the tapi api is mounted at the root, basePath ""):
-#   1. If the request maps to an existing static file, serve it.
-#   2. Otherwise proxy to the srvx API server.
-#   3. If the API has no such route (404), fall back to index.html
-#      (single-page-app style not-found fallback).
+# The tapi api is mounted under /api, so routing is a clean split:
+#   - /api/*  -> srvx API server
+#   - else    -> static files, falling back to index.html when none matches
+#               (single-page-app style not-found fallback)
 :80 {
 	root * /srv/client
 	encode gzip
 
-	# Requests that don't match a file on disk are handled by the API server.
-	@not_static not file
-	handle @not_static {
-		reverse_proxy 127.0.0.1:{$API_PORT:3000} {
-			@not_found status 404
-			handle_response @not_found {
-				rewrite * /index.html
-				file_server
-			}
-		}
+	# API requests are handled by the srvx server.
+	handle /api/* {
+		reverse_proxy 127.0.0.1:{$API_PORT:3000}
 	}
 
-	# Existing static files (and "/" -> index.html) are served directly.
-	file_server
+	# Everything else: serve a static file, or fall back to index.html.
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
 }

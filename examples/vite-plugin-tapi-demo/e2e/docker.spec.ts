@@ -3,9 +3,10 @@ import { execFileSync, spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// End-to-end test of the production Docker image, which serves the tapi API
+// End-to-end test of the production container image, which serves the tapi API
 // with the srvx CLI behind Caddy (reverse proxy + static files with an
-// index.html not-found fallback). Skipped when no Docker runtime is available.
+// index.html not-found fallback). Works with either Docker or Podman, and is
+// skipped when neither container runtime is available.
 
 const HOST_PORT = 3211;
 const IMAGE = "tapi-demo-e2e:test";
@@ -18,8 +19,14 @@ const repoRoot = path.resolve(fileURLToPath(import.meta.url), "../../../..");
 const dockerfile =
   process.env.DEMO_DOCKERFILE ?? "examples/vite-plugin-tapi-demo/Dockerfile";
 
-function dockerAvailable(): boolean {
-  return spawnSync("docker", ["info"], { stdio: "ignore" }).status === 0;
+// Use Docker if present, otherwise Podman (their CLIs are compatible here).
+function detectRuntime(): string | undefined {
+  for (const runtime of ["docker", "podman"]) {
+    if (spawnSync(runtime, ["info"], { stdio: "ignore" }).status === 0) {
+      return runtime;
+    }
+  }
+  return undefined;
 }
 
 async function waitForReady(url: string, timeoutMs = 30_000): Promise<void> {
@@ -36,23 +43,24 @@ async function waitForReady(url: string, timeoutMs = 30_000): Promise<void> {
   }
 }
 
-const hasDocker = dockerAvailable();
+const runtime = detectRuntime();
 
-test.describe("docker image (caddy + srvx)", () => {
+test.describe("container image (caddy + srvx)", () => {
   test.describe.configure({ mode: "serial" });
 
   test.beforeAll(async () => {
-    test.skip(!hasDocker, "docker runtime not available");
+    test.skip(!runtime, "no container runtime (docker/podman) available");
+    const cli = runtime as string;
     // Building the image can take a while on a cold cache.
     test.setTimeout(600_000);
 
-    execFileSync("docker", ["build", "-f", dockerfile, "-t", IMAGE, "."], {
+    execFileSync(cli, ["build", "-f", dockerfile, "-t", IMAGE, "."], {
       cwd: repoRoot,
       stdio: "inherit",
     });
-    spawnSync("docker", ["rm", "-f", CONTAINER], { stdio: "ignore" });
+    spawnSync(cli, ["rm", "-f", CONTAINER], { stdio: "ignore" });
     execFileSync(
-      "docker",
+      cli,
       [
         "run",
         "-d",
@@ -66,11 +74,14 @@ test.describe("docker image (caddy + srvx)", () => {
       ],
       { stdio: "inherit" },
     );
-    await waitForReady(`http://localhost:${HOST_PORT}/`);
+    // Poll the API (not just the static root) so we wait for srvx to boot too.
+    await waitForReady(`http://localhost:${HOST_PORT}/api/greet?name=ready`);
   });
 
   test.afterAll(() => {
-    spawnSync("docker", ["rm", "-f", CONTAINER], { stdio: "ignore" });
+    if (runtime) {
+      spawnSync(runtime, ["rm", "-f", CONTAINER], { stdio: "ignore" });
+    }
   });
 
   test("caddy serves the static page", async ({ page }) => {
@@ -88,7 +99,7 @@ test.describe("docker image (caddy + srvx)", () => {
   });
 
   test("api returns json through the reverse proxy", async ({ request }) => {
-    const res = await request.get("/greet?name=api");
+    const res = await request.get("/api/greet?name=api");
     expect(res.status()).toBe(200);
     expect(await res.json()).toEqual({ greeting: "hello, api" });
   });
