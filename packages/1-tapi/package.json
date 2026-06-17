@@ -42,7 +42,7 @@
     "zod": "^4.0.17"
   },
   "dependencies": {
-    "zod-openapi": "^5.4.0"
+    "zod-openapi": "^6.0.0"
   },
   "repository": {
     "type": "git",
