@@ -1,5 +1,17 @@
 # @farbenmeer/bunny
 
+## 0.7.0
+
+### Minor Changes
+
+- 7f8b5f0: Remove the `useLacy` hook from `@farbenmeer/react-tapi` (and the re-export from
+  `@farbenmeer/bunny`). Use `useQuery` instead.
+
+### Patch Changes
+
+- Updated dependencies [7f8b5f0]
+  - @farbenmeer/react-tapi@8.0.0
+
 ## 0.6.5
 
 ### Patch Changes

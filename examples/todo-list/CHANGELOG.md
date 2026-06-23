@@ -1,5 +1,12 @@
 # @farbenmeer/bunny-boilerplate
 
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [7f8b5f0]
+  - @farbenmeer/bunny@0.7.0
+
 ## 0.3.3
 
 ### Patch Changes
