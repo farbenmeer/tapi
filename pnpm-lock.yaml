@@ -326,8 +326,8 @@ importers:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
       zod-openapi:
-        specifier: ^5.4.0
-        version: 5.4.6(zod@4.4.3)
+        specifier: ^6.0.0
+        version: 6.0.0(zod@4.4.3)
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
@@ -5177,11 +5177,11 @@ packages:
   zeptomatch@2.1.0:
     resolution: {integrity: sha512-KiGErG2J0G82LSpniV0CtIzjlJ10E04j02VOudJsPyPwNZgGnRKQy7I1R7GMyg/QswnE4l7ohSGrQbQbjXPPDA==}
 
-  zod-openapi@5.4.6:
-    resolution: {integrity: sha512-P2jsOOBAq/6hCwUsMCjUATZ8szkMsV5VAwZENfyxp2Hc/XPJQpVwAgevWZc65xZauCwWB9LAn7zYeiCJFAEL+A==}
-    engines: {node: '>=20'}
+  zod-openapi@6.0.0:
+    resolution: {integrity: sha512-mS4eRJ4DGCPrg6elRbJqc/3nLe4EPVi8KiHRKZ7dcTR5m5orPy8EfoWmceAyGZAq71MAWuyrTTOag7W5N61ZPQ==}
+    engines: {node: '>=22.14.0'}
     peerDependencies:
-      zod: ^3.25.74 || ^4.0.0
+      zod: ^4.0.0
 
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
@@ -9804,7 +9804,7 @@ snapshots:
       grammex: 3.1.12
       graphmatch: 1.1.1
 
-  zod-openapi@5.4.6(zod@4.4.3):
+  zod-openapi@6.0.0(zod@4.4.3):
     dependencies:
       zod: 4.4.3
 
