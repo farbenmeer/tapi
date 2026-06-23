@@ -387,9 +387,6 @@ importers:
 
   packages/2-react-tapi:
     dependencies:
-      '@farbenmeer/lacy':
-        specifier: workspace:^
-        version: link:../1-lacy
       typescript:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
