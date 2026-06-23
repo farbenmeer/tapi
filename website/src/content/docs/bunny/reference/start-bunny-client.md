@@ -41,7 +41,7 @@ startBunnyClient(<App />);
 
 The `@farbenmeer/bunny/client` entry re-exports everything from:
 
-- `@farbenmeer/react-tapi` — React hooks for TApi (`useQuery`, etc.).
+- `@farbenmeer/react-tapi` — React hook for TApi (`useQuery`).
 - `@farbenmeer/tapi/client` — `createFetchClient` and other client utilities.
 
 This means you can import all client-side TApi utilities from a single package:
