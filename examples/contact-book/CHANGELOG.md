@@ -1,5 +1,12 @@
 # @farbenmeer/bunny-example-contact-book
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [7f8b5f0]
+  - @farbenmeer/bunny@0.7.0
+
 ## 0.1.2
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @farbenmeer/tapi-example-tables
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [7f8b5f0]
+  - @farbenmeer/react-tapi@8.0.0
+
 ## 0.2.2
 
 ### Patch Changes
