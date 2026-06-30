@@ -356,7 +356,7 @@ importers:
         version: 0.5.3
       '@electric-sql/pglite-socket':
         specifier: ^0.2.0
-        version: 0.2.5(@electric-sql/pglite-age@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_hashids@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_ivm@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_textsearch@0.0.5(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_uuidv7@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgtap@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgvector@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite@0.5.3)
+        version: 0.2.6(@electric-sql/pglite-age@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_hashids@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_ivm@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_textsearch@0.0.5(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_uuidv7@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgtap@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgvector@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite@0.5.3)
       '@types/better-sqlite3':
         specifier: ^7.6.0
         version: 7.6.13
@@ -823,8 +823,8 @@ packages:
     peerDependencies:
       '@electric-sql/pglite': 0.4.1
 
-  '@electric-sql/pglite-socket@0.2.5':
-    resolution: {integrity: sha512-ukyDKIDKg5+0dx2mcRPoHh7xuOw5Hc9YbxYKF/wcmhJtesYCZYsyIGP1/H0RAXBPmFC0ZYx94USQansB9hOyig==}
+  '@electric-sql/pglite-socket@0.2.6':
+    resolution: {integrity: sha512-vAE1JtM3WIMQxB6qZztcy4WvPpqTZ0b4uumbbs+cDgZAIntwh6IbTGHIC9BFkRX3xA8Pki9zY3udcIaL3p/YYA==}
     hasBin: true
     peerDependencies:
       '@electric-sql/pglite': 0.5.3
@@ -5396,7 +5396,7 @@ snapshots:
     dependencies:
       '@electric-sql/pglite': 0.4.1
 
-  '@electric-sql/pglite-socket@0.2.5(@electric-sql/pglite-age@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_hashids@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_ivm@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_textsearch@0.0.5(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_uuidv7@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgtap@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgvector@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite@0.5.3)':
+  '@electric-sql/pglite-socket@0.2.6(@electric-sql/pglite-age@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_hashids@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_ivm@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_textsearch@0.0.5(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pg_uuidv7@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgtap@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite-pgvector@0.0.4(@electric-sql/pglite@0.5.3))(@electric-sql/pglite@0.5.3)':
     dependencies:
       '@electric-sql/pglite': 0.5.3
       '@electric-sql/pglite-age': 0.0.4(@electric-sql/pglite@0.5.3)
