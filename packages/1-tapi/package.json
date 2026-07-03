@@ -1,6 +1,6 @@
 {
   "name": "@farbenmeer/tapi",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "author": {
     "name": "Michel Smola",
     "email": "michel.smola@farbenmeer.de"
@@ -33,6 +33,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@farbenmeer/tag-based-cache": "workspace:*",
     "@types/node": "^25.0.3",
     "vitest": "^4.0.16",
     "zod": "^4.0.17"

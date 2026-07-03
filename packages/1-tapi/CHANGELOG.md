@@ -1,5 +1,11 @@
 # @farbenmeer/tapi
 
+## 0.12.1
+
+### Patch Changes
+
+- 149c7e8: fix unauthorized access to cached responses
+
 ## 0.12.0
 
 ### Minor Changes
