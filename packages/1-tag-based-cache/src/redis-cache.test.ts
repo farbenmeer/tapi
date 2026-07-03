@@ -1,20 +1,40 @@
+import { createClient } from "@redis/client";
 import {
   afterAll,
-  afterEach,
   beforeAll,
   beforeEach,
   describe,
   expect,
   test,
-  vi,
 } from "vitest";
 import { RedisCache } from "./redis-cache";
-import { createClient, RedisClientType } from "@redis/client";
 
-describe("RedisCache", () => {
-  const redisClient = createClient({
-    url: process.env.REDIS_URL ?? "redis://localhost:6379",
+const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
+
+// Skip the suite when no Redis is reachable (e.g. local runs without
+// `docker compose up`). CI provides a Redis service so it always runs there.
+async function isRedisAvailable(url: string): Promise<boolean> {
+  const client = createClient({
+    url,
+    socket: { connectTimeout: 1000, reconnectStrategy: false },
   });
+  client.on("error", () => {});
+  try {
+    await client.connect();
+    return true;
+  } catch {
+    return false;
+  } finally {
+    try {
+      client.destroy();
+    } catch {}
+  }
+}
+
+const redisAvailable = await isRedisAvailable(REDIS_URL);
+
+describe.skipIf(!redisAvailable)("RedisCache", () => {
+  const redisClient = createClient({ url: REDIS_URL });
 
   beforeAll(async () => {
     await redisClient.connect();
