@@ -259,4 +259,72 @@ describe.skipIf(!postgresAvailable)("PostgresCache", () => {
 
     expect(events).toEqual([{ tags: ["tag1"], meta: { clientId: "abc" } }]);
   });
+
+  describe("with a dedicated schema", () => {
+    const schema = "cache_test_schema";
+
+    // Start each test from a clean slate — this also recovers from a prior
+    // run that was killed before it could clean up.
+    beforeEach(async () => {
+      await pool.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
+    });
+
+    test("creates the schema and stores entries there", async () => {
+      const sut = new PostgresCache(pool, { schema });
+      caches.push(sut);
+
+      await sut.set({ key: "k", data: { v: 1 }, ttl: 1000, tags: ["t1"] });
+
+      expect(await sut.get("k")).toEqual({ data: { v: 1 }, attachment: null });
+
+      // The tables really live in the dedicated schema.
+      const { rows } = await pool.query(
+        `SELECT to_regclass('${schema}.cache_entries') IS NOT NULL AS entries,
+                to_regclass('${schema}.cache_tags') IS NOT NULL AS tags`
+      );
+      expect(rows[0]).toEqual({ entries: true, tags: true });
+
+      // Tag invalidation works against the schema-qualified tables.
+      await sut.delete(["t1"]);
+      expect(await sut.get("k")).toEqual(null);
+    });
+
+    test("is isolated from the default schema", async () => {
+      const scoped = new PostgresCache(pool, { schema });
+      const shared = createCache();
+      caches.push(scoped);
+
+      await shared.set({ key: "k", data: { v: "public" }, ttl: 1000, tags: [] });
+      await scoped.set({ key: "k", data: { v: "scoped" }, ttl: 1000, tags: [] });
+
+      expect(await shared.get("k")).toEqual({
+        data: { v: "public" },
+        attachment: null,
+      });
+      expect(await scoped.get("k")).toEqual({
+        data: { v: "scoped" },
+        attachment: null,
+      });
+    });
+
+    test("invalidations do not cross schema boundaries", async () => {
+      const scoped = new PostgresCache(pool, { schema });
+      const shared = createCache();
+      caches.push(scoped);
+      // Materialize the schema tables before the writer notifies.
+      await scoped.get("warmup");
+
+      const events: string[][] = [];
+      shared.subscribe((tags) => events.push(tags));
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // A delete on the scoped cache uses a schema-specific channel, so the
+      // default-schema subscriber must not receive it.
+      await scoped.delete(["tag1"]);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      expect(events).toEqual([]);
+    });
+  });
 });

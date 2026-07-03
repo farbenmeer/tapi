@@ -19,6 +19,7 @@ new PostgresCache(pool: Pool, options?: PostgresCacheOptions)
 - **Parameters**:
   - `pool`: A `pg` `Pool`. The cache checks out a dedicated connection from this pool for `LISTEN` while it has active subscribers, and short-lived connections for reads and writes. The pool's lifecycle is owned by the caller.
   - `options.createSchema`: When `true` (the default) the required tables and indexes are created lazily on the first operation via `CREATE TABLE IF NOT EXISTS`. Set to `false` if you manage the schema yourself (e.g. via migrations).
+  - `options.schema`: The Postgres schema that holds the cache tables. Defaults to whatever the connection's `search_path` resolves to (usually `public`). When set, the tables are fully qualified as `<schema>.cache_entries` / `<schema>.cache_tags`, the schema is created if missing (unless `createSchema` is `false`), and a schema-specific invalidation channel is used so caches on different schemas never cross-notify.
 
 ## Usage
 
@@ -45,7 +46,7 @@ const entry = await cache.get("book:1");
 
 ### Storage
 
-Entries are stored across two tables:
+Entries are stored across two tables (qualified with the configured `schema` when set):
 
 - `cache_entries` — one row per key holding the JSON `data` (as `JSONB`), the binary `attachment` (as `BYTEA`), and the `added_at` / `expires_at` timestamps (epoch milliseconds).
 - `cache_tags` — a `(key, tag)` join table. Rows reference `cache_entries(key)` with `ON DELETE CASCADE`, so a deleted entry drops its tag associations automatically.

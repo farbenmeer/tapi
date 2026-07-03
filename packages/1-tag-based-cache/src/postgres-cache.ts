@@ -12,6 +12,11 @@ interface InvalidationMessage {
   meta?: Json;
 }
 
+/** Quote a Postgres identifier so it can be safely interpolated into SQL. */
+function quoteIdentifier(name: string): string {
+  return `"${name.replace(/"/g, '""')}"`;
+}
+
 export interface PostgresCacheOptions {
   /**
    * When `true` (the default) the required tables and indexes are created
@@ -19,6 +24,16 @@ export interface PostgresCacheOptions {
    * `false` if you manage the schema yourself (e.g. via migrations).
    */
   createSchema?: boolean;
+
+  /**
+   * The Postgres schema to hold the cache tables. Defaults to whatever the
+   * connection's `search_path` resolves to (usually `public`). When set, the
+   * tables are fully qualified as `<schema>.cache_entries` /
+   * `<schema>.cache_tags` and — with `createSchema` enabled — the schema is
+   * created if it does not already exist. Each schema also gets its own
+   * invalidation channel so caches on different schemas do not cross-notify.
+   */
+  schema?: string;
 }
 
 export class PostgresCache implements Cache {
@@ -30,31 +45,49 @@ export class PostgresCache implements Cache {
   private gcTimer?: ReturnType<typeof setTimeout>;
   private stopped = false;
 
+  /** Fully-qualified (schema-prefixed when applicable) table identifiers. */
+  private readonly entriesTable: string;
+  private readonly tagsTable: string;
+  /** Invalidation channel, namespaced by schema so schemas stay isolated. */
+  private readonly channel: string;
+
   constructor(
     private pool: Pool,
     private options: PostgresCacheOptions = {}
   ) {
+    const { schema } = options;
+    const prefix = schema ? `${quoteIdentifier(schema)}.` : "";
+    this.entriesTable = `${prefix}cache_entries`;
+    this.tagsTable = `${prefix}cache_tags`;
+    this.channel = schema ? `${CHANNEL}:${schema}` : CHANNEL;
+
     this.ready = this.setup();
   }
 
   private async setup(): Promise<void> {
     if (this.options.createSchema !== false) {
+      if (this.options.schema) {
+        await this.pool.query(
+          `CREATE SCHEMA IF NOT EXISTS ${quoteIdentifier(this.options.schema)}`
+        );
+      }
+
       await this.pool.query(`
-        CREATE TABLE IF NOT EXISTS cache_entries (
+        CREATE TABLE IF NOT EXISTS ${this.entriesTable} (
           key TEXT PRIMARY KEY,
           data JSONB,
           attachment BYTEA,
           added_at BIGINT NOT NULL,
           expires_at BIGINT NOT NULL
         );
-        CREATE TABLE IF NOT EXISTS cache_tags (
-          key TEXT NOT NULL REFERENCES cache_entries(key) ON DELETE CASCADE,
+        CREATE TABLE IF NOT EXISTS ${this.tagsTable} (
+          key TEXT NOT NULL REFERENCES ${this.entriesTable}(key) ON DELETE CASCADE,
           tag TEXT NOT NULL,
           PRIMARY KEY (key, tag)
         );
-        CREATE INDEX IF NOT EXISTS cache_tags_tag_idx ON cache_tags (tag);
+        CREATE INDEX IF NOT EXISTS cache_tags_tag_idx ON ${this.tagsTable} (tag);
         CREATE INDEX IF NOT EXISTS cache_entries_expires_at_idx
-          ON cache_entries (expires_at);
+          ON ${this.entriesTable} (expires_at);
       `);
     }
 
@@ -67,7 +100,7 @@ export class PostgresCache implements Cache {
     const { rows } = await this.pool.query(
       `
         SELECT data, attachment
-        FROM cache_entries
+        FROM ${this.entriesTable}
         WHERE key = $1 AND expires_at >= $2
       `,
       [key, Date.now()]
@@ -101,7 +134,7 @@ export class PostgresCache implements Cache {
 
       await client.query(
         `
-          INSERT INTO cache_entries (key, data, attachment, added_at, expires_at)
+          INSERT INTO ${this.entriesTable} (key, data, attachment, added_at, expires_at)
           VALUES ($1, $2, $3, $4, $5)
           ON CONFLICT (key) DO UPDATE SET
             data = EXCLUDED.data,
@@ -121,11 +154,11 @@ export class PostgresCache implements Cache {
       // Replace the full tag set so tags removed since the last `set` are
       // dropped, matching the `INSERT OR REPLACE` semantics of the SQLite
       // implementations.
-      await client.query(`DELETE FROM cache_tags WHERE key = $1`, [key]);
+      await client.query(`DELETE FROM ${this.tagsTable} WHERE key = $1`, [key]);
 
       for (const tag of tags) {
         await client.query(
-          `INSERT INTO cache_tags (key, tag) VALUES ($1, $2)
+          `INSERT INTO ${this.tagsTable} (key, tag) VALUES ($1, $2)
              ON CONFLICT DO NOTHING`,
           [key, tag]
         );
@@ -148,14 +181,14 @@ export class PostgresCache implements Cache {
     // `cache_tags` rows are removed automatically via `ON DELETE CASCADE`.
     await this.pool.query(
       `
-        DELETE FROM cache_entries
-        WHERE key IN (SELECT key FROM cache_tags WHERE tag = ANY($1))
+        DELETE FROM ${this.entriesTable}
+        WHERE key IN (SELECT key FROM ${this.tagsTable} WHERE tag = ANY($1))
       `,
       [tags]
     );
 
     await this.pool.query(`SELECT pg_notify($1, $2)`, [
-      CHANNEL,
+      this.channel,
       JSON.stringify({ tags, meta } satisfies InvalidationMessage),
     ]);
   }
@@ -165,16 +198,16 @@ export class PostgresCache implements Cache {
     this.listener = listener;
 
     listener.on("notification", (msg: Notification) => {
-      if (msg.channel !== CHANNEL || !msg.payload) return;
+      if (msg.channel !== this.channel || !msg.payload) return;
       const { tags, meta } = JSON.parse(msg.payload) as InvalidationMessage;
       for (const callback of this.subscriptions) {
         callback(tags, meta);
       }
     });
 
-    // `CHANNEL` is a fixed, safe identifier so string interpolation here is
-    // not injectable (LISTEN does not accept a bound parameter).
-    await listener.query(`LISTEN ${CHANNEL}`);
+    // LISTEN does not accept a bound parameter; the channel name is quoted so
+    // an arbitrary (schema-derived) identifier is interpolated safely.
+    await listener.query(`LISTEN ${quoteIdentifier(this.channel)}`);
   }
 
   subscribe(callback: Subscription): () => void {
@@ -196,7 +229,7 @@ export class PostgresCache implements Cache {
   private async gc(): Promise<void> {
     try {
       const result = await this.pool.query(
-        `DELETE FROM cache_entries WHERE expires_at < $1`,
+        `DELETE FROM ${this.entriesTable} WHERE expires_at < $1`,
         [Date.now()]
       );
       const changes = result.rowCount ?? 0;
