@@ -1,55 +1,65 @@
-import { createClient } from "@redis/client";
+import { Pool } from "pg";
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
   expect,
   test,
 } from "vitest";
-import { RedisCache } from "./redis-cache";
+import { PostgresCache } from "./postgres-cache";
 
-const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
+const POSTGRES_URL =
+  process.env.POSTGRES_URL ??
+  "postgres://postgres:postgres@localhost:5432/postgres";
 
-// Skip the suite when no Redis is reachable (e.g. local runs without
-// `docker compose up`). CI provides a Redis service so it always runs there.
-async function isRedisAvailable(url: string): Promise<boolean> {
-  const client = createClient({
-    url,
-    socket: { connectTimeout: 1000, reconnectStrategy: false },
-  });
-  client.on("error", () => {});
+// Skip the suite when no Postgres is reachable (e.g. local runs without
+// `docker compose up`). CI provides a Postgres service so it always runs there.
+async function isPostgresAvailable(connectionString: string): Promise<boolean> {
+  const pool = new Pool({ connectionString, connectionTimeoutMillis: 1000 });
   try {
-    await client.connect();
+    await pool.query("SELECT 1");
     return true;
   } catch {
     return false;
   } finally {
-    try {
-      client.destroy();
-    } catch {}
+    await pool.end().catch(() => {});
   }
 }
 
-const redisAvailable = await isRedisAvailable(REDIS_URL);
+const postgresAvailable = await isPostgresAvailable(POSTGRES_URL);
 
-describe.skipIf(!redisAvailable)("RedisCache", () => {
-  const redisClient = createClient({ url: REDIS_URL });
+describe.skipIf(!postgresAvailable)("PostgresCache", () => {
+  const pool = new Pool({ connectionString: POSTGRES_URL });
+
+  const caches: PostgresCache[] = [];
+
+  function createCache() {
+    const cache = new PostgresCache(pool);
+    caches.push(cache);
+    return cache;
+  }
 
   beforeAll(async () => {
-    await redisClient.connect();
+    // Ensure the schema exists before the per-test truncation runs.
+    await new PostgresCache(pool)["ready"];
   });
 
   beforeEach(async () => {
-    await redisClient.flushAll();
+    await pool.query("TRUNCATE cache_entries, cache_tags");
+  });
+
+  afterEach(async () => {
+    await Promise.all(caches.splice(0).map((cache) => cache.close()));
   });
 
   afterAll(async () => {
-    redisClient.destroy();
+    await pool.end();
   });
 
   test("basic store and retrieve", async () => {
-    const sut = new RedisCache(redisClient);
+    const sut = createCache();
 
     await sut.set({
       key: "test",
@@ -70,8 +80,14 @@ describe.skipIf(!redisAvailable)("RedisCache", () => {
     });
   });
 
+  test("returns null for missing key", async () => {
+    const sut = createCache();
+
+    expect(await sut.get("nope")).toEqual(null);
+  });
+
   test("expire by ttl", async () => {
-    const sut = new RedisCache(redisClient);
+    const sut = createCache();
 
     await sut.set({
       key: "test",
@@ -83,15 +99,14 @@ describe.skipIf(!redisAvailable)("RedisCache", () => {
       tags: [],
     });
 
-    // Wait for TTL to expire
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for the TTL to expire.
+    await new Promise((resolve) => setTimeout(resolve, 1100));
 
-    // Force Redis to check TTL by trying to get the key
     expect(await sut.get("test")).toEqual(null);
   });
 
   test("expire by tags", async () => {
-    const sut = new RedisCache(redisClient);
+    const sut = createCache();
 
     await sut.set({
       key: "test",
@@ -133,10 +148,14 @@ describe.skipIf(!redisAvailable)("RedisCache", () => {
 
     // Now test2 should also be deleted
     expect(await sut.get("test2")).toEqual(null);
+
+    // The tag rows are cleaned up via ON DELETE CASCADE.
+    const { rows } = await pool.query("SELECT * FROM cache_tags");
+    expect(rows).toEqual([]);
   });
 
   test("store binary blob", async () => {
-    const sut = new RedisCache(redisClient);
+    const sut = createCache();
 
     const numbers = [1, 2, 3, 4, 5];
 
@@ -154,7 +173,7 @@ describe.skipIf(!redisAvailable)("RedisCache", () => {
   });
 
   test("store both data and attachment", async () => {
-    const sut = new RedisCache(redisClient);
+    const sut = createCache();
 
     const numbers = [1, 2, 3, 4, 5];
 
@@ -173,9 +192,8 @@ describe.skipIf(!redisAvailable)("RedisCache", () => {
   });
 
   test("delete with multiple tags", async () => {
-    const sut = new RedisCache(redisClient);
+    const sut = createCache();
 
-    // Set up multiple entries with overlapping tags
     await sut.set({
       key: "item1",
       data: { id: 1 },
@@ -208,26 +226,37 @@ describe.skipIf(!redisAvailable)("RedisCache", () => {
     });
   });
 
-  test("delete needs to clean up data and attachment keys", async () => {
-    const sut = new RedisCache(redisClient);
+  test("set replaces stale tags", async () => {
+    const sut = createCache();
 
-    await sut.set({
-      key: "test",
-      data: { foo: "bar" },
-      attachment: new Uint8Array([1, 2, 3]),
-      ttl: 1000,
-      tags: ["tag1"],
+    await sut.set({ key: "k", data: { v: 1 }, ttl: 1000, tags: ["t1", "t2"] });
+    // Re-set with a smaller tag set: t2 should no longer point at "k".
+    await sut.set({ key: "k", data: { v: 2 }, ttl: 1000, tags: ["t1"] });
+
+    await sut.delete(["t2"]);
+    expect(await sut.get("k")).toEqual({ data: { v: 2 }, attachment: null });
+
+    await sut.delete(["t1"]);
+    expect(await sut.get("k")).toEqual(null);
+  });
+
+  test("delete propagates to subscribers across instances", async () => {
+    const writer = createCache();
+    const reader = createCache();
+
+    const events: Array<{ tags: string[]; meta: unknown }> = [];
+    reader.subscribe((tags, meta) => {
+      events.push({ tags, meta });
     });
 
-    // Verify both keys exist
-    expect(await sut.get("test")).toBeTruthy();
+    // Give the dedicated LISTEN connection time to be established.
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
-    await sut.delete(["tag1"]);
+    await writer.delete(["tag1"], { clientId: "abc" });
 
-    // Verify all related keys are deleted
-    expect(await sut.get("test")).toEqual(null);
-    expect(await redisClient.exists("data:test")).toBe(0);
-    expect(await redisClient.exists("attachment:test")).toBe(0);
-    expect(await redisClient.exists("tags:tag1")).toBe(0);
+    // Wait for the NOTIFY to be delivered.
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    expect(events).toEqual([{ tags: ["tag1"], meta: { clientId: "abc" } }]);
   });
 });
