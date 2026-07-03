@@ -81,36 +81,10 @@ export function createRequestHandler(
           case "HEAD":
           case "GET": {
             try {
-              // get matching cache entry
-              const cached = await api.cache?.get(req.url);
+              const handler = route[req.method];
+              if (!handler) return new Response("Not Found", { status: 404 });
 
-              if (cached) {
-                // serve from cache
-                const body =
-                  req.method === "HEAD"
-                    ? null
-                    : new ReadableStream({
-                        start(controller) {
-                          controller.enqueue(cached.attachment);
-                          controller.close();
-                        },
-                      });
-                const headers = await headersSchema.parseAsync(cached.data);
-
-                return new Response(body, {
-                  headers: headers ?? undefined,
-                });
-              }
-            } catch (error) {
-              // caches errors while retrieving from cache
-              errorLog(error);
-            }
-
-            const handler = route[req.method];
-            if (!handler) return new Response("Not Found", { status: 404 });
-
-            try {
-              // execute handler, serve fresh response
+              // calls the authorizer, throws if unauthorized
               const treq = await prepareRequestWithoutBody(
                 handler,
                 url,
@@ -118,6 +92,34 @@ export function createRequestHandler(
                 req,
                 api.cache,
               );
+
+              try {
+                // get matching cache entry
+                const cached = await api.cache?.get(req.url);
+
+                if (cached) {
+                  // serve from cache
+                  const body =
+                    req.method === "HEAD"
+                      ? null
+                      : new ReadableStream({
+                          start(controller) {
+                            controller.enqueue(cached.attachment);
+                            controller.close();
+                          },
+                        });
+                  const headers = await headersSchema.parseAsync(cached.data);
+
+                  return new Response(body, {
+                    headers: headers ?? undefined,
+                  });
+                }
+              } catch (error) {
+                // catches errors while retrieving from cache
+                // errors are logged but response is still served
+                errorLog(error);
+              }
+
               const res = await executeHandler(handler, treq);
 
               if (res.cache) {

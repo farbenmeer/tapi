@@ -1,3 +1,4 @@
+import { InMemoryCache } from "@farbenmeer/tag-based-cache/in-memory-cache";
 import { describe, expect, test, vi } from "vitest";
 import {
   compilePathRegex,
@@ -149,6 +150,44 @@ describe("createRequestHandler", () => {
     const response = await sut(new Request("http://localhost:3000"));
     expect(response.status).toBe(200);
     expect(deleteMock).toHaveBeenCalledWith(["posts", "users"], undefined);
+  });
+
+  test("does not serve cached responses to unauthorized requests", async () => {
+    const authorize = vi.fn(
+      (req: Request) => req.headers.get("Authorization") === "Bearer valid",
+    );
+    const handler = vi.fn(async () =>
+      TResponse.json({ secret: "data" }, { cache: { tags: ["secret"] } }),
+    );
+    const sut = createRequestHandler(
+      defineApi({ cache: new InMemoryCache(), logger: { error: vi.fn() } }).route(
+        "/secret",
+        { GET: defineHandler({ authorize }, handler) },
+      ),
+    );
+
+    // while the cache is empty, an unauthorized request is rejected
+    const unauthorized = await sut(
+      new Request("http://localhost:3000/secret"),
+    );
+    expect(unauthorized.status).toBe(401);
+    expect(handler).not.toHaveBeenCalled();
+
+    // an authorized request runs the handler and populates the cache
+    const authorized = await sut(
+      new Request("http://localhost:3000/secret", {
+        headers: { Authorization: "Bearer valid" },
+      }),
+    );
+    expect(authorized.status).toBe(200);
+    expect(await authorized.json()).toEqual({ secret: "data" });
+    expect(handler).toHaveBeenCalledTimes(1);
+
+    // the same unauthorized request must still be rejected,
+    // even though a cached response exists for this URL
+    const cached = await sut(new Request("http://localhost:3000/secret"));
+    expect(cached.status).toBe(401);
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 
   test("auth data is available on the request object", async () => {
