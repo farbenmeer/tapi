@@ -1,6 +1,6 @@
 FROM node:lts
 
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git vim && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git vim gh && rm -rf /var/lib/apt/lists/*
 
 RUN corepack enable
 RUN npm install -g @playwright/cli
