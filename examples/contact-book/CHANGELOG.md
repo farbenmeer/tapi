@@ -1,5 +1,12 @@
 # @farbenmeer/bunny-example-contact-book
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [b4e077a]
+  - @farbenmeer/tag-based-cache@0.3.0
+
 ## 0.1.3
 
 ### Patch Changes
