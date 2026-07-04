@@ -21,9 +21,16 @@ export function useQuery<T>(
 
   React.useEffect(() => {
     const unsubscribe = observable.subscribe((next) => {
-      startTransition(async () => {
-        setData(await next);
-      });
+      void next.then(
+        (value) => {
+          startTransition(() => {
+            setData(value);
+          });
+        },
+        // Revalidation failed — keep showing the current (stale) data.
+        // The error is already logged by the cache layer.
+        () => {},
+      );
     });
     return unsubscribe;
   }, [observable]);

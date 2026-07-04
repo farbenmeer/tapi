@@ -29,11 +29,13 @@ export class TResponse<T = unknown> extends Response {
       );
     }
     if (cookies) {
-      init.headers =
-        init.headers instanceof Headers
-          ? init.headers
-          : new Headers(init.headers);
-      cookies.write(init.headers);
+      // Write cookies to the same headers object used for the response body,
+      // so they are included alongside any cache headers set above.
+      cookies.write(
+        rawInit.headers instanceof Headers
+          ? rawInit.headers
+          : (rawInit.headers = new Headers(rawInit.headers)),
+      );
     }
     super(body, rawInit);
     this.cache = cache;
