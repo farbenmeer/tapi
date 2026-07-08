@@ -108,7 +108,7 @@ importers:
         version: 19.2.7(react@19.2.7)
       srvx:
         specifier: ^0.11.15
-        version: 0.11.17
+        version: 0.11.21
       typescript:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
@@ -176,7 +176,7 @@ importers:
         version: link:../../packages/3-vite-plugin-tapi
       srvx:
         specifier: ^0.11.15
-        version: 0.11.17
+        version: 0.11.21
       typescript:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
@@ -530,7 +530,7 @@ importers:
     dependencies:
       srvx:
         specifier: ^0.11.15
-        version: 0.11.17
+        version: 0.11.21
       typescript:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
@@ -4467,8 +4467,8 @@ packages:
     resolution: {integrity: sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==}
     engines: {node: '>= 0.6'}
 
-  srvx@0.11.17:
-    resolution: {integrity: sha512-43yM4luKfCJamyCMhrUeHUPOrf8TdZe7kN8s5zayZCH5OeprYqi49Aso5ZvHXR4aB+DHaRNO/diNFgZSMNG8Xw==}
+  srvx@0.11.21:
+    resolution: {integrity: sha512-GWTHjKMeekX8CwJf4VU9Oo6mJpSGaflGMddbCvR+Cmmh9sslRMiGbAoqqZacE0r1ncARh6buCEETr2W52F8b1w==}
     engines: {node: '>=20.16.0'}
     hasBin: true
 
@@ -9158,7 +9158,7 @@ snapshots:
 
   sqlstring@2.3.3: {}
 
-  srvx@0.11.17: {}
+  srvx@0.11.21: {}
 
   stackback@0.0.2: {}
 
