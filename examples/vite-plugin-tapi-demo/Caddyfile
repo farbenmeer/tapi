@@ -7,6 +7,11 @@
 #               (single-page-app style not-found fallback)
 :80 {
 	root * /srv/client
+
+	# This demo container is served directly, so Caddy compresses responses.
+	# Behind a compressing edge / reverse proxy (e.g. Traefik, which already
+	# negotiates gzip/brotli/zstd per Accept-Encoding) drop this line so
+	# compression happens exactly once.
 	encode gzip
 
 	# API requests are handled by the srvx server.
@@ -14,7 +19,18 @@
 		reverse_proxy 127.0.0.1:{$API_PORT:3000}
 	}
 
+	# Vite emits content-hashed assets under /assets/<name>-<hash>.<ext>: the URL
+	# changes whenever the content changes, so they are safe to cache forever.
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+
+	# The SPA shell is not hashed and points at the current asset URLs, so it
+	# must always be revalidated — never cache the shell itself.
+	@shell path / /index.html
+	header @shell Cache-Control "no-cache"
+
 	# Everything else: serve a static file, or fall back to index.html.
+	# file_server sets ETag/Last-Modified and answers conditional requests (304).
 	handle {
 		try_files {path} /index.html
 		file_server
