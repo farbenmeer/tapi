@@ -1,4 +1,4 @@
-# @farbenmeer/vite-plugin-tapi
+# @toapi/vite-plugin
 
 Vite plugin for [tapi](https://github.com/farbenmeer/tapi). Bundles your tapi
 API alongside your Vite frontend in a single project: serves the API as

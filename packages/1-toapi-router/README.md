@@ -1,4 +1,4 @@
-# @farbenmeer/router Documentation
+# @toapi/router Documentation
 
 A lightweight, React-based client-side router with support for nested routes, path parameters, and immutable search parameter handling.
 

@@ -1,5 +1,13 @@
 # TApi
 
+This package has been renamed to Toapi and split into separate packages for
+* [Server](https://www.npmjs.com/package/@toapi/server)
+* [Client](https://www.npmjs.com/package/@toapi/client)
+* [Worker](https://www.npmjs.com/package/@toapi/worker)
+
+Prefer to use these instead of this package.
+
+
 This library makes it possible to build a Rest API including a fully typed client without a compile step.
 
 
