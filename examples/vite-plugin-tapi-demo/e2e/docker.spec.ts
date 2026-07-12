@@ -118,4 +118,19 @@ test.describe("container image (caddy + srvx)", () => {
     expect(res.status()).toBe(200);
     expect(await res.text()).toContain("vite-plugin-tapi demo");
   });
+
+  test("content-hashed assets get an immutable long-cache header", async ({
+    request,
+  }) => {
+    const html = await (await request.get("/")).text();
+    const asset = html.match(/\/assets\/[^"]+\.js/)?.[0];
+    expect(asset).toBeTruthy();
+    const res = await request.get(asset as string);
+    expect(res.headers()["cache-control"]).toContain("immutable");
+  });
+
+  test("the SPA shell is served with no-cache", async ({ request }) => {
+    const res = await request.get("/");
+    expect(res.headers()["cache-control"]).toContain("no-cache");
+  });
 });

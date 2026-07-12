@@ -38,6 +38,10 @@ srvx --prod -s client dist/server.js
 
 The path passed to `-s` is resolved relative to the directory containing the entry file (`dist/`), so `client` points at `dist/client/`. API routes are matched first; static files fall through when no API route handles the request.
 
+:::note
+`srvx -s` serves files as-is: it has **no SPA history fallback** (deep-linking or reloading a client-side route returns `404`) and sets **no `Cache-Control`/`ETag`** (content-hashed assets are not marked `immutable`, and there is no `304` revalidation). For a client-routed SPA in production, front it with a static server or CDN that handles the history fallback and caching — see the reference `Caddyfile` in `examples/vite-plugin-tapi-demo`.
+:::
+
 ## Environment Variables
 
 The production server does not load `.env` files. Env vars must come from the runtime: Docker env, systemd `EnvironmentFile`, or your PaaS config.
