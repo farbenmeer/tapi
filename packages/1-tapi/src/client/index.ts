@@ -1,6 +1,0 @@
-export type { Observable } from "./client-types.js";
-export { createFetchClient } from "./create-fetch-client.js";
-export type { GetRoute, PostRoute } from "./route-types.js";
-export { HttpError } from "../shared/http-error.js";
-export { INVALIDATIONS_ROUTE } from "../shared/constants.js";
-export type { Logger } from "../shared/logger.js";
