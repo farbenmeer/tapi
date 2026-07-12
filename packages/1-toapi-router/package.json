@@ -1,0 +1,40 @@
+{
+  "name": "@toapi/router",
+  "version": "0.6.2",
+  "author": {
+    "name": "Michel Smola",
+    "email": "michel.smola@farbenmeer.de"
+  },
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farbenmeer/tapi.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "release": "pnpm run build && pnpm publish --no-git-checks",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@vitejs/plugin-react": "^6.0.0",
+    "@vitest/browser-playwright": "^4.0.16",
+    "react": "^19.1.1",
+    "vitest": "^4.0.16",
+    "playwright": "catalog:",
+    "vitest-browser-react": "^2.0.2"
+  },
+  "peerDependencies": {
+    "react": "^19.1.1",
+    "typescript": "^5 || ^6.0.0"
+  }
+}
