@@ -4,7 +4,7 @@ A lightweight, React-based client-side router with support for nested routes, pa
 
 ## Overview
 
-The `@farbenmeer/router` package provides a very lightweight routing solution for React applications with the following key features:
+The `@toapi/router` package provides a very lightweight routing solution for React applications with the following key features:
 
 - **Declarative routing** with React components
 - **Nested routes** with parameter inheritance
@@ -18,7 +18,7 @@ The `@farbenmeer/router` package provides a very lightweight routing solution fo
 ## Quick Start
 
 ```tsx
-import { Router, Route, Link } from "@farbenmeer/router";
+import { Router, Route, Link } from "@toapi/router";
 
 function App() {
   return (
