@@ -31,6 +31,6 @@ function Page() {
 ```
 
 ## What does this do?
-It subscribes TApi's internal PubSub system to get updates on the data when it is invalidated through TApi's tag-based cache invalication mechanism or manually using the revalidate methods of the TApi client, e.G. `client.books.revalidate()`.
+It subscribes Toapi's internal PubSub system to get updates on the data when it is invalidated through TApi's tag-based cache invalication mechanism or manually using the revalidate methods of the TApi client, e.G. `client.books.revalidate()`.
 
 Note that `useQuery` actaully returns a `Promise` which can be passed to client components for granular control of loading states using `Suspense`-Boundaries.
