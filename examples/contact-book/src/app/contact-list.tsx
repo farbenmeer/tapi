@@ -1,5 +1,5 @@
 import { useQuery } from "@farbenmeer/bunny/client";
-import { Link } from "@farbenmeer/router";
+import { Link } from "@toapi/router";
 import { client } from "client";
 
 export function ContactList() {

@@ -1,4 +1,4 @@
-import { useQuery } from "@farbenmeer/react-tapi";
+import { useQuery } from "@toapi/react";
 import { client } from "./client";
 
 export function App() {

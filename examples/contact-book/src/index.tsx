@@ -1,5 +1,5 @@
 import { startBunnyClient } from "@farbenmeer/bunny/client";
-import { Router } from "@farbenmeer/router";
+import { Router } from "@toapi/router";
 import { App } from "app/app";
 
 declare global {

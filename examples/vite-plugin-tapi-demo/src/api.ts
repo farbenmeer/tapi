@@ -1,4 +1,4 @@
-import { defineApi, defineHandler, TResponse } from "@farbenmeer/tapi/server";
+import { defineApi, defineHandler, TResponse } from "@toapi/server";
 import { z } from "zod";
 
 export const api = defineApi()

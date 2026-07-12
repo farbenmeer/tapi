@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@farbenmeer/bunny/client";
-import { useParams, useRouter, Link } from "@farbenmeer/router";
+import { useParams, useRouter, Link } from "@toapi/router";
 import { client } from "client";
 
 export function ContactDetail() {

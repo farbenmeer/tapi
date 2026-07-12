@@ -32,12 +32,12 @@ importers:
       '@farbenmeer/bunny':
         specifier: workspace:^
         version: link:../../packages/3-bunny
-      '@farbenmeer/router':
+      '@toapi/cache':
         specifier: workspace:^
-        version: link:../../packages/1-router
-      '@farbenmeer/tag-based-cache':
+        version: link:../../packages/1-toapi-cache
+      '@toapi/router':
         specifier: workspace:^
-        version: link:../../packages/1-tag-based-cache
+        version: link:../../packages/1-toapi-router
       react:
         specifier: ^19
         version: 19.2.7
@@ -91,15 +91,18 @@ importers:
 
   examples/tables:
     dependencies:
-      '@farbenmeer/react-tapi':
+      '@toapi/client':
         specifier: workspace:^
-        version: link:../../packages/2-react-tapi
-      '@farbenmeer/tapi':
+        version: link:../../packages/2-toapi-client
+      '@toapi/react':
         specifier: workspace:^
-        version: link:../../packages/4-tapi
-      '@farbenmeer/vite-plugin-tapi':
+        version: link:../../packages/2-toapi-react
+      '@toapi/server':
         specifier: workspace:^
-        version: link:../../packages/3-vite-plugin-tapi
+        version: link:../../packages/3-toapi-server
+      '@toapi/vite-plugin':
+        specifier: workspace:^
+        version: link:../../packages/3-toapi-vite-plugin
       react:
         specifier: ^19.2.5
         version: 19.2.7
@@ -168,12 +171,15 @@ importers:
 
   examples/vite-plugin-tapi-demo:
     dependencies:
-      '@farbenmeer/tapi':
+      '@toapi/client':
         specifier: workspace:^
-        version: link:../../packages/4-tapi
-      '@farbenmeer/vite-plugin-tapi':
+        version: link:../../packages/2-toapi-client
+      '@toapi/server':
         specifier: workspace:^
-        version: link:../../packages/3-vite-plugin-tapi
+        version: link:../../packages/3-toapi-server
+      '@toapi/vite-plugin':
+        specifier: workspace:^
+        version: link:../../packages/3-toapi-vite-plugin
       srvx:
         specifier: ^0.11.15
         version: 0.11.21
@@ -631,9 +637,9 @@ importers:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
     devDependencies:
-      '@farbenmeer/tapi':
+      '@toapi/server':
         specifier: workspace:^
-        version: link:../4-tapi
+        version: link:../3-toapi-server
       '@types/node':
         specifier: ^25.0.3
         version: 25.9.4
@@ -643,9 +649,9 @@ importers:
 
   packages/3-vite-plugin-tapi:
     dependencies:
-      '@farbenmeer/tapi':
+      '@toapi/server':
         specifier: workspace:^
-        version: link:../4-tapi
+        version: link:../3-toapi-server
       '@toapi/vite-plugin':
         specifier: workspace:^
         version: link:../3-toapi-vite-plugin
