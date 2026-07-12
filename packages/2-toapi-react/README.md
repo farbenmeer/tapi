@@ -1,18 +1,18 @@
-# @farbenmeer/react-tapi
+# @toapi/react
 
-React-Binding for [TAPI](https://www.npmjs.com/package/@farbenmeer/tapi)
+React-Binding for [Toapi](https://www.npmjs.com/package/@toapi/client)
 
 ## Installation
 ```bash
-npm install @farbenmeer/react-tapi
-yarn add @farbenmeer/react-tapi
-pnpm add @farbenmeer/react-tapi
-bun add @farbenmeer/react-tapi
+npm install @toapi/react
+yarn add @toapi/react
+pnpm add @toapi/react
+bun add @toapi/react
 ```
 
 ## Usage
 ```tsx
-import { useQuery } from '@farbenmeer/react-tapi';
+import { useQuery } from '@toapi/react';
 import { client } from "/path/to/tapi-client";
 import { use } from 'react';
 
