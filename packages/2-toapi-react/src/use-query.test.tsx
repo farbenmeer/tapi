@@ -1,11 +1,11 @@
-import { createFetchClient, type GetRoute } from "@farbenmeer/tapi/client";
+import { createFetchClient, type GetRoute } from "@toapi/client";
 import {
   createLocalClient,
   createRequestHandler,
   defineApi,
   defineHandler,
   TResponse,
-} from "@farbenmeer/tapi/server";
+} from "@toapi/server";
 import { act, render, screen } from "@testing-library/react";
 import { Suspense } from "react";
 import { describe, expect, test } from "vitest";

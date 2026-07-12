@@ -27,7 +27,7 @@
     "@toapi/react": "workspace:^"
   },
   "peerDependencies": {
-    "@farbenmeer/tapi": "workspace:^",
+    "@toapi/client": "workspace:^",
     "react": "^19.1.1",
     "typescript": "^5 || ^6.0.0"
   },
