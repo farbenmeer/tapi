@@ -83,8 +83,9 @@ describe.skipIf(!redisAvailable)("RedisCache", () => {
       tags: [],
     });
 
-    // Wait for TTL to expire
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for TTL to expire, with margin over the 1s TTL to avoid a
+    // boundary race on loaded CI runners
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Force Redis to check TTL by trying to get the key
     expect(await sut.get("test")).toEqual(null);
