@@ -1,12 +1,14 @@
+import type {
+  Path as BasePath,
+  BaseRoute,
+  Logger,
+  MaybePromise,
+} from "@toapi/common";
 import {
   INVALIDATION_POST_EVENT,
   INVALIDATIONS_ROUTE,
   TAGS_HEADER,
 } from "@toapi/common";
-import type { Logger } from "@toapi/common";
-import type { MaybePromise } from "@toapi/common";
-import type { Path as BasePath } from "@toapi/common";
-import type { BaseRoute } from "@toapi/common";
 import { Cache } from "./cache.js";
 import type { Client, Revalidating } from "./client-types.js";
 import { handleResponse } from "./handle-response.js";

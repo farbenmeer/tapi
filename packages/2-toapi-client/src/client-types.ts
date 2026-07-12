@@ -1,25 +1,29 @@
-import type { Path as BasePath } from "@toapi/common";
-import type { BaseRoute } from "@toapi/common";
-import type { Handler as BaseHandler } from "@toapi/common";
-import type { MaybePromise } from "@toapi/common";
+import type {
+  Handler as BaseHandler,
+  Path as BasePath,
+  BaseRoute,
+  MaybePromise,
+} from "@toapi/common";
 
 type Segment<Path> = Path extends `/${infer Segment}/${string}`
   ? Segment
   : Path extends `/${infer Segment}`
-  ? Segment
-  : never;
+    ? Segment
+    : never;
 
 type Rest<
   Path,
-  Segment extends string
+  Segment extends string,
 > = Path extends `/${Segment}/${infer Rest}` ? `/${Rest}` : never;
 
 export type Client<Routes extends Record<BasePath, MaybePromise<BaseRoute>>> = {
-  [segment in Segment<keyof Routes> as segment extends `:${string}`
-    ? string | number
-    : segment extends `*${string}`
-    ? string | number
-    : segment]: (Extract<keyof Routes, `/${segment}`> extends never
+  [
+    segment in Segment<keyof Routes> as segment extends `:${string}`
+      ? string | number
+      : segment extends `*${string}`
+        ? string | number
+        : segment
+  ]: (Extract<keyof Routes, `/${segment}`> extends never
     ? {}
     : ClientRoute<Routes[`/${segment}`]>) &
     (Exclude<keyof Routes, `/${segment}`> extends never
@@ -39,18 +43,18 @@ type ClientRoute<Route extends MaybePromise<BaseRoute>> = {
 };
 
 export type QueryWithoutBody<
-  Handler extends BaseHandler<any, any, any, undefined> | undefined
+  Handler extends BaseHandler<any, any, any, undefined> | undefined,
 > = Handler extends undefined
   ? never
   : RequiredKeys<QueryType<Handler>> extends never
-  ? (
-      query?: Partial<QueryType<Handler>>,
-      req?: RequestInit
-    ) => Promise<ResponseType<Handler>> & Observable<ResponseType<Handler>>
-  : (
-      query: OptionalizeUndefined<QueryType<Handler>>,
-      req?: RequestInit
-    ) => Promise<ResponseType<Handler>> & Observable<ResponseType<Handler>>;
+    ? (
+        query?: Partial<QueryType<Handler>>,
+        req?: RequestInit,
+      ) => Promise<ResponseType<Handler>> & Observable<ResponseType<Handler>>
+    : (
+        query: OptionalizeUndefined<QueryType<Handler>>,
+        req?: RequestInit,
+      ) => Promise<ResponseType<Handler>> & Observable<ResponseType<Handler>>;
 
 export type Observable<T> = {
   subscribe(callback: (value: Promise<T>) => void): () => void;
@@ -61,26 +65,26 @@ export type Revalidating = {
 };
 
 export type MutationWithoutBody<
-  Handler extends BaseHandler<any, any, any, undefined> | undefined
+  Handler extends BaseHandler<any, any, any, undefined> | undefined,
 > = Handler extends undefined
   ? never
   : RequiredKeys<QueryType<Handler>> extends never
-  ? (
-      query?: Partial<QueryType<Handler>>,
-      req?: RequestInit
-    ) => Promise<ResponseType<Handler>> & Revalidating
-  : (
-      query: OptionalizeUndefined<QueryType<Handler>>,
-      req?: RequestInit
-    ) => Promise<ResponseType<Handler>> & Revalidating;
+    ? (
+        query?: Partial<QueryType<Handler>>,
+        req?: RequestInit,
+      ) => Promise<ResponseType<Handler>> & Revalidating
+    : (
+        query: OptionalizeUndefined<QueryType<Handler>>,
+        req?: RequestInit,
+      ) => Promise<ResponseType<Handler>> & Revalidating;
 
 export type MutationWithBody<
-  Handler extends BaseHandler<any, any, any, unknown> | undefined
+  Handler extends BaseHandler<any, any, any, unknown> | undefined,
 > = Handler extends undefined
   ? never
   : (
       body?: BodyType<Handler> | FormData,
-      req?: RequestInit & { query?: OptionalizeUndefined<QueryType<Handler>> }
+      req?: RequestInit & { query?: OptionalizeUndefined<QueryType<Handler>> },
     ) => Promise<ResponseType<Handler>> & Revalidating;
 
 type QueryType<Handler extends { schema: { __q?: any } } | undefined> =

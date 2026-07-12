@@ -1,15 +1,20 @@
-import { isMutation } from "@toapi/common";
 import type { Logger } from "@toapi/common";
+import { isMutation } from "@toapi/common";
 import { getCachedEntry, getMetadata } from "./cache";
 import { mutateAndInvalidate } from "./mutate-and-invalidate";
 import { serveFromNetwork } from "./serve-from-network";
-export { listenForInvalidations } from "./revalidation-stream";
+export type { Logger } from "@toapi/common";
 export { cleanup } from "./cleanup";
 export type { CleanupOptions } from "./cleanup";
-export type { Logger } from "@toapi/common";
+export { listenForInvalidations } from "./revalidation-stream";
 
-export async function handleTapiRequest(req: Request, options?: { logger?: Logger }) {
-  const errorLog = options?.logger?.error ?? ((err: unknown) => console.error("TApi Worker fetch failed", err));
+export async function handleTapiRequest(
+  req: Request,
+  options?: { logger?: Logger },
+) {
+  const errorLog =
+    options?.logger?.error ??
+    ((err: unknown) => console.error("TApi Worker fetch failed", err));
 
   if (isMutation(req)) {
     return mutateAndInvalidate(req);
