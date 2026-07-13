@@ -15,16 +15,20 @@ function pkg(name, { guides = false } = {}) {
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://farbenmeer.github.io",
+  base: "/tapi",
   integrations: [
     starlight({
       title: "Toapi",
       logo: { src: "./src/assets/logo.svg", alt: "Toapi" },
       favicon: "/favicon.svg",
       head: [
-        { tag: "link", attrs: { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96x96.png" } },
-        { tag: "link", attrs: { rel: "shortcut icon", href: "/favicon.ico" } },
-        { tag: "link", attrs: { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" } },
-        { tag: "link", attrs: { rel: "manifest", href: "/site.webmanifest" } },
+        // Starlight's `favicon` is base-prefixed automatically; these custom
+        // links are not, so include the /tapi base explicitly.
+        { tag: "link", attrs: { rel: "icon", type: "image/png", sizes: "96x96", href: "/tapi/favicon-96x96.png" } },
+        { tag: "link", attrs: { rel: "shortcut icon", href: "/tapi/favicon.ico" } },
+        { tag: "link", attrs: { rel: "apple-touch-icon", sizes: "180x180", href: "/tapi/apple-touch-icon.png" } },
+        { tag: "link", attrs: { rel: "manifest", href: "/tapi/site.webmanifest" } },
       ],
       social: [
         { icon: "github", label: "GitHub", href: "https://github.com/farbenmeer/tapi" },

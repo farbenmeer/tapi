@@ -79,7 +79,7 @@ router.replace("/dashboard");
 
 ## Context-Aware Resolution
 
-Like [`Link`](/router/reference/link/), `useRouter` resolves the URL you pass relative to the current route context. Absolute paths (starting with `/`) navigate exactly; relative paths resolve against the matched parent route; and query-only (`?…`) or hash-only (`#…`) hrefs are appended to the current location.
+Like [`Link`](/tapi/router/reference/link/), `useRouter` resolves the URL you pass relative to the current route context. Absolute paths (starting with `/`) navigate exactly; relative paths resolve against the matched parent route; and query-only (`?…`) or hash-only (`#…`) hrefs are appended to the current location.
 
 ```tsx
 // Inside a route matched at /users/123
@@ -98,7 +98,7 @@ router.push("/");        // -> /
 
 ## Related
 
-- [Link](/router/reference/link/) — declarative navigation as an anchor element
-- [usePathname](/router/reference/use-pathname/) — access the current pathname
-- [useParams](/router/reference/use-params/) — access route parameters
-- [useSearchParams](/router/reference/use-search-params/) — access search parameters
+- [Link](/tapi/router/reference/link/) — declarative navigation as an anchor element
+- [usePathname](/tapi/router/reference/use-pathname/) — access the current pathname
+- [useParams](/tapi/router/reference/use-params/) — access route parameters
+- [useSearchParams](/tapi/router/reference/use-search-params/) — access search parameters

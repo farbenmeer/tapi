@@ -138,7 +138,7 @@ function App() {
 
 ## Related
 
-- [Route](/router/reference/route/) — define route matching and rendering
-- [Link](/router/reference/link/) — navigate between routes
-- [useRouter](/router/reference/use-router/) — access navigation methods
-- [usePathname](/router/reference/use-pathname/) — access the current pathname
+- [Route](/tapi/router/reference/route/) — define route matching and rendering
+- [Link](/tapi/router/reference/link/) — navigate between routes
+- [useRouter](/tapi/router/reference/use-router/) — access navigation methods
+- [usePathname](/tapi/router/reference/use-pathname/) — access the current pathname

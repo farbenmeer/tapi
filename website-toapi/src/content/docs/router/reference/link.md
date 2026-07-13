@@ -201,7 +201,7 @@ function NavLink({ href, children }) {
 
 ## Related
 
-- [Router](/router/reference/router/) — root router component
-- [Route](/router/reference/route/) — define route matching
-- [useRouter](/router/reference/use-router/) — programmatic navigation
-- [usePathname](/router/reference/use-pathname/) — access the current pathname
+- [Router](/tapi/router/reference/router/) — root router component
+- [Route](/tapi/router/reference/route/) — define route matching
+- [useRouter](/tapi/router/reference/use-router/) — programmatic navigation
+- [usePathname](/tapi/router/reference/use-pathname/) — access the current pathname

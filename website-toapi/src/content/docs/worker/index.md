@@ -24,17 +24,17 @@ npm install @toapi/worker
 ```
 
 The package targets the `WebWorker` type lib rather than the `DOM` lib. See the
-[service-worker guide](/worker/guides/service-worker/) for the `tsconfig.json`
+[service-worker guide](/tapi/worker/guides/service-worker/) for the `tsconfig.json`
 setup and the full build/register recipe.
 
 ## Public API
 
 | Export | Kind | Purpose |
 | --- | --- | --- |
-| [`handleTapiRequest`](/worker/reference/handle-tapi-request/) | function | Handle a single `fetch` event: serve from cache, network, or invalidate on mutation. |
-| [`listenForInvalidations`](/worker/reference/listen-for-invalidations/) | function | Open the server's revalidation stream and apply remote tag invalidations. |
-| [`cleanup`](/worker/reference/cleanup/) | function | Reconcile the cache and metadata stores, typically from the `activate` event. |
-| `CleanupOptions` | type | Options for [`cleanup`](/worker/reference/cleanup/). |
+| [`handleTapiRequest`](/tapi/worker/reference/handle-tapi-request/) | function | Handle a single `fetch` event: serve from cache, network, or invalidate on mutation. |
+| [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/) | function | Open the server's revalidation stream and apply remote tag invalidations. |
+| [`cleanup`](/tapi/worker/reference/cleanup/) | function | Reconcile the cache and metadata stores, typically from the `activate` event. |
+| `CleanupOptions` | type | Options for [`cleanup`](/tapi/worker/reference/cleanup/). |
 | `Logger` | type | Re-exported from `@toapi/common`; the optional logger accepted by `handleTapiRequest`. |
 
 ## Minimal service worker
@@ -75,6 +75,6 @@ those checks to match your API base path.
 
 ## Related
 
-- [Service worker setup guide](/worker/guides/service-worker/)
-- [`@toapi/cache`](/cache/) — the server-side tag-based cache that
+- [Service worker setup guide](/tapi/worker/guides/service-worker/)
+- [`@toapi/cache`](/tapi/cache/) — the server-side tag-based cache that
   produces the tags and expiry headers this worker reads.

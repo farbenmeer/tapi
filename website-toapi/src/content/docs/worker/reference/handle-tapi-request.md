@@ -103,6 +103,6 @@ handleTapiRequest(event.request, { logger });
 
 ## Related
 
-- [`listenForInvalidations`](/worker/reference/listen-for-invalidations/)
-- [`cleanup`](/worker/reference/cleanup/)
-- [Service worker setup guide](/worker/guides/service-worker/)
+- [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/)
+- [`cleanup`](/tapi/worker/reference/cleanup/)
+- [Service worker setup guide](/tapi/worker/guides/service-worker/)

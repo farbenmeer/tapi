@@ -96,4 +96,4 @@ recognizes `ServiceWorkerGlobalScope` and related globals:
   entry's `expiresAt` before it is actually deleted on the next SW activation.
 
 For the full service-worker API, see the
-[`@toapi/worker`](/worker/) package.
+[`@toapi/worker`](/tapi/worker/) package.

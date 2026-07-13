@@ -3,7 +3,7 @@ title: "Cache"
 description: "The Cache interface — the common contract shared by every @toapi/cache backend."
 ---
 
-The `Cache` interface is the common contract shared by all cache implementations. You can swap between [InMemoryCache](/cache/reference/in-memory-cache/), [FilesystemCache](/cache/reference/filesystem-cache/), [RedisCache](/cache/reference/redis-cache/), and [PostgresCache](/cache/reference/postgres-cache/) without changing any calling code.
+The `Cache` interface is the common contract shared by all cache implementations. You can swap between [InMemoryCache](/tapi/cache/reference/in-memory-cache/), [FilesystemCache](/tapi/cache/reference/filesystem-cache/), [RedisCache](/tapi/cache/reference/redis-cache/), and [PostgresCache](/tapi/cache/reference/postgres-cache/) without changing any calling code.
 
 ```ts
 import type { Cache } from "@toapi/cache";

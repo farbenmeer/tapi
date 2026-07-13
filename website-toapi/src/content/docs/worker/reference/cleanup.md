@@ -68,6 +68,6 @@ because the Cache API is async and would otherwise auto-commit it.
 
 ## Related
 
-- [`handleTapiRequest`](/worker/reference/handle-tapi-request/)
-- [`listenForInvalidations`](/worker/reference/listen-for-invalidations/)
-- [Service worker setup guide](/worker/guides/service-worker/)
+- [`handleTapiRequest`](/tapi/worker/reference/handle-tapi-request/)
+- [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/)
+- [Service worker setup guide](/tapi/worker/guides/service-worker/)

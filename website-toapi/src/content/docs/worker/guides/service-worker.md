@@ -93,11 +93,11 @@ Or add it as a build script in your `package.json`:
 
 ### Using Vite + `@toapi/vite-plugin`
 
-If your project uses [`@toapi/vite-plugin`](/vite-plugin/),
+If your project uses [`@toapi/vite-plugin`](/tapi/vite-plugin/),
 the cleanest way to build the service worker is with
 [`vite-plugin-pwa`](https://vite-pwa-org.netlify.app/) in
 `injectManifest` mode, alongside `tapi()`. See the
-[vite-plugin docs](/vite-plugin/) for the full recipe.
+[vite-plugin docs](/tapi/vite-plugin/) for the full recipe.
 
 ## 4. Register the Service Worker
 
@@ -140,6 +140,6 @@ revalidation stream.
 
 ## Related
 
-- [`handleTapiRequest`](/worker/reference/handle-tapi-request/)
-- [`listenForInvalidations`](/worker/reference/listen-for-invalidations/)
-- [`cleanup`](/worker/reference/cleanup/)
+- [`handleTapiRequest`](/tapi/worker/reference/handle-tapi-request/)
+- [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/)
+- [`cleanup`](/tapi/worker/reference/cleanup/)

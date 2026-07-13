@@ -57,22 +57,22 @@ function App() {
 
 | Component | Description |
 |---|---|
-| [`Router`](/router/reference/router/) | Root provider component that manages location state and navigation. |
-| [`Route`](/router/reference/route/) | Conditionally renders content based on the current pathname. |
-| [`Link`](/router/reference/link/) | Client-side navigation rendered as an anchor element. |
-| [`Switch`](/router/reference/switch/) | Renders only the first matching `Route` — useful for fallbacks and 404s. |
+| [`Router`](/tapi/router/reference/router/) | Root provider component that manages location state and navigation. |
+| [`Route`](/tapi/router/reference/route/) | Conditionally renders content based on the current pathname. |
+| [`Link`](/tapi/router/reference/link/) | Client-side navigation rendered as an anchor element. |
+| [`Switch`](/tapi/router/reference/switch/) | Renders only the first matching `Route` — useful for fallbacks and 404s. |
 
 ## Hooks
 
 | Hook | Description |
 |---|---|
-| [`useRouter()`](/router/reference/use-router/) | Programmatic navigation via `.push()` and `.replace()`. |
-| [`usePathname()`](/router/reference/use-pathname/) | Current pathname string. |
-| [`useParams()`](/router/reference/use-params/) | Dynamic route parameters from the current segment. |
-| [`useSearchParams()`](/router/reference/use-search-params/) | Immutable search parameter access and updates. |
-| [`useHash()`](/router/reference/use-hash/) | Current URL hash fragment. |
+| [`useRouter()`](/tapi/router/reference/use-router/) | Programmatic navigation via `.push()` and `.replace()`. |
+| [`usePathname()`](/tapi/router/reference/use-pathname/) | Current pathname string. |
+| [`useParams()`](/tapi/router/reference/use-params/) | Dynamic route parameters from the current segment. |
+| [`useSearchParams()`](/tapi/router/reference/use-search-params/) | Immutable search parameter access and updates. |
+| [`useHash()`](/tapi/router/reference/use-hash/) | Current URL hash fragment. |
 
 ## Guides
 
-- [Setup](/router/guides/setup/) — install the package and set up your first routes.
-- [Testing](/router/guides/testing/) — test components and routes deterministically.
+- [Setup](/tapi/router/guides/setup/) — install the package and set up your first routes.
+- [Testing](/tapi/router/guides/testing/) — test components and routes deterministically.

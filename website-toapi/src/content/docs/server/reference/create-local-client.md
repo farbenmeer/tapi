@@ -3,7 +3,7 @@ title: "createLocalClient"
 description: "Call your Toapi handlers in-process with the same typed client — no HTTP round-trip, ideal for server components and scripts."
 ---
 
-The `createLocalClient` function lets you use your typed API client in a server-side environment (like Next.js Server Components, Astro frontmatter, or scripts). Instead of making real HTTP network requests, it calls your request handlers directly in memory while preserving the same convenient API and type safety as the browser [client](/client/).
+The `createLocalClient` function lets you use your typed API client in a server-side environment (like Next.js Server Components, Astro frontmatter, or scripts). Instead of making real HTTP network requests, it calls your request handlers directly in memory while preserving the same convenient API and type safety as the browser [client](/tapi/client/).
 
 ## Usage
 
@@ -50,9 +50,9 @@ function createLocalClient<Routes>(
 
 ### `api`
 
-**Type**: [`ApiDefinition`](/server/reference/api-definition/)
+**Type**: [`ApiDefinition`](/tapi/server/reference/api-definition/)
 
-The API definition object returned by [`defineApi`](/server/reference/define-api/). This contains the complete map of your routes and handlers.
+The API definition object returned by [`defineApi`](/tapi/server/reference/define-api/). This contains the complete map of your routes and handlers.
 
 ### `init`
 
@@ -62,9 +62,9 @@ Optional default request init merged into every synthetic request. Use it to sup
 
 ## How it works
 
-`createLocalClient` creates a standard [`createFetchClient`](/client/) but overrides the internal `fetch` implementation:
+`createLocalClient` creates a standard [`createFetchClient`](/tapi/client/) but overrides the internal `fetch` implementation:
 
-1. It initializes your API using [`createRequestHandler`](/server/reference/create-request-handler/).
+1. It initializes your API using [`createRequestHandler`](/tapi/server/reference/create-request-handler/).
 2. When you call a method like `.get()`, it constructs a `Request` object representing that call.
 3. It passes this request directly to the request handler.
 4. It parses the returned `Response` and returns the typed data.
@@ -92,5 +92,5 @@ serverClient.users.post(
 
 ## Related
 
-- [`@toapi/client`](/client/) — the underlying fetch client and its full method surface.
-- [`createRequestHandler`](/server/reference/create-request-handler/) — the handler this client calls in-process.
+- [`@toapi/client`](/tapi/client/) — the underlying fetch client and its full method surface.
+- [`createRequestHandler`](/tapi/server/reference/create-request-handler/) — the handler this client calls in-process.

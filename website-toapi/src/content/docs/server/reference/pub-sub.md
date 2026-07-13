@@ -3,7 +3,7 @@ title: "PubSub and the Cache interface"
 description: "The in-process pub/sub used for Toapi tag revalidation, and the Cache contract that server-side cache implementations satisfy."
 ---
 
-`PubSub` is the default cache/pub-sub instance used by [`defineApi`](/server/reference/define-api/). It distributes tag invalidations to connected clients but stores no response data of its own. It implements the `Cache` interface, which every server-side cache — including the reference implementations in [`@toapi/cache`](/cache/) — satisfies.
+`PubSub` is the default cache/pub-sub instance used by [`defineApi`](/tapi/server/reference/define-api/). It distributes tag invalidations to connected clients but stores no response data of its own. It implements the `Cache` interface, which every server-side cache — including the reference implementations in [`@toapi/cache`](/tapi/cache/) — satisfies.
 
 ## PubSub
 
@@ -24,12 +24,12 @@ Behaviour:
 - `subscribe(callback)` registers a subscriber and returns an unsubscribe function.
 
 :::caution
-`PubSub` only coordinates within a single process. To share invalidations across multiple hosts, use a shared implementation such as `RedisCache` from [`@toapi/cache`](/cache/).
+`PubSub` only coordinates within a single process. To share invalidations across multiple hosts, use a shared implementation such as `RedisCache` from [`@toapi/cache`](/tapi/cache/).
 :::
 
 ## The Cache interface
 
-Pass any object implementing the `Cache` interface to [`defineApi`](/server/reference/define-api/) to enable server-side response caching. The [request handler](/server/reference/create-request-handler/) reads and writes through it, and [`streamRevalidatedTags`](/server/reference/stream-revalidated-tags/) subscribes to it.
+Pass any object implementing the `Cache` interface to [`defineApi`](/tapi/server/reference/define-api/) to enable server-side response caching. The [request handler](/tapi/server/reference/create-request-handler/) reads and writes through it, and [`streamRevalidatedTags`](/tapi/server/reference/stream-revalidated-tags/) subscribes to it.
 
 ```ts
 type Json =
@@ -66,7 +66,7 @@ interface Cache {
 
 ## Related
 
-- [`defineApi`](/server/reference/define-api/) — accepts a `cache` implementing this interface.
-- [`streamRevalidatedTags`](/server/reference/stream-revalidated-tags/) — subscribes to the cache to stream invalidations.
-- [`@toapi/cache`](/cache/) — ready-to-use `Cache` implementations (in-memory, Redis, …).
-- [Caching Strategies](/server/reference/caching/) — the bigger picture across all cache layers.
+- [`defineApi`](/tapi/server/reference/define-api/) — accepts a `cache` implementing this interface.
+- [`streamRevalidatedTags`](/tapi/server/reference/stream-revalidated-tags/) — subscribes to the cache to stream invalidations.
+- [`@toapi/cache`](/tapi/cache/) — ready-to-use `Cache` implementations (in-memory, Redis, …).
+- [Caching Strategies](/tapi/server/reference/caching/) — the bigger picture across all cache layers.

@@ -60,7 +60,7 @@ offline) nothing stale is served without first checking the network.
 Expiring on connect means the first read of each cached resource after the
 worker (re)connects will revalidate against the network. Entries are not
 deleted — if the network is unavailable, the expired entry is still served by
-[`handleTapiRequest`](/worker/reference/handle-tapi-request/).
+[`handleTapiRequest`](/tapi/worker/reference/handle-tapi-request/).
 :::
 
 ### Streaming invalidations
@@ -85,6 +85,6 @@ unless you are building a custom client integration.
 
 ## Related
 
-- [`handleTapiRequest`](/worker/reference/handle-tapi-request/)
-- [`cleanup`](/worker/reference/cleanup/)
-- [Service worker setup guide](/worker/guides/service-worker/)
+- [`handleTapiRequest`](/tapi/worker/reference/handle-tapi-request/)
+- [`cleanup`](/tapi/worker/reference/cleanup/)
+- [Service worker setup guide](/tapi/worker/guides/service-worker/)
