@@ -1,3 +1,3 @@
 # @farbenmeer/react-tapi
 
-This package has been renamed to [@toapi/cache](https://www.npmjs.com/package/@toapi/react).
+This package has been renamed to [@toapi/react](https://www.npmjs.com/package/@toapi/react).
