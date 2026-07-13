@@ -67,7 +67,7 @@ Consume it from the browser with the shared types — see [`@toapi/client`](/tap
 import { createFetchClient } from "@toapi/client";
 import type { api } from "./api";
 
-const client = createFetchClient<typeof api>("/api");
+const client = createFetchClient<typeof api.routes>("/api");
 const { message } = await client.hello.get();
 ```
 

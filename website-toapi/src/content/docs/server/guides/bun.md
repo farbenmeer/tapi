@@ -115,7 +115,7 @@ To consume your API, create the typed client.
 import { createFetchClient } from "@toapi/client";
 import type { api } from "./api";
 
-export const client = createFetchClient<typeof api>("http://localhost:3000/api");
+export const client = createFetchClient<typeof api.routes>("http://localhost:3000/api");
 ```
 
 ## 4. Add a route

@@ -65,7 +65,7 @@ import { createFetchClient } from "@toapi/client";
 import type { api } from "./api";
 
 // Adjust the URL to match your server's address
-export const client = createFetchClient<typeof api>("http://localhost:3000/api");
+export const client = createFetchClient<typeof api.routes>("http://localhost:3000/api");
 ```
 
 ## 4. Add a route

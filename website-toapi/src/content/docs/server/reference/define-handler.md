@@ -127,22 +127,24 @@ export const POST = defineHandler(
       if (!req.headers.get("Authorization")) throw new HttpError(401, "Unauthorized");
       return { userId: "current-user" };
     },
-    body: (formData: FormData) =>
-      z
-        .object({
-          title: z.string().min(3),
-          content: z.string(),
-        })
-        .parse({
-          title: formData.get("title"),
-          content: formData.get("content"),
-        }),
   },
   async (req) => {
     const user = req.auth();
-    const { title, content } = await req.data();
 
-    return TResponse.json({ success: true, author: user.userId });
+    // For multipart/form-data, read the body with `req.formData()` inside the
+    // handler. The `body` schema is for JSON payloads (parsed from `req.json()`).
+    const formData = await req.formData();
+    const parsed = z
+      .object({
+        title: z.string().min(3),
+        content: z.string(),
+      })
+      .parse({
+        title: formData.get("title"),
+        content: formData.get("content"),
+      });
+
+    return TResponse.json({ success: true, title: parsed.title, author: user.userId });
   },
 );
 ```

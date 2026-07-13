@@ -63,12 +63,12 @@ Configure or disable this with the `invalidationsUrl` option:
 
 ```ts
 // custom endpoint
-createFetchClient<typeof api>(apiUrl, {
+createFetchClient<typeof api.routes>(apiUrl, {
   invalidationsUrl: "https://example.com/api/__tapi/invalidations",
 });
 
 // disable server-push entirely
-createFetchClient<typeof api>(apiUrl, { invalidationsUrl: false });
+createFetchClient<typeof api.routes>(apiUrl, { invalidationsUrl: false });
 ```
 
 ## Subscriptions tie it together

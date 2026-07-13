@@ -19,7 +19,7 @@ npm install @toapi/client
 import { createFetchClient } from "@toapi/client";
 import type { api } from "./api"; // the type of your server's defineApi(...)
 
-const client = createFetchClient<typeof api>("https://example.com/api");
+const client = createFetchClient<typeof api.routes>("https://example.com/api");
 
 // GET /users
 const users = await client.users.get();

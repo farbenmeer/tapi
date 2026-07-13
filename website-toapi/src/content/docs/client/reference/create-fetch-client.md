@@ -11,7 +11,7 @@ The `createFetchClient` function creates a type-safe client for your API to be u
 import { createFetchClient } from "@toapi/client";
 import type { api } from "./api"; // Your API definition type
 
-const client = createFetchClient<typeof api>("https://api.example.com");
+const client = createFetchClient<typeof api.routes>("https://api.example.com");
 
 // Usage
 await client.users.get();
@@ -27,7 +27,7 @@ function createFetchClient<Routes>(
 ): Client<Routes>;
 ```
 
-The `Routes` type parameter is the type of your server's API definition (`typeof api`). It drives inference for every path, query, body, and response type on the returned `Client`.
+The `Routes` type parameter is the type of your server's **routes map** (`typeof api.routes`). `ApiDefinition` wraps that map, so pass `api.routes` — not `api` itself. It drives inference for every path, query, body, and response type on the returned `Client`.
 
 ## Parameters
 

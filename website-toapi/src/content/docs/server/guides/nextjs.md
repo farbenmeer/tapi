@@ -60,7 +60,7 @@ import { createFetchClient } from "@toapi/client";
 import type { api } from "@/api";
 
 // Assuming your API is mounted at /api
-export const client = createFetchClient<typeof api>("/api");
+export const client = createFetchClient<typeof api.routes>("/api");
 ```
 
 ## 4. Add a route

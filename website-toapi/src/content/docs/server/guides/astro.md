@@ -55,7 +55,7 @@ Create a client for browser-side usage.
 import { createFetchClient } from "@toapi/client";
 import type { api } from "./api";
 
-export const client = createFetchClient<typeof api>("/api");
+export const client = createFetchClient<typeof api.routes>("/api");
 ```
 
 ## 4. Add a route
