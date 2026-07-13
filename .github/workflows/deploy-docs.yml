@@ -1,14 +1,11 @@
 name: Deploy docs
 
+# Deploys the Toapi docs to GitHub Pages. Invoked by the Release workflow after
+# a changesets publish, or manually.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "website-toapi/**"
-      - ".github/workflows/deploy-docs.yml"
+  workflow_call:
   workflow_dispatch:
 
-# Allow the workflow to publish to GitHub Pages.
 permissions:
   contents: read
   pages: write

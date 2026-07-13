@@ -11,11 +11,14 @@ permissions:
   id-token: write # Required for OIDC
   contents: write # Required for changesets to push commits
   pull-requests: write # Required for changesets to create PRs
+  pages: write # Required to deploy the docs to GitHub Pages
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v7
@@ -31,9 +34,17 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Create Release Pull Request
+      - name: Create Release Pull Request or Publish
+        id: changesets
         uses: changesets/action@v1
         with:
           publish: pnpm run release
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+  # Publish the docs to GitHub Pages only when a release was actually published.
+  deploy-docs:
+    name: Deploy docs
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    uses: ./.github/workflows/deploy-docs.yml
