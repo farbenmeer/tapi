@@ -1,6 +1,6 @@
 # @toapi/vite-plugin
 
-Vite plugin for [tapi](https://github.com/farbenmeer/tapi). Bundles your tapi
+Vite plugin for [Toapi](https://github.com/farbenmeer/tapi). Bundles your Toapi
 API alongside your Vite frontend in a single project: serves the API as
 middleware in dev and preview mode, and produces a deployable server bundle
 for production.
@@ -8,27 +8,27 @@ for production.
 ## Installation
 
 ```bash
-pnpm add -D @farbenmeer/vite-plugin-tapi
-pnpm add @farbenmeer/tapi srvx
+pnpm add -D @toapi/vite-plugin
+pnpm add @toapi/server srvx
 ```
 
-Peer-deps: `vite ^8`, `@farbenmeer/tapi`.
+Peer-deps: `vite ^8`, `@toapi/server`.
 
 ## Usage
 
 `vite.config.ts`:
 ```ts
 import { defineConfig } from "vite";
-import tapi from "@farbenmeer/vite-plugin-tapi";
+import toapi from "@toapi/vite-plugin";
 
 export default defineConfig({
-  plugins: [tapi()],
+  plugins: [toapi()],
 });
 ```
 
 The plugin expects `src/api.ts` to export `api` (an `ApiDefinition`):
 ```ts
-import { defineApi, defineHandler, TResponse } from "@farbenmeer/tapi/server";
+import { defineApi, defineHandler, TResponse } from "@toapi/server";
 
 export const api = defineApi().route("/hello", {
   GET: defineHandler({ authorize: () => true }, async () => {
@@ -110,7 +110,7 @@ pnpm add -D vite-plugin-pwa
 ```ts
 // vite.config.ts
 import { defineConfig } from "vite";
-import tapi from "@farbenmeer/vite-plugin-tapi";
+import tapi from "@toapi/vite-plugin";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
@@ -135,7 +135,7 @@ import {
   handleTapiRequest,
   listenForInvalidations,
   cleanup,
-} from "@farbenmeer/tapi/worker";
+} from "@toapi/worker";
 
 declare const self: ServiceWorkerGlobalScope;
 
