@@ -2,6 +2,7 @@ packages:
   - packages/*
   - examples/*
   - website
+  - website-toapi
 
 catalog:
   playwright: ^1.59.1
@@ -11,5 +12,6 @@ allowBuilds:
   "@prisma/engines": true
   better-sqlite3: true
   esbuild: true
+  msw: false
   prisma: true
   sharp: true
