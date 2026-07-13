@@ -1,4 +1,4 @@
-import { Route, Switch } from "@farbenmeer/router";
+import { Route, Switch } from "@toapi/router";
 import { ContactList } from "./contact-list";
 import { ContactDetail } from "./contact-detail";
 import { ContactForm } from "./contact-form";

@@ -1,5 +1,7 @@
 # @farbenmeer/workflow
 
+> This package is deprecated and unmaintained. Use [reflow-ts](https://danfry1.github.io/reflow-ts/) instead.
+
 A durable workflow engine for TypeScript. Define workflows as plain functions, break them into retryable steps, and let the engine handle persistence, retries, and lease-based distributed execution.
 
 ## Installation

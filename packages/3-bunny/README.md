@@ -1,5 +1,7 @@
 # @farbenmeer/bunny
 
+This package is deprecated. Use vite with [@toapi/vite-plugin](https://www.npmjs.com/package/@toapi/vite-plugin) instead.
+
 This is a web framework based on [Tapi](https://www.npmjs.com/package/@farbenmeer/tapi) and React.
 
 ## Start a project

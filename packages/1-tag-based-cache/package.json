@@ -1,56 +1,52 @@
 {
   "name": "@farbenmeer/tag-based-cache",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Michel Smola",
     "email": "michel.smola@farbenmeer.de"
   },
   "type": "module",
-  "module": "dist/index.js",
-  "main": "dist/index.js",
   "private": false,
   "license": "MIT",
   "files": [
-    "dist"
+    "index.js",
+    "index.d.ts",
+    "filesystem-cache.js",
+    "filesystem-cache.d.ts",
+    "redis-cache.js",
+    "redis-cache.d.ts",
+    "postgres-cache.js",
+    "postgres-cache.d.ts",
+    "in-memory-cache.js",
+    "in-memory-cache.d.ts"
   ],
   "exports": {
     ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./index.d.ts",
+      "default": "./index.js"
     },
     "./filesystem-cache": {
-      "default": "./dist/filesystem-cache.js",
-      "types": "./dist/filesystem-cache.d.ts"
+      "types": "./filesystem-cache.d.ts",
+      "default": "./filesystem-cache.js"
     },
     "./redis-cache": {
-      "default": "./dist/redis-cache.js",
-      "types": "./dist/redis-cache.d.ts"
+      "types": "./redis-cache.d.ts",
+      "default": "./redis-cache.js"
     },
     "./postgres-cache": {
-      "default": "./dist/postgres-cache.js",
-      "types": "./dist/postgres-cache.d.ts"
+      "types": "./postgres-cache.d.ts",
+      "default": "./postgres-cache.js"
     },
     "./in-memory-cache": {
-      "default": "./dist/in-memory-cache.js",
-      "types": "./dist/in-memory-cache.d.ts"
+      "types": "./in-memory-cache.d.ts",
+      "default": "./in-memory-cache.js"
     }
   },
   "scripts": {
-    "build": "tsc --noEmit false",
-    "release": "pnpm build && pnpm publish --no-git-checks",
-    "test": "vitest"
+    "release": "pnpm publish --no-git-checks"
   },
-  "devDependencies": {
-    "@types/node": "^25.0.3",
-    "@types/pg": "^8.0.0",
-    "vitest": "^4.0.16",
-    "typescript": "^6.0.0",
-    "@redis/client": "^6.0.0",
-    "pg": "^8.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/farbenmeer/tapi.git"
+  "dependencies": {
+    "@toapi/cache": "workspace:^"
   },
   "peerDependencies": {
     "@redis/client": "^5.10.0 || ^6.0.0",
@@ -63,5 +59,9 @@
     "pg": {
       "optional": true
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farbenmeer/tapi.git"
   }
 }

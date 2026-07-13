@@ -1,4 +1,4 @@
-import { createRequestHandler } from "@farbenmeer/tapi/server";
+import { createRequestHandler } from "@toapi/server";
 import path from "node:path";
 import type { Plugin } from "vite";
 import { loadEnv } from "vite";
@@ -181,7 +181,7 @@ export default function tapi(options: TapiPluginOptions = {}): Plugin {
         load(id) {
           if (id !== RESOLVED_VIRTUAL_SERVER_ID) return null;
           return [
-            `import { createRequestHandler } from "@farbenmeer/tapi/server";`,
+            `import { createRequestHandler } from "@toapi/server";`,
             `import { api } from ${JSON.stringify(resolvedEntry)};`,
             ``,
             `export const fetch = createRequestHandler(api, { basePath: ${JSON.stringify(basePath)} });`,

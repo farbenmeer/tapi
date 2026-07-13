@@ -1,0 +1,67 @@
+{
+  "name": "@toapi/cache",
+  "version": "0.3.0",
+  "author": {
+    "name": "Michel Smola",
+    "email": "michel.smola@farbenmeer.de"
+  },
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "private": false,
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./filesystem-cache": {
+      "default": "./dist/filesystem-cache.js",
+      "types": "./dist/filesystem-cache.d.ts"
+    },
+    "./redis-cache": {
+      "default": "./dist/redis-cache.js",
+      "types": "./dist/redis-cache.d.ts"
+    },
+    "./postgres-cache": {
+      "default": "./dist/postgres-cache.js",
+      "types": "./dist/postgres-cache.d.ts"
+    },
+    "./in-memory-cache": {
+      "default": "./dist/in-memory-cache.js",
+      "types": "./dist/in-memory-cache.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --noEmit false",
+    "release": "pnpm build && pnpm publish --no-git-checks",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/pg": "^8.0.0",
+    "vitest": "^4.0.16",
+    "typescript": "^6.0.0",
+    "@redis/client": "^6.0.0",
+    "pg": "^8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farbenmeer/tapi.git"
+  },
+  "peerDependencies": {
+    "@redis/client": "^5.10.0 || ^6.0.0",
+    "pg": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@redis/client": {
+      "optional": true
+    },
+    "pg": {
+      "optional": true
+    }
+  }
+}

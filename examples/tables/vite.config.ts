@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import tapi from "@farbenmeer/vite-plugin-tapi";
+import tapi from "@toapi/vite-plugin";
 
 export default defineConfig({
   plugins: [tapi()],

@@ -14,8 +14,9 @@
     "test:docker": "playwright test --config=playwright.docker.config.ts"
   },
   "dependencies": {
-    "@farbenmeer/tapi": "workspace:^",
-    "@farbenmeer/vite-plugin-tapi": "workspace:^",
+    "@toapi/server": "workspace:^",
+    "@toapi/client": "workspace:^",
+    "@toapi/vite-plugin": "workspace:^",
     "srvx": "^0.11.15",
     "vite": "^8.0.9",
     "zod": "^4.0.17"

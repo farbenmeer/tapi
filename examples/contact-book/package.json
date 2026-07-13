@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@farbenmeer/bunny": "workspace:^",
-    "@farbenmeer/router": "workspace:^",
-    "@farbenmeer/tag-based-cache": "workspace:^",
+    "@toapi/router": "workspace:^",
+    "@toapi/cache": "workspace:^",
     "zod": "^4",
     "react": "^19",
     "react-dom": "^19"
