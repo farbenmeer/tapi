@@ -1,5 +1,11 @@
 # @toapi/server
 
+## 1.0.1
+
+### Patch Changes
+
+- 6279c99: fix import from toapi/client
+
 ## 1.0.0
 
 ### Minor Changes
