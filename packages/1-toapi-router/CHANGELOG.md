@@ -1,5 +1,11 @@
 # @toapi/router
 
+## 1.0.0
+
+### Major Changes
+
+- f86e1da: bump router to v1
+
 ## 0.7.0
 
 ### Minor Changes
