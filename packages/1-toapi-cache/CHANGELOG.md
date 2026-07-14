@@ -1,4 +1,4 @@
-# @farbenmeer/tag-based-cache
+# @toapi/cache
 
 ## 0.4.0
 

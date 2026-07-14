@@ -1,4 +1,4 @@
-# @farbenmeer/react-tapi
+# @toapi/react
 
 ## 1.0.0
 

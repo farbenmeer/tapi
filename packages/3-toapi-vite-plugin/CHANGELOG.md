@@ -1,4 +1,4 @@
-# @farbenmeer/vite-plugin-tapi
+# @toapi/vite-plugin
 
 ## 1.0.0
 

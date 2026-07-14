@@ -1,4 +1,4 @@
-# @farbenmeer/router
+# @toapi/router
 
 ## 0.7.0
 
