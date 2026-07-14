@@ -1,7 +1,7 @@
 import type { ApiDefinition } from "./define-api.js";
 import type { Path } from "@toapi/common";
 import type { BaseRoute } from "@toapi/common";
-import { createFetchClient } from "../../2-toapi-client/dist/index.js";
+import { createFetchClient } from "@toapi/client";
 import { createRequestHandler } from "./create-request-handler.js";
 import type { MaybePromise } from "@toapi/common";
 
