@@ -79,19 +79,17 @@ export function Page() {
 
 ### A query that depends on state
 
-When the query depends on props or state, pass a factory so a new request is built when the inputs change. Memoize it so the hook does not resubscribe on every render.
+Queries can just use ordinary search parameters:
 
 ```tsx
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@toapi/react";
 import { client } from "./tapi-client";
 
 function SearchResults({ initial = "" }: { initial?: string }) {
   const [q, setQ] = useState(initial);
 
-  const results = useQuery(
-    useCallback(() => client.books.get({ q }), [q]),
-  );
+  const results = useQuery(client.books.get({ q }));
 
   return (
     <>
@@ -108,7 +106,7 @@ function SearchResults({ initial = "" }: { initial?: string }) {
 
 ### Automatic updates after a mutation
 
-Because `useQuery` subscribes to the client, a component reading a query updates itself once a mutation invalidates the matching tags — no manual refetch needed.
+Because `useQuery` subscribes to the client, a component reading a query updates itself once a mutation invalidates the matching tags — no manual refetch needed. Just make sure `POST /books` invalidates at least one of the tags associated with `GET /books`.
 
 ```tsx
 import { useQuery } from "@toapi/react";
