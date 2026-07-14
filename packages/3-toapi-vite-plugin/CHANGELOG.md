@@ -1,5 +1,32 @@
 # @farbenmeer/vite-plugin-tapi
 
+## 1.0.0
+
+### Minor Changes
+
+- 7b2c251: Migrate four more packages to the `@toapi` scope, keeping the original
+  `@farbenmeer` names as backward-compatible shims:
+
+  - `@farbenmeer/tag-based-cache` → `@toapi/cache`
+  - `@farbenmeer/router` → `@toapi/router`
+  - `@farbenmeer/react-tapi` → `@toapi/react`
+  - `@farbenmeer/vite-plugin-tapi` → `@toapi/vite-plugin`
+
+  Each original package is now a thin, build-free shim whose entry points
+  re-export from the corresponding `@toapi/*` package via hand-authored
+  `.js`/`.d.ts` files, so existing consumers need no changes.
+
+- 7b2c251: `@toapi/vite-plugin` now imports and generates code targeting `@toapi/server`
+  instead of `@farbenmeer/tapi/server`, and its peer dependency changed from
+  `@farbenmeer/tapi` to `@toapi/server`. Consumers (including via the
+  `@farbenmeer/vite-plugin-tapi` shim) should depend on `@toapi/server`; the
+  server module the plugin emits into the build now imports from `@toapi/server`.
+
+### Patch Changes
+
+- Updated dependencies [b81f517]
+  - @toapi/server@1.0.0
+
 ## 0.3.0
 
 ### Patch Changes
