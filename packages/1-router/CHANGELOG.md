@@ -1,5 +1,12 @@
 # @farbenmeer/router
 
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies [f86e1da]
+  - @toapi/router@1.0.0
+
 ## 0.8.0
 
 ### Minor Changes
