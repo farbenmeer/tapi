@@ -1,5 +1,11 @@
 # @toapi/react
 
+## 1.0.1
+
+### Patch Changes
+
+- @toapi/client@1.0.1
+
 ## 1.0.0
 
 ### Minor Changes
