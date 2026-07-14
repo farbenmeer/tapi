@@ -1,6 +1,6 @@
 {
   "name": "@farbenmeer/bunny-example-contact-book",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "type": "module",
   "private": true,
   "scripts": {

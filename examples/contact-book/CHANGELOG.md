@@ -1,5 +1,13 @@
 # @farbenmeer/bunny-example-contact-book
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [7b2c251]
+  - @toapi/cache@0.4.0
+  - @toapi/router@0.7.0
+
 ## 0.1.4
 
 ### Patch Changes
