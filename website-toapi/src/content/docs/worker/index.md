@@ -31,47 +31,53 @@ setup and the full build/register recipe.
 
 | Export | Kind | Purpose |
 | --- | --- | --- |
-| [`handleTapiRequest`](/tapi/worker/reference/handle-tapi-request/) | function | Handle a single `fetch` event: serve from cache, network, or invalidate on mutation. |
+| [`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/) | function | Set up the whole worker in one call: registers the listeners and opens the stream. |
+| [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/) | function | Handle a single `fetch` event: serve from cache, network, or invalidate on mutation. |
 | [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/) | function | Open the server's revalidation stream and apply remote tag invalidations. |
 | [`cleanup`](/tapi/worker/reference/cleanup/) | function | Reconcile the cache and metadata stores, typically from the `activate` event. |
+| `SetupToapiWorkerOptions` | type | Options for [`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/). |
 | `CleanupOptions` | type | Options for [`cleanup`](/tapi/worker/reference/cleanup/). |
-| `Logger` | type | Re-exported from `@toapi/common`; the optional logger accepted by `handleTapiRequest`. |
+| `Logger` | type | Re-exported from `@toapi/common`; the optional logger accepted by `handleToapiRequest`. |
 
 ## Minimal service worker
 
+The whole worker is a single call:
+
 ```ts
 // service-worker.ts
-import {
-  handleTapiRequest,
-  listenForInvalidations,
-  cleanup,
-} from "@toapi/worker";
+import { setupToapiWorker } from "@toapi/worker";
 
 declare const self: ServiceWorkerGlobalScope;
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
-});
+setupToapiWorker();
+```
 
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
-  if (
-    url.pathname.startsWith("/api") &&
-    !url.pathname.startsWith("/api/__tapi")
-  ) {
-    event.respondWith(handleTapiRequest(event.request));
-  }
-});
+By default this caches same-origin requests under `/api` (excluding the
+`/api/__tapi` control endpoints) and listens for invalidations on
+`/api/__tapi/invalidations`. Pass options to change the base path, stream URL,
+stale window, or logger:
 
-listenForInvalidations({ url: "/api/__tapi/invalidations" });
+```ts
+setupToapiWorker({
+  basePath: "/data",
+  maximumStaleAge: 60 * 60 * 24, // 1 day
+});
 ```
 
 :::note
-`@toapi/worker` only manages requests you route to it. The `fetch` listener
-above deliberately handles requests under `/api` while excluding the
-`/api/__tapi` control endpoints (such as the invalidation stream). Adjust
-those checks to match your API base path.
+`setupToapiWorker`'s `fetch` listener only responds to same-origin requests
+under `basePath`, so everything else falls through to any other `fetch`
+listeners — that's how it composes with `vite-plugin-pwa`'s static-asset
+precaching. See the
+[vite-plugin service-worker guide](/tapi/vite-plugin/guides/service-worker/).
 :::
+
+If you need to interleave Toapi with your own `activate`/`fetch` logic, you can
+wire up [`cleanup`](/tapi/worker/reference/cleanup/),
+[`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/), and
+[`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/) by
+hand instead — see the
+[service-worker guide](/tapi/worker/guides/service-worker/).
 
 ## Related
 

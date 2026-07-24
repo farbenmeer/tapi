@@ -9,12 +9,47 @@ register it on your page.
 ## 1. Create the Service Worker
 
 Create a `service-worker.ts` file in your project (e.g. at the root or in
-`src/`):
+`src/`) and call [`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/):
+
+```ts
+// service-worker.ts
+import { setupToapiWorker } from "@toapi/worker";
+
+declare const self: ServiceWorkerGlobalScope;
+
+setupToapiWorker();
+```
+
+That single call registers the `activate` and `fetch` listeners and opens
+the revalidation stream. By default it caches same-origin requests under
+`/api` (excluding the `/api/__tapi` control endpoints) and listens for
+invalidations on `/api/__tapi/invalidations`. Pass options to adjust the
+base path, stream URL, stale window, or logger:
+
+```ts
+setupToapiWorker({
+  basePath: "/data",
+  maximumStaleAge: 60 * 60 * 24, // 1 day
+});
+```
+
+When the service worker connects to the invalidation stream, it
+automatically marks every cached entry as expired so the next access
+revalidates it. On each `activate` it also runs a cleanup pass that bounds
+long-term cache growth: entries whose `expiresAt` is older than
+`maximumStaleAge` seconds are deleted, cache entries that no longer have a
+meta record are removed, and the tags index is rebuilt from the surviving
+meta records.
+
+### Wiring it up by hand
+
+If you need to interleave Toapi with your own `activate`/`fetch` logic,
+call the underlying functions directly instead of `setupToapiWorker`:
 
 ```ts
 // service-worker.ts
 import {
-  handleTapiRequest,
+  handleToapiRequest,
   listenForInvalidations,
   cleanup,
 } from "@toapi/worker";
@@ -33,7 +68,7 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/api") &&
     !url.pathname.startsWith("/api/__tapi")
   ) {
-    event.respondWith(handleTapiRequest(event.request));
+    event.respondWith(handleToapiRequest(event.request));
   }
 });
 
@@ -42,14 +77,6 @@ listenForInvalidations({ url: "/api/__tapi/invalidations" });
 
 Adjust the pathname checks to match your API base path and revalidation
 endpoint.
-
-When the service worker connects to the invalidation stream, it
-automatically marks every cached entry as expired so the next access
-revalidates it. `cleanup({ maximumStaleAge })` is what you call from the
-`activate` event to bound long-term cache growth: it deletes entries
-whose `expiresAt` is older than `maximumStaleAge` seconds, removes any
-cache entries that no longer have a meta record, and rebuilds the tags
-index from the surviving meta records.
 
 ## 2. Add TypeScript Types
 
@@ -140,6 +167,7 @@ revalidation stream.
 
 ## Related
 
-- [`handleTapiRequest`](/tapi/worker/reference/handle-tapi-request/)
+- [`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/)
+- [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/)
 - [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/)
 - [`cleanup`](/tapi/worker/reference/cleanup/)
