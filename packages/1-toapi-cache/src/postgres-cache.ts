@@ -175,7 +175,11 @@ export class PostgresCache implements Cache {
     }
   }
 
-  async delete(tags: string[], meta?: Json): Promise<void> {
+  delete(tags: string[], meta?: Json): Promise<void> {
+    return this.invalidate(tags, meta)
+  }
+
+  async invalidate(tags: string[], meta?: Json): Promise<void> {
     await this.ready;
 
     // `cache_tags` rows are removed automatically via `ON DELETE CASCADE`.
