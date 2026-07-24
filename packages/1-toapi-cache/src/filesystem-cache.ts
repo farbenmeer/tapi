@@ -110,7 +110,12 @@ export class FilesystemCache implements Cache {
     return Promise.resolve();
   }
 
+
   delete(tags: string[], meta?: Json): Promise<void> {
+    return this.invalidate(tags, meta)
+  }
+
+  invalidate(tags: string[], meta?: Json): Promise<void> {
     this.db.exec("BEGIN;");
     try {
       const stmt = this.db.prepare(
