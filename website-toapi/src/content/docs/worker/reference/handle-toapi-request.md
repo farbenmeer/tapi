@@ -1,17 +1,24 @@
 ---
-title: "handleTapiRequest"
+title: "handleToapiRequest"
 description: "Handle a single service-worker fetch event: serve from cache, revalidate from network, or invalidate on mutation."
 ---
 
-`handleTapiRequest` is the core request handler for the Toapi service worker.
+`handleToapiRequest` is the core request handler for the Toapi service worker.
 Pass it the `Request` from a `fetch` event and it decides whether to serve from
 Cache Storage, fetch from the network, or run a mutation and invalidate the
 affected tags.
 
+:::note[Renamed]
+This function was previously called `handleTapiRequest`. That name is still
+exported as a deprecated alias for the same function and will be removed in a
+future major version — prefer `handleToapiRequest`. Most setups don't call it
+directly at all; use [`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/).
+:::
+
 ## Signature
 
 ```ts
-function handleTapiRequest(
+function handleToapiRequest(
   req: Request,
   options?: { logger?: Logger },
 ): Promise<Response>;
@@ -28,7 +35,7 @@ Returns a `Promise<Response>` suitable for passing to `event.respondWith(...)`.
 ## Usage
 
 ```ts
-import { handleTapiRequest } from "@toapi/worker";
+import { handleToapiRequest } from "@toapi/worker";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -38,7 +45,7 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/api") &&
     !url.pathname.startsWith("/api/__tapi")
   ) {
-    event.respondWith(handleTapiRequest(event.request));
+    event.respondWith(handleToapiRequest(event.request));
   }
 });
 ```
@@ -92,13 +99,13 @@ interface Logger {
 into your own reporting rather than `console.error`:
 
 ```ts
-import { handleTapiRequest, type Logger } from "@toapi/worker";
+import { handleToapiRequest, type Logger } from "@toapi/worker";
 
 const logger: Logger = {
   error: (err) => reportToSentry(err),
 };
 
-handleTapiRequest(event.request, { logger });
+handleToapiRequest(event.request, { logger });
 ```
 
 ## Related

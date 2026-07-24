@@ -10,11 +10,26 @@ redirects the client build to `dist/client/`, which is exactly where VitePWA
 emits `sw.js`, and the production server bundle is built separately so nothing
 leaks across.
 
+Inside the worker the two responsibilities also compose cleanly:
+
+- **VitePWA / Workbox** precaches your **static build output** (the app shell,
+  JS, CSS, images) via the manifest it injects as `self.__WB_MANIFEST`.
+- **[`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/)** handles your
+  **Toapi API routes** — caching, offline fallback, and tag-based revalidation.
+
+Because `setupToapiWorker`'s `fetch` listener only responds to same-origin
+requests under its `basePath`, everything else — every static asset — falls
+through to Workbox's precache route. The two never fight over a request.
+
 ## Installation
 
 ```bash
-pnpm add -D vite-plugin-pwa
+pnpm add -D vite-plugin-pwa workbox-precaching
 ```
+
+`workbox-precaching` provides `precacheAndRoute`, which turns the injected
+manifest into a static-asset cache. It ships with Workbox but is a separate
+import, so install it explicitly (pnpm does not hoist transitive deps).
 
 ## Vite config
 
@@ -46,34 +61,44 @@ production.
 
 ## Service worker
 
+Precache the static build output with Workbox, then hand your API routes to
+Toapi — two calls, one file:
+
 ```ts
 // src/service-worker.ts
-import {
-  handleTapiRequest,
-  listenForInvalidations,
-  cleanup,
-} from "@toapi/worker";
+import { precacheAndRoute } from "workbox-precaching";
+import { setupToapiWorker } from "@toapi/worker";
 
-declare const self: ServiceWorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope & {
+  // VitePWA injects the precache manifest here in injectManifest mode.
+  __WB_MANIFEST: Array<{ url: string; revision: string | null }>;
+};
 
-self.addEventListener("activate", (event) => {
-  // Drop cache entries that have been expired longer than 7 days,
-  // remove orphans, and rebuild the tags index.
-  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
-});
+// 1. Cache static build files (app shell, JS, CSS, images) via VitePWA/Workbox.
+precacheAndRoute(self.__WB_MANIFEST);
 
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
-  if (
-    url.pathname.startsWith("/api") &&
-    !url.pathname.startsWith("/api/__tapi")
-  ) {
-    event.respondWith(handleTapiRequest(event.request));
-  }
-});
-
-listenForInvalidations({ url: "/api/__tapi/invalidations" });
+// 2. Cache & revalidate Toapi API routes.
+setupToapiWorker();
 ```
+
+`precacheAndRoute(self.__WB_MANIFEST)` registers a `fetch` route for every
+static file VitePWA fingerprinted at build time, so navigations and assets work
+offline. `setupToapiWorker()` adds its own `fetch` listener that only claims
+same-origin requests under `/api` (skipping `/api/__tapi`), so the two coexist:
+static requests are served from the precache, API requests from the Toapi cache.
+
+If your API lives somewhere other than `/api`, pass a matching `basePath` — and
+make sure it isn't a prefix VitePWA also precaches:
+
+```ts
+setupToapiWorker({ basePath: "/data" });
+```
+
+:::note
+`self.__WB_MANIFEST` **must** appear literally in the source — it's the
+injection point VitePWA replaces with the real manifest. If you remove it the
+build fails.
+:::
 
 ## TypeScript
 
@@ -90,10 +115,17 @@ recognizes `ServiceWorkerGlobalScope` and related globals:
 
 ## Notes
 
-- Adjust the `/api` path checks in the service worker to match the `basePath`
-  you pass to `toapi()`.
-- `cleanup`'s `maximumStaleAge` is a grace period, in seconds, past a cache
-  entry's `expiresAt` before it is actually deleted on the next SW activation.
+- Match `setupToapiWorker`'s `basePath` to the `basePath` you pass to `toapi()`.
+  It defaults to `/api`.
+- Pass `maximumStaleAge` to `setupToapiWorker` to tune the grace period, in
+  seconds, past a cache entry's `expiresAt` before it is deleted on the next SW
+  activation. It defaults to 7 days.
+- Need to interleave your own `activate`/`fetch` logic with Toapi's? Call
+  [`cleanup`](/tapi/worker/reference/cleanup/),
+  [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/), and
+  [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/)
+  directly instead of `setupToapiWorker`.
 
 For the full service-worker API, see the
+[`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/) reference and the
 [`@toapi/worker`](/tapi/worker/) package.

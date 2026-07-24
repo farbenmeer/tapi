@@ -63,15 +63,15 @@ The default `PubSub` implementation only works on a single host. To run Toapi ac
 
 ## Service worker cache
 
-Toapi includes tools to set up a service worker that caches Toapi responses. Create a service worker, listen to the `fetch` event, decide whether the request should be handled by Toapi, and if so call `handleTapiRequest`:
+Toapi includes tools to set up a service worker that caches Toapi responses. Create a service worker, listen to the `fetch` event, decide whether the request should be handled by Toapi, and if so call `handleToapiRequest`:
 
 ```ts
-import { handleTapiRequest } from "@toapi/worker";
+import { handleToapiRequest } from "@toapi/worker";
 
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (url.host === process.env.BASE_URL && /\/api/.test(url.pathname)) {
-    event.respondWith(handleTapiRequest(event.request));
+    event.respondWith(handleToapiRequest(event.request));
   }
 });
 ```
