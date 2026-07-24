@@ -64,7 +64,11 @@ export class RedisCache implements Cache {
     await Promise.all(promises);
   }
 
-  async delete(tags: string[], meta?: Json): Promise<void> {
+  delete(tags: string[], meta?: Json): Promise<void> {
+    return this.invalidate(tags, meta)
+  }
+
+  async invalidate(tags: string[], meta?: Json): Promise<void> {
     const keys = await Promise.all(
       tags.map((tag) => this.redis.sMembers(`tag:${tag}`))
     );
