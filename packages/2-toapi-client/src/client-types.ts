@@ -3,6 +3,7 @@ import type {
   Path as BasePath,
   BaseRoute,
   MaybePromise,
+  Observable,
 } from "@toapi/common";
 
 type Segment<Path> = Path extends `/${infer Segment}/${string}`
@@ -55,10 +56,6 @@ export type QueryWithoutBody<
         query: OptionalizeUndefined<QueryType<Handler>>,
         req?: RequestInit,
       ) => Promise<ResponseType<Handler>> & Observable<ResponseType<Handler>>;
-
-export type Observable<T> = {
-  subscribe(callback: (value: Promise<T>) => void): () => void;
-};
 
 export type Revalidating = {
   revalidated: Promise<void>;

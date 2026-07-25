@@ -1,4 +1,4 @@
-import type { Observable } from "@toapi/client";
+import type { Observable } from "@toapi/common";
 import * as React from "react";
 
 type ObservablePromise<T> = Promise<T> & Observable<T>;

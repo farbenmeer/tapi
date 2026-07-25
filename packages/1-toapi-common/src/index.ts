@@ -3,6 +3,7 @@ export * from "./http-error.js";
 export * from "./is-mutation.js";
 export type * from "./logger.js";
 export type * from "./maybe-promise.js";
+export type * from "./observable.js";
 export type * from "./path.js";
 export type * from "./route.js";
 export type * from "./handler.js";
