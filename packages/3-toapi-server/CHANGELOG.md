@@ -1,5 +1,13 @@
 # @toapi/server
 
+## 1.1.0
+
+### Patch Changes
+
+- Updated dependencies [a3a106e]
+  - @toapi/common@1.1.0
+  - @toapi/client@1.1.0
+
 ## 1.0.1
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @toapi/worker
 
+## 1.1.0
+
+### Minor Changes
+
+- 90c496a: Add `setupToapiWorker`, a single-call helper that registers the `activate` and `fetch` listeners and opens the revalidation stream, replacing the manual `cleanup` / `handleToapiRequest` / `listenForInvalidations` wiring. The individual functions remain exported for advanced setups.
+
+  Rename `handleTapiRequest` to `handleToapiRequest` as part of the tapi → toapi rebrand. `handleTapiRequest` stays as a deprecated alias for the same function and will be removed in a future major version.
+
+### Patch Changes
+
+- Updated dependencies [a3a106e]
+  - @toapi/common@1.1.0
+
 ## 1.0.1
 
 ## 1.0.0
