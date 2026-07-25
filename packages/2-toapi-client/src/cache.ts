@@ -1,6 +1,5 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "@toapi/common";
-import type { Logger } from "@toapi/common";
-import type { Observable } from "./client-types.js";
+import type { Logger, Observable } from "@toapi/common";
 import { handleResponse } from "./handle-response.js";
 
 type ObservablePromise = Promise<unknown> & Observable<unknown>;

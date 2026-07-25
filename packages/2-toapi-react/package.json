@@ -22,6 +22,9 @@
     "release": "pnpm run build && pnpm publish --no-git-checks",
     "test": "vitest"
   },
+  "dependencies": {
+    "@toapi/common": "workspace:^"
+  },
   "devDependencies": {
     "@toapi/client": "workspace:^",
     "@toapi/server": "workspace:^",
@@ -36,7 +39,6 @@
     "zod": "^4.1.5"
   },
   "peerDependencies": {
-    "@toapi/client": "workspace:^",
     "react": "^19.1.1",
     "typescript": "^5 || ^6.0.0"
   }
