@@ -1,5 +1,16 @@
 # @toapi/client
 
+## 1.1.0
+
+### Minor Changes
+
+- a3a106e: Move the `Observable` type from `@toapi/client` to `@toapi/common`. `@toapi/client` continues to re-export `Observable`, so its public API is unchanged. `@toapi/react` now depends on `@toapi/common` directly and no longer has a peer dependency on `@toapi/client`.
+
+### Patch Changes
+
+- Updated dependencies [a3a106e]
+  - @toapi/common@1.1.0
+
 ## 1.0.1
 
 ## 1.0.0

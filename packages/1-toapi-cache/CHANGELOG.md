@@ -1,5 +1,11 @@
 # @toapi/cache
 
+## 0.5.0
+
+### Minor Changes
+
+- 8e595c9: Add invalidate API (same functionality as delete), make delete an alias, mark delete as deprecated
+
 ## 0.4.0
 
 ### Minor Changes

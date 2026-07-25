@@ -1,5 +1,12 @@
 # @farbenmeer/vite-plugin-tapi
 
+## 2.0.0
+
+### Patch Changes
+
+- @toapi/server@1.1.0
+- @toapi/vite-plugin@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes

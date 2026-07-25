@@ -1,5 +1,15 @@
 # @farbenmeer/tapi-example-tables
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [a3a106e]
+  - @toapi/client@1.1.0
+  - @toapi/react@1.1.0
+  - @toapi/server@1.1.0
+  - @toapi/vite-plugin@2.0.0
+
 ## 0.2.4
 
 ### Patch Changes

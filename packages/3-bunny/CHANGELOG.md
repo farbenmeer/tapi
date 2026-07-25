@@ -1,5 +1,11 @@
 # @farbenmeer/bunny
 
+## 0.7.2
+
+### Patch Changes
+
+- @farbenmeer/react-tapi@10.0.0
+
 ## 0.7.1
 
 ### Patch Changes

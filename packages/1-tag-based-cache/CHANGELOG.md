@@ -1,5 +1,12 @@
 # @farbenmeer/tag-based-cache
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [8e595c9]
+  - @toapi/cache@0.5.0
+
 ## 0.5.0
 
 ### Minor Changes
