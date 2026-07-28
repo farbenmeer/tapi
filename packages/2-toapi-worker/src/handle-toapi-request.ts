@@ -32,7 +32,7 @@ export async function handleToapiRequest(
         // cached response is expired
         try {
           // try to serve from network
-          return serveFromNetwork(req);
+          return await serveFromNetwork(req);
         } catch (error) {
           // probably network not available, serve old response
           errorLog(error);
