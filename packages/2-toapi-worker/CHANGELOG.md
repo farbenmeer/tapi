@@ -1,5 +1,11 @@
 # @toapi/worker
 
+## 1.1.1
+
+### Patch Changes
+
+- 5c5eecc: Fix offline stale-fallback in the worker: `serveFromNetwork` is now awaited so the expired-cache catch block can serve the cached response when the network is unavailable.
+
 ## 1.1.0
 
 ### Minor Changes
