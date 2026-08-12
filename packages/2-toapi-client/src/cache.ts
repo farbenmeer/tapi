@@ -1,5 +1,9 @@
-import { EXPIRES_AT_HEADER, TAGS_HEADER } from "@toapi/common";
-import type { Logger, Observable } from "@toapi/common";
+import {
+  EXPIRES_AT_HEADER,
+  TAGS_HEADER,
+  type Logger,
+  type Observable,
+} from "@toapi/common";
 import { handleResponse } from "./handle-response.js";
 
 type ObservablePromise = Promise<unknown> & Observable<unknown>;
@@ -80,7 +84,8 @@ export class Cache {
                 () => {
                   this.revalidateRequest(url, entry);
                 },
-                entry.current.expiresAt - Date.now() +
+                entry.current.expiresAt -
+                  Date.now() +
                   Math.round(Math.random() * this.maxOverdueTTL),
               );
             }
@@ -183,7 +188,6 @@ export class Cache {
   }
 
   request(url: string, fetch: () => Promise<Response>): ObservablePromise {
-    const now = Date.now();
     let entry = this.emplace(url, fetch);
 
     if (entry.current) {
