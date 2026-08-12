@@ -1,5 +1,6 @@
 import {
   EXPIRES_AT_HEADER,
+  HttpError,
   TAGS_HEADER,
   type Logger,
   type Observable,
@@ -62,7 +63,10 @@ export class Cache {
   private revalidateRequest(
     url: string,
     entry: CacheEntry,
-  ): { observable: ObservablePromise; revalidated: Promise<void> } {
+  ): {
+    observable: ObservablePromise;
+    revalidated: Promise<void>;
+  } {
     if (entry.timeout) {
       // clear timeout to make sure it the entry doesn't get revalidated again or removed based on TTL
       clearTimeout(entry.timeout);
@@ -76,10 +80,13 @@ export class Cache {
       {
         subscribe: (callback: Subscription) => {
           if (entry.subscriptions.size === 0) {
+            // no active subscriptions yet
             if (entry.timeout) {
+              // clear cleanup timeout
               clearTimeout(entry.timeout);
             }
             if (entry.current?.expiresAt) {
+              // set up TTL-based revalidation timeout
               entry.timeout = setTimeout(
                 () => {
                   this.revalidateRequest(url, entry);
@@ -90,7 +97,6 @@ export class Cache {
               );
             }
           }
-          entry.subscriptions.add(callback);
 
           // If there's a newer revalidation in-flight or completed since
           // this observable was created, notify the new subscriber immediately
@@ -101,7 +107,16 @@ export class Cache {
             // A revalidation completed between cache.request() returning this
             // observable and subscribe() being called — notify with the newer value.
             callback(entry.current.value);
+          } else if (!this.storage.has(url)) {
+            // The entry was cleared from the cache (revalidated with 0 subscriptions)
+            // before this observable was created. Put it back and re-fetch.
+            this.storage.set(url, entry);
+            const { observable } = this.revalidateRequest(url, entry);
+            callback(observable);
           }
+
+          // register the callback
+          entry.subscriptions.add(callback);
 
           return () => {
             entry.subscriptions.delete(callback);
@@ -126,8 +141,27 @@ export class Cache {
       try {
         // wait for request to finish
         const response = await responsePromise;
-        // this will throw an error if the response is not ok
-        await observable;
+
+        try {
+          // this will throw an error if the response is not ok
+          await observable;
+        } catch (error) {
+          if (error instanceof HttpError) {
+            if (error.status >= 500) {
+              // server error, drop this response
+              entry.next = undefined;
+              return;
+            } else {
+              // not found, unauthorized, etc.: evict the cache
+              this.clearEntry(url);
+              return;
+            }
+          } else {
+            // probably a network error, drop this response
+            entry.next = undefined;
+            return;
+          }
+        }
 
         if (entry.next !== next) {
           // request was superseded by a new request
@@ -216,7 +250,13 @@ export class Cache {
   async revalidateUrl(url: string) {
     const entry = this.storage.get(url);
 
+    // no entry, nothing to do
     if (!entry) return;
+    // no subscribers, clear the entry
+    if (entry.subscriptions.size === 0) {
+      this.clearEntry(url);
+      return;
+    }
 
     if (entry.next) {
       // we are currently fetching that url
@@ -250,6 +290,19 @@ export class Cache {
     );
   }
 
+  private clearEntry(url: string) {
+    console.log("clear", url);
+    const entry = this.storage.get(url);
+    if (!entry) return;
+
+    if (entry.current) {
+      for (const tag of entry.current.tags) {
+        this.tagIndex.get(tag)?.delete(url);
+      }
+    }
+    this.storage.delete(url);
+  }
+
   queueClearEntry(url: string) {
     const entry = this.storage.get(url);
     if (!entry) return;
@@ -259,12 +312,7 @@ export class Cache {
     }
 
     entry.timeout = setTimeout(() => {
-      if (entry.current) {
-        for (const tag of entry.current.tags) {
-          this.tagIndex.get(tag)?.delete(url);
-        }
-      }
-      this.storage.delete(url);
+      this.clearEntry(url);
     }, this.minTTL);
   }
 }

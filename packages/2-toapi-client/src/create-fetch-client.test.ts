@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, vi, test } from "vitest";
-import { createFetchClient } from "@toapi/client";
-import type { api } from "./define-api.mock.js";
-import { requestHandler } from "./request-handler.mock.js";
+import { createFetchClient } from "./create-fetch-client.js";
+import type { api } from "../../3-toapi-server/src/define-api.mock.js";
+import { requestHandler } from "../../3-toapi-server/src/request-handler.mock.js";
+import { HttpError } from "../../1-toapi-common/dist/http-error.js";
+import { TResponse } from "../../1-toapi-common/dist/t-response.js";
+import { defineApi } from "../../3-toapi-server/src/define-api.js";
+import { defineHandler } from "../../3-toapi-server/src/define-handler.js";
+import { createRequestHandler } from "../../3-toapi-server/src/create-request-handler.js";
 
 describe("createFetchClient", () => {
   const fetch = vi.fn((url: string, init: RequestInit) => {
@@ -109,7 +114,7 @@ describe("createFetchClient", () => {
     const promise = client.error["not-found"].get();
     await expect(promise).rejects.toThrow();
     const anotherPromise = client.error["not-found"].get();
-    expect(anotherPromise).toBe(promise);
+    expect(anotherPromise).not.toBe(promise);
   });
 
   test("TTL-based revalidation fires after TTL, not immediately", async () => {
@@ -123,15 +128,15 @@ describe("createFetchClient", () => {
       const ttlSeconds = 60;
 
       // Initial fetch — entry.current is not yet set when we subscribe
-      const promise = ttlClient.cached.get();
-      const unsubscribe = promise.subscribe(vi.fn());
-      await promise;
+      const observable = ttlClient.cached.get();
+      const unsubscribe = observable.subscribe(vi.fn());
+      await observable;
       await Promise.resolve(); // let waitForRevalidation finish setting entry.current
 
       // Unsubscribe so size drops to 0, then re-subscribe:
       // the subscribe handler sees entry.current.expiresAt and schedules the TTL timeout
       unsubscribe();
-      promise.subscribe(vi.fn());
+      observable.subscribe(vi.fn());
 
       expect(fetch).toHaveBeenCalledTimes(1);
 
@@ -206,5 +211,38 @@ describe("createFetchClient", () => {
     observable.subscribe(cb);
 
     expect(cb).toHaveBeenCalledTimes(1);
+  });
+
+  test("cache eviction on 404", async () => {
+    let exists = true;
+    const getThing = vi.fn(async () => {
+      if (!exists) throw new HttpError(404, "Not Found");
+      return TResponse.json({ name: "thing" }, { cache: { tags: ["thing"] } });
+    });
+    const deleteThing = vi.fn(async () => {
+      exists = false;
+      return TResponse.json({ deleted: true }, { cache: { tags: ["thing"] } });
+    });
+    const api = defineApi().route("/thing", {
+      GET: defineHandler({ authorize: () => true }, getThing),
+      DELETE: defineHandler({ authorize: () => true }, deleteThing),
+    });
+
+    const handler = createRequestHandler(api, { basePath: "/api" });
+    const client = createFetchClient<typeof api.routes>("http://test/api", {
+      fetch: async (url, init) => {
+        return handler(new Request(url, init));
+      },
+    });
+
+    const sub = vi.fn();
+    const observable = client.thing.get();
+    const thing = await observable;
+    const unsubscribe = observable.subscribe(sub);
+
+    expect(thing).toEqual({ name: "thing" });
+
+    await client.thing.delete();
+    unsubscribe();
   });
 });
