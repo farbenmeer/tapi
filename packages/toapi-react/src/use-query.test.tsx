@@ -124,7 +124,7 @@ describe("useQuery", () => {
   });
 
   describe("reactivity", () => {
-    test.only("updates on revalidation", async () => {
+    test("updates on revalidation", async () => {
       const things: string[] = [];
 
       const api = defineApi().route("/things", {
