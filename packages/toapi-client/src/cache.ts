@@ -13,6 +13,7 @@ import {
   queue,
   resolve,
   revalidate,
+  revert,
 } from "./state-machine.js";
 
 type Subscription = (data: Promise<unknown>) => void;
@@ -136,6 +137,16 @@ export class Cache {
 
       // log every other error
       this.errorLog(error);
+      switch (entry.state.status) {
+        case "pending":
+          // no point to caching a failed request
+          this.evictEntry(url);
+          return;
+        case "revalidating":
+          // revert to last good state
+          entry.state = revert(entry.state);
+          return;
+      }
     }
   }
 
@@ -252,6 +263,7 @@ export class Cache {
         subscriptions: new Set([callback]),
         timeout: null,
       };
+      this.storage.set(url, newEntry);
       callback(observable);
       return () => this.unsubscribe(url, newEntry, callback);
     }

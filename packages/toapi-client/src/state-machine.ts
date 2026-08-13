@@ -19,6 +19,7 @@ export type Revalidating = {
   status: "revalidating";
   value: ObservablePromise;
   tags: Set<string>;
+  expiresAt?: number;
   next: ObservablePromise;
   queued?: ObservablePromise;
 };
@@ -40,6 +41,7 @@ export function revalidate(
     status: "revalidating",
     value: state.value,
     tags: state.tags,
+    expiresAt: state.expiresAt,
     next,
   };
 }
@@ -65,16 +67,26 @@ export function resolve(
   if (state.queued) {
     return {
       status: "revalidating",
-      value: state.next,
-      tags: tags,
+      value,
+      tags,
+      expiresAt,
       next: state.queued,
     };
   } else {
     return {
       status: "cached",
-      value: state.next,
-      tags: tags,
-      expiresAt: expiresAt,
+      value,
+      tags,
+      expiresAt,
     };
   }
+}
+
+export function revert(state: Revalidating): Cached {
+  return {
+    status: "cached",
+    value: state.value,
+    tags: state.tags,
+    expiresAt: state.expiresAt,
+  };
 }
