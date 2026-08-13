@@ -210,7 +210,7 @@ importers:
         version: 12.11.1
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.4)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
+        version: 0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.0
@@ -376,7 +376,7 @@ importers:
     dependencies:
       kysely:
         specifier: ^0.29.0
-        version: 0.29.4
+        version: 0.29.5
       typescript:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
@@ -404,10 +404,10 @@ importers:
         version: 0.31.10
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.4)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
+        version: 0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
       kysely-codegen:
         specifier: ^0.20.0
-        version: 0.20.0(better-sqlite3@12.11.1)(kysely@0.29.4)(mysql2@3.15.3)(pg@8.22.0)(typescript@6.0.3)
+        version: 0.20.0(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(typescript@6.0.3)
       pg:
         specifier: ^8.0.0
         version: 8.22.0
@@ -3819,8 +3819,8 @@ packages:
       tedious:
         optional: true
 
-  kysely@0.29.4:
-    resolution: {integrity: sha512-y5mVgQNkMbs1eK9Xyc0pmNdabN2wHhRYY/5r4W5HrUT1rYCEPeVNSj1RUJeSDKT3U0p+mXCvLgkrFuIafYI6BA==}
+  kysely@0.29.5:
+    resolution: {integrity: sha512-ooa+eSbBNPTo3MycPEuW5jdrxQdQwdtB3LC3h43FiXQbIry5tR0C5lDG7eealK0E4D7XjrnOP5DIUg/LyjRMYQ==}
     engines: {node: '>=22.0.0'}
 
   lightningcss-android-arm64@1.32.0:
@@ -7754,14 +7754,14 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.23.0
 
-  drizzle-orm@0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.4)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)):
+  drizzle-orm@0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)):
     optionalDependencies:
       '@electric-sql/pglite': 0.5.4
       '@prisma/client': 7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3)
       '@types/better-sqlite3': 7.6.13
       '@types/pg': 8.20.4
       better-sqlite3: 12.11.1
-      kysely: 0.29.4
+      kysely: 0.29.5
       mysql2: 3.15.3
       pg: 8.22.0
       postgres: 3.4.7
@@ -8483,14 +8483,14 @@ snapshots:
 
   klona@2.0.6: {}
 
-  kysely-codegen@0.20.0(better-sqlite3@12.11.1)(kysely@0.29.4)(mysql2@3.15.3)(pg@8.22.0)(typescript@6.0.3):
+  kysely-codegen@0.20.0(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(typescript@6.0.3):
     dependencies:
       chalk: 4.1.2
       cosmiconfig: 9.0.2(typescript@6.0.3)
       diff: 8.0.4
       dotenv: 17.4.2
       dotenv-expand: 12.0.3
-      kysely: 0.29.4
+      kysely: 0.29.5
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
@@ -8502,7 +8502,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  kysely@0.29.4: {}
+  kysely@0.29.5: {}
 
   lightningcss-android-arm64@1.32.0:
     optional: true
