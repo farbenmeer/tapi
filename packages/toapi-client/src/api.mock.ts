@@ -1,10 +1,13 @@
 import { z } from "zod/v4";
-import { defineApi } from "./define-api.js";
-import { defineHandler } from "./define-handler.js";
-import { TResponse } from "@toapi/common";
-import { HttpError } from "@toapi/common";
+import { defineApi, defineHandler } from "@toapi/server";
+import { TResponse, HttpError, type Logger } from "@toapi/common";
+import { vi } from "vitest";
 
-export const api = defineApi()
+export const mockLogger: Logger = { error: vi.fn() };
+
+export const api = defineApi({
+  logger: mockLogger,
+})
   .route("/books", {
     GET: defineHandler({ authorize: () => true }, async () =>
       TResponse.json([

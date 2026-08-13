@@ -1,5 +1,5 @@
 {
-  "name": "@toapi/server",
+  "name": "@toapi/client",
   "version": "1.1.1",
   "author": {
     "name": "Michel Smola",
@@ -25,15 +25,13 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@toapi/client": "workspace:^",
-    "@toapi/common": "workspace:^",
-    "zod-openapi": "^6.0.0"
+    "@toapi/common": "workspace:^"
   },
   "devDependencies": {
-    "@farbenmeer/tag-based-cache": "workspace:*",
     "@types/node": "^25.0.3",
     "vitest": "^4.0.16",
-    "zod": "^4.0.17"
+    "zod": "^4.0.17",
+    "@toapi/server": "workspace:^"
   },
   "peerDependencies": {
     "typescript": "^5 || ^6.0.0",

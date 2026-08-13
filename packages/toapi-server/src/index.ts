@@ -1,5 +1,4 @@
 export { createRequestHandler } from "./create-request-handler.js";
-export { createLocalClient } from "./create-local-client.js";
 export { defineApi } from "./define-api.js";
 export { defineHandler } from "./define-handler.js";
 export { HttpError } from "@toapi/common";
@@ -12,3 +11,4 @@ export { streamRevalidatedTags } from "./revalidation-stream.js";
 export { PubSub, type Cache } from "./cache.js";
 export { INVALIDATIONS_ROUTE } from "@toapi/common";
 export type { Logger } from "@toapi/common";
+export { createLocalFetch } from "./create-local-fetch.js";

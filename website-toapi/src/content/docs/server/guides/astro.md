@@ -109,16 +109,20 @@ Use the client in your `<script>` tags or within UI framework components (React,
 
 ### Server-side usage (frontmatter)
 
-When fetching data inside Astro component frontmatter (which runs on the server during build or SSR), use [`createLocalClient`](/tapi/server/reference/create-local-client/) to call handlers directly without an HTTP round-trip.
+When fetching data inside Astro component frontmatter (which runs on the server during build or SSR), pair [`createLocalFetch`](/tapi/server/reference/create-local-fetch/) with `createFetchClient` to call handlers directly without an HTTP round-trip.
 
 First, set up a server client helper:
 
 ```ts
 // src/server-client.ts
-import { createLocalClient } from "@toapi/server";
+import { createFetchClient } from "@toapi/client";
+import { createLocalFetch } from "@toapi/server";
 import { api } from "./api";
 
-export const serverClient = createLocalClient(api);
+export const serverClient = createFetchClient<typeof api.routes>(
+  "http://localhost",
+  { fetch: createLocalFetch(api) },
+);
 ```
 
 Then use it in your Astro pages:

@@ -117,16 +117,20 @@ For a first-class React integration with hooks and Suspense, see [`@toapi/react`
 
 ### Server components
 
-For Server Components, skip the HTTP overhead by using [`createLocalClient`](/tapi/server/reference/create-local-client/). This calls your handlers directly.
+For Server Components, skip the HTTP overhead by pairing [`createLocalFetch`](/tapi/server/reference/create-local-fetch/) with `createFetchClient`. This calls your handlers directly.
 
 Create a server-only client instance:
 
 ```ts
 // src/server-client.ts
-import { createLocalClient } from "@toapi/server";
+import { createFetchClient } from "@toapi/client";
+import { createLocalFetch } from "@toapi/server";
 import { api } from "@/api";
 
-export const serverClient = createLocalClient(api);
+export const serverClient = createFetchClient<typeof api.routes>(
+  "http://localhost",
+  { fetch: createLocalFetch(api) },
+);
 ```
 
 Then use it in your Server Component:

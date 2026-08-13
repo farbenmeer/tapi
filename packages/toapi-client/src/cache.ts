@@ -291,7 +291,6 @@ export class Cache {
   }
 
   private clearEntry(url: string) {
-    console.log("clear", url);
     const entry = this.storage.get(url);
     if (!entry) return;
 

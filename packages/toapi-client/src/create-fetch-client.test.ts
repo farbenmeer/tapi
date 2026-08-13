@@ -1,12 +1,9 @@
 import { beforeEach, describe, expect, vi, test } from "vitest";
 import { createFetchClient } from "./create-fetch-client.js";
-import type { api } from "../../3-toapi-server/src/define-api.mock.js";
-import { requestHandler } from "../../3-toapi-server/src/request-handler.mock.js";
-import { HttpError } from "../../1-toapi-common/dist/http-error.js";
-import { TResponse } from "../../1-toapi-common/dist/t-response.js";
-import { defineApi } from "../../3-toapi-server/src/define-api.js";
-import { defineHandler } from "../../3-toapi-server/src/define-handler.js";
-import { createRequestHandler } from "../../3-toapi-server/src/create-request-handler.js";
+import { mockLogger, type api } from "./api.mock.js";
+import { requestHandler } from "./request-handler.mock.js";
+import { HttpError, TResponse } from "@toapi/common";
+import { defineApi, defineHandler, createRequestHandler } from "@toapi/server";
 
 describe("createFetchClient", () => {
   const fetch = vi.fn((url: string, init: RequestInit) => {
@@ -194,6 +191,8 @@ describe("createFetchClient", () => {
     await expect(observable).rejects.toThrow();
 
     expect(cb).not.toHaveBeenCalled();
+
+    expect(mockLogger.error).toHaveBeenCalled();
   });
 
   test("subscribe notifies of newer resolved value when revalidation completed before subscribe", async () => {
@@ -223,12 +222,16 @@ describe("createFetchClient", () => {
       exists = false;
       return TResponse.json({ deleted: true }, { cache: { tags: ["thing"] } });
     });
-    const api = defineApi().route("/thing", {
+    const api = defineApi({
+      logger: mockLogger,
+    }).route("/thing", {
       GET: defineHandler({ authorize: () => true }, getThing),
       DELETE: defineHandler({ authorize: () => true }, deleteThing),
     });
 
-    const handler = createRequestHandler(api, { basePath: "/api" });
+    const handler = createRequestHandler(api, {
+      basePath: "/api",
+    });
     const client = createFetchClient<typeof api.routes>("http://test/api", {
       fetch: async (url, init) => {
         return handler(new Request(url, init));
@@ -244,5 +247,9 @@ describe("createFetchClient", () => {
 
     await client.thing.delete();
     unsubscribe();
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      new HttpError(404, "Not Found"),
+    );
   });
 });

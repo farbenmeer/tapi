@@ -101,5 +101,5 @@ Requests that match no route, or match a route with no handler for the given met
 ## Related
 
 - [`defineApi`](/tapi/server/reference/define-api/) — build the API definition passed in here.
-- [`createLocalClient`](/tapi/server/reference/create-local-client/) — wraps `createRequestHandler` to call handlers in-process.
+- [`createLocalFetch`](/tapi/server/reference/create-local-fetch/) — builds on `createRequestHandler` to call handlers in-process through a typed client.
 - [Caching Strategies](/tapi/server/reference/caching/) — how the cache layers cooperate.

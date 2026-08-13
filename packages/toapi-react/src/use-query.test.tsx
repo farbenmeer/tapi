@@ -1,6 +1,6 @@
 import { createFetchClient, type GetRoute } from "@toapi/client";
 import {
-  createLocalClient,
+  createLocalFetch,
   createRequestHandler,
   defineApi,
   defineHandler,
@@ -21,7 +21,7 @@ describe("useQuery", () => {
         },
         async (req) => {
           return TResponse.json({ message: "No Query" });
-        }
+        },
       ),
     })
     .route("/withQuery", {
@@ -35,11 +35,13 @@ describe("useQuery", () => {
         async (req) => {
           const { q } = req.query();
           return TResponse.json({ message: `Query: ${q}` });
-        }
+        },
       ),
     });
 
-  const client = createLocalClient(api);
+  const client = createFetchClient<typeof api.routes>("http://localhost", {
+    fetch: createLocalFetch(api),
+  });
 
   test("Without Query", async () => {
     function Sut() {
@@ -51,8 +53,8 @@ describe("useQuery", () => {
       render(
         <Suspense fallback={<div>Loading...</div>}>
           <Sut />
-        </Suspense>
-      )
+        </Suspense>,
+      ),
     );
 
     expect(screen.getByText("No Query")).toBeInTheDocument();
@@ -68,8 +70,8 @@ describe("useQuery", () => {
       render(
         <Suspense fallback={<div>Loading...</div>}>
           <Sut />
-        </Suspense>
-      )
+        </Suspense>,
+      ),
     );
 
     expect(screen.getByText("Query: test")).toBeInTheDocument();
@@ -91,8 +93,8 @@ describe("useQuery", () => {
         render(
           <Suspense fallback={<div>Loading...</div>}>
             <Sut route={client.noQuery} />
-          </Suspense>
-        )
+          </Suspense>,
+        ),
       );
 
       expect(screen.getByText("No Query")).toBeInTheDocument();
@@ -113,8 +115,8 @@ describe("useQuery", () => {
         render(
           <Suspense fallback={<div>Loading...</div>}>
             <Sut route={client.withQuery} />
-          </Suspense>
-        )
+          </Suspense>,
+        ),
       );
 
       expect(screen.getByText("Query: test")).toBeInTheDocument();
@@ -132,7 +134,7 @@ describe("useQuery", () => {
           },
           async () => {
             return TResponse.json(things, { cache: { tags: ["things"] } });
-          }
+          },
         ),
         POST: defineHandler(
           {
@@ -145,7 +147,7 @@ describe("useQuery", () => {
             const { thing } = await req.data();
             things.push(thing);
             return TResponse.json(null, { cache: { tags: ["things"] } });
-          }
+          },
         ),
       });
 
@@ -157,7 +159,7 @@ describe("useQuery", () => {
           async fetch(url, init) {
             return handler(new Request(url, init));
           },
-        }
+        },
       );
 
       function Sut() {
