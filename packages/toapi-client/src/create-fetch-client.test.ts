@@ -64,25 +64,26 @@ describe("createFetchClient", () => {
     const cb = vi.fn();
     const promise = client.books.get();
     const unsubscribe = promise.subscribe(cb);
-    expect(cb).toHaveBeenCalledTimes(0);
-    await promise;
-    expect(cb).toHaveBeenCalledTimes(0);
-    await client.books.revalidate();
     expect(cb).toHaveBeenCalledTimes(1);
+    await promise;
+    expect(cb).toHaveBeenCalledTimes(1);
+    await client.books.revalidate();
+    expect(cb).toHaveBeenCalledTimes(2);
     unsubscribe();
     await client.books.revalidate();
-    expect(cb).toHaveBeenCalledTimes(1);
+    expect(cb).toHaveBeenCalledTimes(2);
   });
 
   test("tag-based revalidation", async () => {
     const cb = vi.fn();
     const promise = client.movies[1]!.get({ test: "asdf" });
     promise.subscribe(cb);
+    expect(cb).toHaveBeenCalledTimes(1);
     const data = await promise;
     expect(data.id).toEqual("1");
-    expect(cb).toHaveBeenCalledTimes(0);
+    expect(promise).toBe(cb.mock.calls[0][0]);
     await client.movies.post({ id: "3", title: "Movie 3" }).revalidated;
-    expect(cb).toHaveBeenCalledTimes(1);
+    expect(cb).toHaveBeenCalledTimes(2);
   });
 
   test("wildcard route", async () => {
@@ -188,9 +189,11 @@ describe("createFetchClient", () => {
     const cb = vi.fn();
     observable.subscribe(cb);
 
-    await expect(observable).rejects.toThrow();
+    await expect(observable).rejects.toThrow(new HttpError(404, "Not Found"));
 
-    expect(cb).not.toHaveBeenCalled();
+    await expect(cb.mock.calls[0][0]).rejects.toThrow(
+      new HttpError(404, "Not Found"),
+    );
 
     expect(mockLogger.error).toHaveBeenCalled();
   });
@@ -232,9 +235,15 @@ describe("createFetchClient", () => {
     const handler = createRequestHandler(api, {
       basePath: "/api",
     });
+
+    const logClientError = vi.fn();
+
     const client = createFetchClient<typeof api.routes>("http://test/api", {
       fetch: async (url, init) => {
         return handler(new Request(url, init));
+      },
+      logger: {
+        error: logClientError,
       },
     });
 
@@ -242,14 +251,19 @@ describe("createFetchClient", () => {
     const observable = client.thing.get();
     const thing = await observable;
     const unsubscribe = observable.subscribe(sub);
+    expect(sub).toHaveBeenCalled();
 
     expect(thing).toEqual({ name: "thing" });
 
     await client.thing.delete();
     unsubscribe();
 
+    expect(sub).toHaveBeenCalledTimes(2);
     expect(mockLogger.error).toHaveBeenCalledWith(
       new HttpError(404, "Not Found"),
     );
+    expect(logClientError).not.toHaveBeenCalled();
+
+    await expect(client.thing.get()).rejects.toThrow(HttpError);
   });
 });

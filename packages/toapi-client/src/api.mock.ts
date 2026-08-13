@@ -1,9 +1,13 @@
 import { z } from "zod/v4";
 import { defineApi, defineHandler } from "@toapi/server";
 import { TResponse, HttpError, type Logger } from "@toapi/common";
-import { vi } from "vitest";
+import { beforeEach, vi } from "vitest";
 
-export const mockLogger: Logger = { error: vi.fn() };
+const logError = vi.fn();
+beforeEach(() => {
+  logError.mockClear();
+});
+export const mockLogger: Logger = { error: logError };
 
 export const api = defineApi({
   logger: mockLogger,

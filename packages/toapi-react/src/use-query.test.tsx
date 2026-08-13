@@ -124,7 +124,7 @@ describe("useQuery", () => {
   });
 
   describe("reactivity", () => {
-    test("updates on revalidation", async () => {
+    test.only("updates on revalidation", async () => {
       const things: string[] = [];
 
       const api = defineApi().route("/things", {
@@ -151,14 +151,10 @@ describe("useQuery", () => {
         ),
       });
 
-      const handler = createRequestHandler(api);
-
       const client = createFetchClient<typeof api.routes>(
         "http://localhost:3000",
         {
-          async fetch(url, init) {
-            return handler(new Request(url, init));
-          },
+          fetch: createLocalFetch(api),
         },
       );
 

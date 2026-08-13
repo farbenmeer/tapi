@@ -6,19 +6,21 @@ import {
   type Observable,
 } from "@toapi/common";
 import { handleResponse } from "./handle-response.js";
+import {
+  type CacheEntryState,
+  init,
+  type ObservablePromise,
+  queue,
+  resolve,
+  revalidate,
+} from "./state-machine.js";
 
-type ObservablePromise = Promise<unknown> & Observable<unknown>;
 type Subscription = (data: Promise<unknown>) => void;
+type Fetcher = () => Promise<Response>;
 
 interface CacheEntry {
-  current?: {
-    value: ObservablePromise;
-    expiresAt?: number;
-    tags: Set<string>;
-  };
-  next?: ObservablePromise;
-  queuedRevalidation?: Promise<void>;
-  fetch: () => Promise<Response>;
+  state: CacheEntryState;
+  fetch: Fetcher;
   subscriptions: Set<Subscription>;
   timeout: ReturnType<typeof setTimeout> | null;
 }
@@ -45,235 +47,141 @@ export class Cache {
     this.errorLog = options.logger?.error ?? console.error;
   }
 
-  private emplace(url: string, fetch: () => Promise<Response>) {
-    const currentEntry = this.storage.get(url);
-    if (currentEntry) {
-      currentEntry.fetch = fetch;
-      return currentEntry;
+  request(url: string, fetch: () => Promise<Response>): ObservablePromise {
+    const entry = this.storage.get(url);
+
+    if (entry) {
+      switch (entry.state.status) {
+        case "pending":
+        case "revalidating":
+          return entry.state.queued ?? entry.state.next;
+        case "cached":
+          return entry.state.value;
+      }
+    } else {
+      const { observable } = this.loadFreshData(url, fetch);
+      this.storage.set(url, {
+        state: init(observable),
+        fetch,
+        subscriptions: new Set(),
+        timeout: null,
+      });
+      return observable;
     }
-    const newEntry: CacheEntry = {
-      subscriptions: new Set(),
-      timeout: null,
-      fetch,
-    };
-    this.storage.set(url, newEntry);
-    return newEntry;
   }
 
-  private revalidateRequest(
+  private async setResolveHook(
     url: string,
-    entry: CacheEntry,
-  ): {
-    observable: ObservablePromise;
-    revalidated: Promise<void>;
-  } {
-    if (entry.timeout) {
-      // clear timeout to make sure it the entry doesn't get revalidated again or removed based on TTL
-      clearTimeout(entry.timeout);
+    responsePromise: Promise<Response>,
+    observable: ObservablePromise,
+  ) {
+    try {
+      const response = await responsePromise;
+      await observable;
+
+      const entry = this.storage.get(url);
+      switch (entry?.state.status) {
+        case "pending": {
+          const { tags, expiresAt } = this.extractMetadata(response);
+
+          for (const tag of tags) {
+            const urls = this.tagIndex.get(tag);
+            if (urls) {
+              urls.add(url);
+            } else {
+              this.tagIndex.set(tag, new Set([url]));
+            }
+          }
+          entry.state = resolve(entry.state, observable, tags, expiresAt);
+
+          this.setTimer(url, entry);
+          return;
+        }
+        case "revalidating": {
+          const { tags, expiresAt } = this.extractMetadata(response);
+
+          // add url to tagIndex for new tags
+          for (const tag of tags.difference(entry.state.tags)) {
+            const urls = this.tagIndex.get(tag);
+            if (urls) {
+              urls.add(url);
+            } else {
+              this.tagIndex.set(tag, new Set([url]));
+            }
+          }
+
+          // remove url from tagIndex for removed tags
+          for (const tag of entry.state.tags.difference(tags)) {
+            this.tagIndex.get(tag)?.delete(url);
+          }
+
+          entry.state = resolve(entry.state, observable, tags, expiresAt);
+
+          this.setTimer(url, entry);
+          return;
+        }
+      }
+    } catch (error) {
+      if (error instanceof HttpError && error.status < 500) {
+        // not found, no access etc, evict the entry
+        this.evictEntry(url);
+        return;
+      }
+
+      const entry = this.storage.get(url);
+      if (!entry) {
+        // evicted, ignore
+        return;
+      }
+
+      // log every other error
+      this.errorLog(error);
+    }
+  }
+
+  revalidateUrl(url: string): Promise<void> {
+    const entry = this.storage.get(url);
+
+    // no entry, nothing to do
+    if (!entry) return Promise.resolve();
+
+    // no subscribers, evict the entry
+    if (entry.subscriptions.size === 0) {
+      this.evictEntry(url);
+      return Promise.resolve();
     }
 
-    // actually load fresh data
-    const responsePromise = entry.fetch();
-
-    const observable: Promise<unknown> & Observable<unknown> = Object.assign(
-      responsePromise.then(handleResponse),
-      {
-        subscribe: (callback: Subscription) => {
-          if (entry.subscriptions.size === 0) {
-            // no active subscriptions yet
-            if (entry.timeout) {
-              // clear cleanup timeout
-              clearTimeout(entry.timeout);
-            }
-            if (entry.current?.expiresAt) {
-              // set up TTL-based revalidation timeout
-              entry.timeout = setTimeout(
-                () => {
-                  this.revalidateRequest(url, entry);
-                },
-                entry.current.expiresAt -
-                  Date.now() +
-                  Math.round(Math.random() * this.maxOverdueTTL),
-              );
-            }
-          }
-
-          // If there's a newer revalidation in-flight or completed since
-          // this observable was created, notify the new subscriber immediately
-          // so it doesn't miss the update.
-          if (entry.next && entry.next !== observable) {
-            callback(entry.next);
-          } else if (entry.current && entry.current.value !== observable) {
-            // A revalidation completed between cache.request() returning this
-            // observable and subscribe() being called — notify with the newer value.
-            callback(entry.current.value);
-          } else if (!this.storage.has(url)) {
-            // The entry was cleared from the cache (revalidated with 0 subscriptions)
-            // before this observable was created. Put it back and re-fetch.
-            this.storage.set(url, entry);
-            const { observable } = this.revalidateRequest(url, entry);
-            callback(observable);
-          }
-
-          // register the callback
-          entry.subscriptions.add(callback);
-
-          return () => {
-            entry.subscriptions.delete(callback);
-            if (entry.subscriptions.size === 0) {
-              this.queueClearEntry(url);
-            }
-          };
-        },
-      },
+    const { observable, resolved } = this.loadFreshData(
+      url,
+      entry.fetch,
+      entry.state.status === "revalidating"
+        ? entry.state.next
+        : Promise.resolve(),
     );
 
-    entry.next = observable;
+    switch (entry.state.status) {
+      case "pending":
+        // pending is stale now, replace it with a fresh request
+        entry.state = init(observable);
+        break;
+
+      case "cached":
+        // revalidate
+        entry.state = revalidate(entry.state, observable);
+        break;
+
+      case "revalidating":
+        // already revalidating, queue
+        entry.state = queue(entry.state, observable);
+        break;
+    }
 
     // notify subscribers
     for (const callback of entry.subscriptions) {
       callback(observable);
     }
 
-    const next = entry.next;
-
-    const waitForRevalidation = async () => {
-      try {
-        // wait for request to finish
-        const response = await responsePromise;
-
-        try {
-          // this will throw an error if the response is not ok
-          await observable;
-        } catch (error) {
-          if (error instanceof HttpError) {
-            if (error.status >= 500) {
-              // server error, drop this response
-              entry.next = undefined;
-              return;
-            } else {
-              // not found, unauthorized, etc.: evict the cache
-              this.clearEntry(url);
-              return;
-            }
-          } else {
-            // probably a network error, drop this response
-            entry.next = undefined;
-            return;
-          }
-        }
-
-        if (entry.next !== next) {
-          // request was superseded by a new request
-          return;
-        }
-
-        // update entry
-        const oldTags = entry.current?.tags ?? new Set();
-        const newTags = new Set(
-          response.headers.get(TAGS_HEADER)?.split(" ") ?? [],
-        );
-        const expiresAtHeader = response.headers.get(EXPIRES_AT_HEADER);
-        const expiresAt = expiresAtHeader
-          ? parseInt(expiresAtHeader, 10)
-          : undefined;
-
-        entry.current = {
-          value: observable,
-          tags: newTags,
-          expiresAt,
-        };
-        entry.next = undefined;
-
-        // add url to tagIndex for new tags
-        for (const tag of newTags.difference(oldTags)) {
-          const urls = this.tagIndex.get(tag);
-          if (urls) {
-            urls.add(url);
-          } else {
-            this.tagIndex.set(tag, new Set([url]));
-          }
-        }
-
-        // remove url from tagIndex for removed tags
-        for (const tag of oldTags.difference(newTags)) {
-          this.tagIndex.get(tag)?.delete(url);
-        }
-      } catch (error) {
-        if (!entry.current) {
-          // no current value, we are stuck with the rejected promise
-          entry.current = {
-            value: observable,
-            tags: new Set(),
-          };
-        }
-        // there is a current valid value, we'll keep that an drop the error
-        entry.next = undefined;
-        await this.errorLog(error);
-      } finally {
-        if (entry.subscriptions.size === 0) {
-          // clear response after minTTL if no subscribers active
-          this.queueClearEntry(url);
-        }
-      }
-    };
-
-    return { observable, revalidated: waitForRevalidation() };
-  }
-
-  request(url: string, fetch: () => Promise<Response>): ObservablePromise {
-    let entry = this.emplace(url, fetch);
-
-    if (entry.current) {
-      // has cached value, serve from cache
-      return entry.current.value;
-    }
-
-    // no cached value
-
-    if (entry.next) {
-      // already loading, serve from next
-      return entry.next;
-    }
-
-    // nothing cached, load fresh
-    const { observable } = this.revalidateRequest(url, entry);
-    return observable;
-  }
-
-  async queueRevalidation(url: string, entry: CacheEntry) {
-    await entry.next;
-    const { revalidated } = this.revalidateRequest(url, entry);
-    await revalidated;
-  }
-
-  async revalidateUrl(url: string) {
-    const entry = this.storage.get(url);
-
-    // no entry, nothing to do
-    if (!entry) return;
-    // no subscribers, clear the entry
-    if (entry.subscriptions.size === 0) {
-      this.clearEntry(url);
-      return;
-    }
-
-    if (entry.next) {
-      // we are currently fetching that url
-      if (entry.queuedRevalidation) {
-        // another revalidation is already queued, wait for it to finish
-        await entry.queuedRevalidation;
-      } else {
-        // queue another revalidation
-        const queuedRevalidation = this.queueRevalidation(url, entry);
-        entry.queuedRevalidation = queuedRevalidation;
-        await queuedRevalidation;
-      }
-    } else {
-      // there is no request in flight, revalidate immediately
-      const { revalidated } = this.revalidateRequest(url, entry);
-      await revalidated;
-    }
+    return resolved;
   }
 
   async revalidateTags(tags: string[]) {
@@ -284,34 +192,134 @@ export class Cache {
       if (!taggedUrls) continue;
       urls = urls.union(taggedUrls);
     }
+
     // revalidate urls and wait until all are resolved or rejected
     await Promise.allSettled(
       Array.from(urls).map((url) => this.revalidateUrl(url)),
     );
   }
 
-  private clearEntry(url: string) {
+  private evictEntry(url: string) {
     const entry = this.storage.get(url);
     if (!entry) return;
 
-    if (entry.current) {
-      for (const tag of entry.current.tags) {
-        this.tagIndex.get(tag)?.delete(url);
-      }
+    switch (entry.state.status) {
+      case "cached":
+      case "revalidating":
+        // remove tags from index
+        for (const tag of entry.state.tags) {
+          this.tagIndex.get(tag)?.delete(url);
+        }
     }
+
     this.storage.delete(url);
   }
 
-  queueClearEntry(url: string) {
-    const entry = this.storage.get(url);
-    if (!entry) return;
+  private loadFreshData(
+    url: string,
+    fetch: Fetcher,
+    waitFor: Promise<unknown> = Promise.resolve(),
+  ): { observable: ObservablePromise; resolved: Promise<void> } {
+    // actually load fresh data
+    const responsePromise = waitFor.then(() => fetch());
 
+    const observable: ObservablePromise = Object.assign(
+      responsePromise.then(handleResponse),
+      {
+        subscribe: (callback: Subscription) =>
+          this.subscribe(url, fetch, callback),
+      },
+    );
+
+    const resolved = this.setResolveHook(url, responsePromise, observable);
+
+    return { observable, resolved };
+  }
+
+  private subscribe(
+    url: string,
+    fetch: Fetcher,
+    callback: Subscription,
+  ): () => void {
+    const entry = this.storage.get(url);
+
+    if (!entry) {
+      // has been evicted
+      const { observable } = this.loadFreshData(url, fetch);
+      const newEntry = {
+        state: init(observable),
+        fetch,
+        subscriptions: new Set([callback]),
+        timeout: null,
+      };
+      callback(observable);
+      return () => this.unsubscribe(url, newEntry, callback);
+    }
+
+    // set up subscription
+    entry.subscriptions.add(callback);
+
+    if (entry.subscriptions.size === 1) {
+      // was scheduled for eviction, reset the timer
+      this.setTimer(url, entry);
+    }
+
+    // Immediately push the current value to the new subscriber
+    // so it doesn't miss any updates
+    switch (entry.state.status) {
+      case "cached":
+        callback(entry.state.value);
+        break;
+      case "pending":
+      case "revalidating":
+        callback(entry.state.queued ?? entry.state.next);
+        break;
+    }
+
+    return () => this.unsubscribe(url, entry, callback);
+  }
+
+  private unsubscribe(url: string, entry: CacheEntry, callback: Subscription) {
+    entry.subscriptions.delete(callback);
+    this.setTimer(url, entry);
+  }
+
+  private setTimer(url: string, entry: CacheEntry) {
     if (entry.timeout) {
       clearTimeout(entry.timeout);
     }
 
-    entry.timeout = setTimeout(() => {
-      this.clearEntry(url);
-    }, this.minTTL);
+    if (entry.subscriptions.size === 0) {
+      // no active subscriptions, set up eviction timer
+      entry.timeout = setTimeout(() => this.evictEntry(url), this.minTTL);
+      return;
+    }
+
+    if (entry.state.status === "cached" && entry.state.expiresAt) {
+      // entry expires, set up revalidation timer
+      const timeUntilRevalidation =
+        entry.state.expiresAt -
+        Date.now() +
+        Math.round(Math.random() * this.maxOverdueTTL);
+      entry.timeout = setTimeout(
+        () => this.revalidateUrl(url),
+        Math.max(0, timeUntilRevalidation),
+      );
+      return;
+    }
+
+    // no timeout necessary
+    entry.timeout = null;
+  }
+
+  private extractMetadata(response: Response): {
+    tags: Set<string>;
+    expiresAt?: number;
+  } {
+    const expiresAtHeader = response.headers.get(EXPIRES_AT_HEADER);
+    return {
+      tags: new Set(response.headers.get(TAGS_HEADER)?.split(" ") ?? []),
+      expiresAt: expiresAtHeader ? parseInt(expiresAtHeader, 10) : undefined,
+    };
   }
 }
