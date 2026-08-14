@@ -197,7 +197,10 @@ export const api = defineApi({
         authorize: () => true,
       },
       async (req) => {
-        return TResponse.json(req.query());
+        const query = req.query();
+        return TResponse.json(
+          query.optional === undefined ? {} : query,
+        );
       },
     ),
   });
