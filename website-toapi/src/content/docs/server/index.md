@@ -80,7 +80,6 @@ The client is typed entirely from `typeof api` — there is no generated SDK to 
 - [`createRequestHandler`](/tapi/server/reference/create-request-handler/) — turn an API definition into a Web-standard request handler (the primary server entry point).
 - [`defineApi`](/tapi/server/reference/define-api/) — build the typed map of your routes.
 - [`defineHandler`](/tapi/server/reference/define-handler/) — implement a single endpoint with validation and auth.
-- [`createLocalClient`](/tapi/server/reference/create-local-client/) — call your handlers in-process without an HTTP round-trip.
 - [`generateOpenAPISchema`](/tapi/server/reference/generate-openapi-schema/) — produce an OpenAPI 3.1 document from your API.
 - [`streamRevalidatedTags`](/tapi/server/reference/stream-revalidated-tags/) — expose the long-polling invalidation stream.
 - [`TResponse`](/tapi/server/reference/t-response/) — the response helper returned from handlers.

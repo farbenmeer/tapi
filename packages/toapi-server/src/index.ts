@@ -1,5 +1,4 @@
 export { createRequestHandler } from "./create-request-handler.js";
-export { createLocalClient } from "./create-local-client.js";
 export { defineApi } from "./define-api.js";
 export { defineHandler } from "./define-handler.js";
 export { HttpError } from "@toapi/common";

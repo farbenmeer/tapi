@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { z } from "zod/v4";
-import { api } from "./define-api.mock.js";
+import { api } from "./api.mock.js";
 import { defineApi } from "./define-api.js";
 import { defineHandler } from "./define-handler.js";
 import { generateOpenAPISchema } from "./openapi.js";
@@ -18,17 +18,17 @@ describe("OpenAPI", () => {
     expect(
       (schema.paths?.["/books"].post?.requestBody as any).content[
         "application/json"
-      ].schema.properties.id.type
+      ].schema.properties.id.type,
     ).toBe("string");
     expect(
       (schema.paths?.["/books"].post?.requestBody as any).content[
         "application/json"
-      ].schema.properties.title.type
+      ].schema.properties.title.type,
     ).toBe("string");
     expect(
       (schema.paths?.["/books"].post?.requestBody as any).content[
         "application/json"
-      ].schema.required
+      ].schema.required,
     ).toEqual(["id", "title"]);
 
     expect(schema.paths?.["/authorized"]).toEqual({
@@ -66,9 +66,7 @@ describe("OpenAPI", () => {
         {
           authorize: () => true,
           params: {
-            id: z
-              .string()
-              .meta({ description: "Widget ID", example: "w_123" }),
+            id: z.string().meta({ description: "Widget ID", example: "w_123" }),
           },
           response: Widget,
         },
