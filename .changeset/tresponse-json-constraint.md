@@ -1,5 +1,5 @@
 ---
-"@toapi/common": minor
+"@toapi/common": patch
 "@toapi/server": patch
 "@toapi/client": patch
 ---
