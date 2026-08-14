@@ -1,6 +1,5 @@
 import { createFetchClient, type GetRoute } from "@toapi/client";
 import {
-  createLocalFetch,
   createRequestHandler,
   defineApi,
   defineHandler,
@@ -39,8 +38,9 @@ describe("useQuery", () => {
       ),
     });
 
+  const handler = createRequestHandler(api);
   const client = createFetchClient<typeof api.routes>("http://localhost", {
-    fetch: createLocalFetch(api),
+    fetch: (url, init) => handler(new Request(url, init)),
   });
 
   test("Without Query", async () => {
@@ -151,10 +151,11 @@ describe("useQuery", () => {
         ),
       });
 
+      const handler = createRequestHandler(api);
       const client = createFetchClient<typeof api.routes>(
         "http://localhost:3000",
         {
-          fetch: createLocalFetch(api),
+          fetch: (url, init) => handler(new Request(url, init)),
         },
       );
 

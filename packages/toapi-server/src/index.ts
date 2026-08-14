@@ -11,4 +11,3 @@ export { streamRevalidatedTags } from "./revalidation-stream.js";
 export { PubSub, type Cache } from "./cache.js";
 export { INVALIDATIONS_ROUTE } from "@toapi/common";
 export type { Logger } from "@toapi/common";
-export { createLocalFetch } from "./create-local-fetch.js";

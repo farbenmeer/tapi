@@ -43,10 +43,10 @@ The API definition object returned by [`defineApi`](/tapi/server/reference/defin
 
 ### `options`
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `basePath` | `string` | `""` | The root path under which all routes are mounted. Must match the URL prefix where you serve the handler (e.g. `/api`). It is prepended to every route path and to the built-in routes. |
-| `defaultTTL` | `number` | `1209600` (14 days) | The default time-to-live, in seconds, applied to cached responses whose handler set `cache` without an explicit `ttl`. |
+| Option       | Type     | Default             | Description                                                                                                                                                                            |
+| ------------ | -------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `basePath`   | `string` | `""`                | The root path under which all routes are mounted. Must match the URL prefix where you serve the handler (e.g. `/api`). It is prepended to every route path and to the built-in routes. |
+| `defaultTTL` | `number` | `1209600` (14 days) | The default time-to-live, in seconds, applied to cached responses whose handler set `cache` without an explicit `ttl`.                                                                 |
 
 ## Path matching
 
@@ -62,10 +62,10 @@ Parameter values are URL-decoded before validation.
 
 The handler responds to two reserved routes under `basePath` before matching your own routes:
 
-| Route | Condition | Behaviour |
-| --- | --- | --- |
-| `<basePath>/__tapi/invalidations` | always | Opens the long-polling invalidation stream via [`streamRevalidatedTags`](/tapi/server/reference/stream-revalidated-tags/). Clients and service workers connect here to receive revalidated tags. |
-| `<basePath>/__tapi/openapi.json` | only when `oas` is set on `defineApi` | Serves the generated OpenAPI document (see [`generateOpenAPISchema`](/tapi/server/reference/generate-openapi-schema/)). The document is generated once and cached in memory. |
+| Route                             | Condition                             | Behaviour                                                                                                                                                                                        |
+| --------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<basePath>/__tapi/invalidations` | always                                | Opens the long-polling invalidation stream via [`streamRevalidatedTags`](/tapi/server/reference/stream-revalidated-tags/). Clients and service workers connect here to receive revalidated tags. |
+| `<basePath>/__tapi/openapi.json`  | only when `oas` is set on `defineApi` | Serves the generated OpenAPI document (see [`generateOpenAPISchema`](/tapi/server/reference/generate-openapi-schema/)). The document is generated once and cached in memory.                     |
 
 :::note
 Because the invalidation stream is mounted automatically, you do not need a separate route for it when you use `createRequestHandler`. You only wire up [`streamRevalidatedTags`](/tapi/server/reference/stream-revalidated-tags/) by hand when your framework handles that path outside the Toapi handler.
@@ -90,16 +90,15 @@ A response is **not** cached if the handler reads `req.auth()`. Reading auth dat
 
 Errors thrown while handling a request are logged (via the [`Logger`](/tapi/server/reference/define-api/#logger-interface) supplied to `defineApi`, or `console.error`) and converted into responses:
 
-| Thrown value | Response |
-| --- | --- |
-| `ZodError` (validation failure) | `400 Bad Request`, body is the array of Zod issues, `Content-Type: application/json+zodissues`. |
-| [`HttpError`](/tapi/server/reference/http-error/) | The error's `status`, body `{ message, data }`, `Content-Type: application/json+httperror`. |
-| Anything else | `500 Internal Server Error`. |
+| Thrown value                                      | Response                                                                                        |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `ZodError` (validation failure)                   | `400 Bad Request`, body is the array of Zod issues, `Content-Type: application/json+zodissues`. |
+| [`HttpError`](/tapi/server/reference/http-error/) | The error's `status`, body `{ message, data }`, `Content-Type: application/json+httperror`.     |
+| Anything else                                     | `500 Internal Server Error`.                                                                    |
 
 Requests that match no route, or match a route with no handler for the given method, return `404 Not Found`.
 
 ## Related
 
 - [`defineApi`](/tapi/server/reference/define-api/) — build the API definition passed in here.
-- [`createLocalFetch`](/tapi/server/reference/create-local-fetch/) — builds on `createRequestHandler` to call handlers in-process through a typed client.
 - [Caching Strategies](/tapi/server/reference/caching/) — how the cache layers cooperate.
