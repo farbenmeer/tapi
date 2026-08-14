@@ -77,10 +77,15 @@ export const api = defineApi({
       {
         authorize: () => true,
       },
-      async (req) =>
-        TResponse.json(Object.fromEntries(await req.formData()), {
-          cache: { tags: ["movies"] },
-        }),
+      async (req) => {
+        const data: Record<string, string> = {};
+        for (const [key, value] of await req.formData()) {
+          if (typeof value === "string") {
+            data[key] = value;
+          }
+        }
+        return TResponse.json(data, { cache: { tags: ["movies"] } });
+      },
     ),
   })
   .route("/authorized", {
