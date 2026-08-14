@@ -1,5 +1,13 @@
 # @farbenmeer/vite-plugin-tapi
 
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [04bb55e]
+  - @toapi/server@1.2.0
+  - @toapi/vite-plugin@3.0.0
+
 ## 2.0.0
 
 ### Patch Changes

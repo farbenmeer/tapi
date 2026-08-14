@@ -1,5 +1,17 @@
 # @farbenmeer/vite-plugin-tapi-example-demo
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [47b4b3e]
+- Updated dependencies [04bb55e]
+- Updated dependencies [2c8e389]
+- Updated dependencies [2c8e389]
+  - @toapi/client@1.2.0
+  - @toapi/server@1.2.0
+  - @toapi/vite-plugin@3.0.0
+
 ## 0.1.5
 
 ### Patch Changes

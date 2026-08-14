@@ -1,5 +1,15 @@
 # @farbenmeer/react-tapi
 
+## 11.0.0
+
+### Patch Changes
+
+- Updated dependencies [47b4b3e]
+- Updated dependencies [2c8e389]
+- Updated dependencies [2c8e389]
+  - @toapi/client@1.2.0
+  - @toapi/react@1.2.0
+
 ## 10.0.0
 
 ### Patch Changes

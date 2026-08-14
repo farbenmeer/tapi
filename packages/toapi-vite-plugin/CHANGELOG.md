@@ -1,5 +1,12 @@
 # @toapi/vite-plugin
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [04bb55e]
+  - @toapi/server@1.2.0
+
 ## 2.0.0
 
 ### Patch Changes

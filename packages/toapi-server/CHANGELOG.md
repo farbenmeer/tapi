@@ -1,5 +1,15 @@
 # @toapi/server
 
+## 1.2.0
+
+### Minor Changes
+
+- 04bb55e: remove createLocalClient API. It is a uselessly thin wrapper around createRequestHandler + createFetchClient.
+
+### Patch Changes
+
+- @toapi/common@1.2.0
+
 ## 1.1.1
 
 ## 1.1.0
