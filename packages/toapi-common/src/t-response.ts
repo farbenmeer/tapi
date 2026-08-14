@@ -1,6 +1,24 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "./constants.js";
 import type { CookieStore } from "./cookie-store.js";
 
+/**
+ * A value that can be represented as JSON without coercion.
+ *
+ * This is the set of values `JSON.stringify` can round-trip into a structured
+ * JSON value (rather than coercing it into a string or throwing). Constraining
+ * {@link TResponse.json} to it prevents non-JSON values such as `Date`, `Map`,
+ * `Set`, `bigint`, `undefined`, functions or symbols from being advertised as
+ * structured response data while actually being serialized to (or rejected as)
+ * strings — which would break the type contract the client relies on.
+ */
+export type JSONValue =
+  | null
+  | boolean
+  | number
+  | string
+  | JSONValue[]
+  | { [key: string]: JSONValue };
+
 interface TResponseInit extends ResponseInit {
   cache?: {
     tags?: string[];
@@ -39,7 +57,10 @@ export class TResponse<T = unknown> extends Response {
     this.cache = cache;
   }
 
-  static override json<T>(data: T, init: TResponseInit = {}): TResponse<T> {
+  static override json<T extends JSONValue>(
+    data: T,
+    init: TResponseInit = {},
+  ): TResponse<T> {
     setHeader(init, "Content-Type", "application/json");
     const res = new TResponse<T>(JSON.stringify(data), init);
     res.data = data;

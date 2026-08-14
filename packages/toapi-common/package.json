@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "tsc --noEmit false",
+    "build": "tsc -p tsconfig.build.json",
     "release": "pnpm build && pnpm publish --no-git-checks",
     "test": "vitest"
   },
