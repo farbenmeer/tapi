@@ -1,5 +1,14 @@
 # @toapi/client
 
+## 1.2.0
+
+### Patch Changes
+
+- 47b4b3e: explicitly modelled state machine for client cache
+- 2c8e389: invalidated routes with 0 subscribers are immediately evicted
+- 2c8e389: 500-up responses are not cached, 400-499 responses evict the cache, waitForRevalidation never throws
+  - @toapi/common@1.2.0
+
 ## 1.1.1
 
 ## 1.1.0

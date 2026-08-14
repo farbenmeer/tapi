@@ -1,5 +1,11 @@
 # @toapi/react
 
+## 1.2.0
+
+### Patch Changes
+
+- @toapi/common@1.2.0
+
 ## 1.1.1
 
 ## 1.1.0
