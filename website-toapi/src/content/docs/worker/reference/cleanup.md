@@ -5,8 +5,8 @@ description: "Reconcile the Toapi worker's cache and metadata stores, dropping l
 
 `cleanup` reconciles the service worker's Cache Storage and its IndexedDB
 metadata stores. It bounds long-term cache growth and heals any drift between the
-cache, the meta store, and the tags index. It is intended to be run from the
-service worker's `activate` event.
+cache, the meta store, and the tags index. It is intended to be run once at the
+top level of the service worker, each time the worker starts up.
 
 ## Signature
 
@@ -36,14 +36,12 @@ import { cleanup } from "@toapi/worker";
 
 declare const self: ServiceWorkerGlobalScope;
 
-self.addEventListener("activate", (event) => {
-  // Keep entries for up to 7 days past expiry.
-  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
-});
+// Keep entries for up to 7 days past expiry.
+cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }).catch(console.error);
 ```
 
-Wrapping the call in `event.waitUntil(...)` keeps the worker alive until cleanup
-finishes.
+`cleanup` returns a promise; nothing awaits it for you, so attach a `.catch(...)`
+(or pass a logger-backed handler) to avoid an unhandled rejection.
 
 ## Behavior
 

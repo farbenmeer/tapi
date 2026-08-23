@@ -74,17 +74,27 @@ order:
 1. **No cached entry** — the request is served from the network. The response is
    stored in the cache only if it is `ok` and carries a tags or expires-at
    header; otherwise any stale entry for that URL is removed.
-2. **Cached entry with a future `expiresAt`** — the cached response is returned
-   directly, without touching the network.
-3. **Cached entry that has expired** — the handler tries to refetch from the
-   network. If the refetch fails (for example, the device is offline), the error
-   is passed to `options.logger.error` and the stale cached response is served as
-   a fallback.
-4. **Cached entry with no expiry recorded** — the cached response is returned.
+2. **Cached entry whose metadata says it is still fresh** — the cached response
+   is returned directly, without touching the network. An entry counts as fresh
+   when its metadata has a future `expiresAt`, or no `expiresAt` at all (the
+   response carried tags but no expiry, so only an invalidation can make it
+   stale).
+3. **Cached entry that has expired, or has no metadata at all** — the handler
+   tries to refetch from the network. If the refetch fails (for example, the
+   device is offline), the error is passed to `options.logger.error` and the
+   stale cached response is served as a fallback.
 
 :::tip
 Step 3 is what makes the worker offline-tolerant: an expired entry is always
 preferable to a network failure, so the user still sees data.
+:::
+
+:::note[Entries without metadata]
+A cache entry whose metadata record is missing — for instance because the meta
+store was cleared, or a write was interrupted — is treated as expired rather
+than as fresh. Without metadata there is no expiry to check and no tag that
+could ever invalidate it, so serving it from cache would make it immortal. It is
+still kept as an offline fallback.
 :::
 
 ## `Logger`
@@ -92,11 +102,20 @@ preferable to a network failure, so the user still sees data.
 ```ts
 interface Logger {
   error?: (error: unknown) => void | Promise<void>;
+  warn?: (message: string) => void | Promise<void>;
+  info?: (message: string) => void | Promise<void>;
 }
 ```
 
-`Logger` is re-exported from `@toapi/common`. Provide one to route worker errors
-into your own reporting rather than `console.error`:
+`Logger` is re-exported from `@toapi/common`. Every method is optional and each
+one falls back independently to the matching `console` method, so you can
+override just the ones you care about. `handleToapiRequest` only uses `error`;
+`warn` and `info` are used by
+[`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/) for
+connection retries and stream progress.
+
+Provide one to route worker errors into your own reporting rather than
+`console.error`:
 
 ```ts
 import { handleToapiRequest, type Logger } from "@toapi/worker";

@@ -32,24 +32,26 @@ Returns an empty [`ApiDefinition`](/tapi/server/reference/api-definition/) insta
 
 ## Options
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `cache` | `Cache` | `new PubSub()` | The cache / pub-sub instance used for tag-based revalidation and optional server-side response caching. Defaults to an in-process [`PubSub`](/tapi/server/reference/pub-sub/), which distributes invalidations but stores nothing. Pass a reference cache from [`@toapi/cache`](/tapi/cache/) to enable server-side caching, or a shared implementation such as `RedisCache` when running multiple server instances. |
-| `oas` | `{ title: string; version: string }` | `undefined` | When set, an OpenAPI 3.1 document is generated from your routes and served at `<basePath>/__tapi/openapi.json`. See [`generateOpenAPISchema`](/tapi/server/reference/generate-openapi-schema/). |
-| `logger` | `Logger` | `console.error` | Logger used by the request handler to report errors thrown by route handlers and cache operations. When omitted, errors are logged via `console.error`. |
+| Option   | Type                                 | Default         | Description                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------- | ------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cache`  | `Cache`                              | `new PubSub()`  | The cache / pub-sub instance used for tag-based revalidation and optional server-side response caching. Defaults to an in-process [`PubSub`](/tapi/server/reference/pub-sub/), which distributes invalidations but stores nothing. Pass a reference cache from [`@toapi/cache`](/tapi/cache/) to enable server-side caching, or a shared implementation such as `RedisCache` when running multiple server instances. |
+| `oas`    | `{ title: string; version: string }` | `undefined`     | When set, an OpenAPI 3.1 document is generated from your routes and served at `<basePath>/__tapi/openapi.json`. See [`generateOpenAPISchema`](/tapi/server/reference/generate-openapi-schema/).                                                                                                                                                                                                                      |
+| `logger` | `Logger`                             | `console.error` | Logger used by the request handler to report errors thrown by route handlers and cache operations. When omitted, errors are logged via `console.error`.                                                                                                                                                                                                                                                              |
 
 ### Logger interface
 
 ```ts
 interface Logger {
   error?: (error: unknown) => void | Promise<void>;
+  warn?: (message: string) => void | Promise<void>;
+  info?: (message: string) => void | Promise<void>;
 }
 ```
 
 Pass any object that implements this shape — for example a Pino or Winston instance, or a custom function that ships errors to your observability platform.
 
 :::note
-The `Logger` interface currently only exposes `error`. Additional methods (`log`, `info`, `warn`, …) may be added in future minor releases. Implementations should treat unknown methods as optional and ignore them.
+The server request handler currently only calls `error`. Further methods may be added in future minor releases, so implementations should treat unknown methods as optional and ignore them.
 :::
 
 ```ts

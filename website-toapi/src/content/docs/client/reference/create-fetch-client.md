@@ -41,13 +41,13 @@ The base URL of your API server (e.g., `https://example.com/api`). Every request
 
 **Type**: `object` (optional)
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `fetch` | `(url: string, init: RequestInit) => Promise<Response>` | global `fetch` | Custom fetch implementation. Useful for mocking, server-side rendering, or adding global middleware/interceptors. |
-| `minTTL` | `number` | `5000` | Milliseconds a cache entry with no active subscribers is retained before being dropped. |
-| `maxOverdueTTL` | `number` | `1000` | Upper bound (ms) of the random jitter added when scheduling background revalidations, to avoid stampedes. |
-| `logger` | [`Logger`](#logger) | `console` | Object with an optional `error(err)` method used to report fetch/revalidation errors. |
-| `invalidationsUrl` | `string \| false` | `apiUrl + "/__tapi/invalidations"` | URL of the server-sent invalidation stream. Pass `false` to disable server-push revalidation entirely, or a string to point at a custom endpoint. |
+| Property           | Type                                                    | Default                            | Description                                                                                                                                       |
+| ------------------ | ------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fetch`            | `(url: string, init: RequestInit) => Promise<Response>` | global `fetch`                     | Custom fetch implementation. Useful for mocking, server-side rendering, or adding global middleware/interceptors.                                 |
+| `minTTL`           | `number`                                                | `5000`                             | Milliseconds a cache entry with no active subscribers is retained before being dropped.                                                           |
+| `maxOverdueTTL`    | `number`                                                | `1000`                             | Upper bound (ms) of the random jitter added when scheduling background revalidations, to avoid stampedes.                                         |
+| `logger`           | [`Logger`](#logger)                                     | `console`                          | Object with an optional `error(err)` method used to report fetch/revalidation errors.                                                             |
+| `invalidationsUrl` | `string \| false`                                       | `apiUrl + "/__tapi/invalidations"` | URL of the server-sent invalidation stream. Pass `false` to disable server-push revalidation entirely, or a string to point at a custom endpoint. |
 
 ## Return value
 
@@ -61,8 +61,8 @@ For any route path, you can call standard HTTP methods.
 
 Performs a `GET` request.
 
-- **`query`** *(optional)* — an object of query parameters. Required only if the route schema declares required query params; otherwise optional.
-- **`req`** *(optional)* — a standard `RequestInit`.
+- **`query`** _(optional)_ — an object of query parameters. Required only if the route schema declares required query params; otherwise optional.
+- **`req`** _(optional)_ — a standard `RequestInit`.
 - **Returns** — a `Promise` resolving to the typed response data, augmented with a [`.subscribe()`](/tapi/client/reference/observable/) method for cache updates.
 
 ```ts
@@ -74,7 +74,7 @@ const users = await client.users.get({ active: true });
 Performs a mutation request.
 
 - **`body`** — the request body (a JSON-serializable value or a `FormData` instance).
-- **`req`** *(optional)* — a `RequestInit` that may also carry `query` params via `req.query`.
+- **`req`** _(optional)_ — a `RequestInit` that may also carry `query` params via `req.query`.
 - **Returns** — a `Promise` resolving to the response data, augmented with a `.revalidated` promise that settles once tag-based revalidation triggered by the response has completed.
 
 ```ts
@@ -88,8 +88,8 @@ await client.users.post({ name: "Alice" }, { query: { notify: true } });
 
 Performs a `DELETE` request (no body).
 
-- **`query`** *(optional)* — query parameters.
-- **`req`** *(optional)* — request configuration.
+- **`query`** _(optional)_ — query parameters.
+- **`req`** _(optional)_ — request configuration.
 - **Returns** — a `Promise` augmented with `.revalidated`, like the other mutations.
 
 ### `.revalidate(query?)`
@@ -119,11 +119,13 @@ const unsubscribe = promise.subscribe((next) => {
 
 ## `Logger`
 
-`Logger` is re-exported from `@toapi/common`. It is a minimal interface used for error reporting:
+`Logger` is re-exported from `@toapi/common`. It is a minimal interface used for log reporting:
 
 ```ts
 interface Logger {
   error?: (error: unknown) => void | Promise<void>;
+  warn?: (message: string) => void | Promise<void>;
+  info?: (message: string) => void | Promise<void>;
 }
 ```
 

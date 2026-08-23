@@ -27,24 +27,30 @@ export interface SetupToapiWorkerOptions {
   invalidationsUrl?: string;
   /**
    * Grace period in seconds past a cache entry's `expiresAt` before it is
-   * dropped on the next `activate`. See {@link CleanupOptions}.
+   * dropped by the cleanup pass that runs on every worker startup. See
+   * {@link CleanupOptions}.
    *
    * @default 60 * 60 * 24 * 7 // 7 days
    */
   maximumStaleAge?: number;
   /**
-   * Optional logger. Its `error` method is used for failed network refetches
-   * and for a fatal failure of the invalidation stream. Defaults to
-   * `console.error`.
+   * Optional logger. `error` reports failed network refetches and a fatal
+   * failure of the invalidation stream, `warn` reports invalidation-stream
+   * retries, and `info` reports stream progress. Each method that is omitted
+   * falls back to the matching `console` method.
    */
   logger?: Logger;
 }
 
 /**
  * Wire up the whole Toapi service worker in a single call. This registers the
- * `activate` and `fetch` listeners and opens the revalidation stream, and is
- * equivalent to calling {@link cleanup}, {@link handleToapiRequest}, and
+ * `fetch` listener, runs {@link cleanup}, and opens the revalidation stream,
+ * and is equivalent to calling {@link cleanup}, {@link handleToapiRequest}, and
  * {@link listenForInvalidations} by hand.
+ *
+ * Cleanup runs at worker startup rather than from the `activate` event, which
+ * only fires when a new worker takes over — an installed worker that is never
+ * updated would otherwise never clean up.
  *
  * ```ts
  * // service-worker.ts
