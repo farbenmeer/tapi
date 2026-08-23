@@ -2,18 +2,16 @@
 # available), e.g. `podman build -f examples/todo-list/Dockerfile .`
 
 # --- Build stage: compile workspace deps and bundle the app ---
-# NODE_ENV is deliberately left unset here: pnpm skips devDependencies when it
-# is "production", and the build needs them (typescript for the workspace
-# packages, @vitejs/plugin-react and @tailwindcss/vite for vite.config.ts).
 FROM node:24-slim AS builder
 WORKDIR /usr/src/app
 RUN corepack enable
+ENV NODE_ENV=production
 
 COPY . .
 RUN pnpm install --frozen-lockfile
 # Build the example's workspace dependencies first, then the example itself.
-# `vite build` emits a self-contained dist/server.js (srvx fetch handler)
-# and the static client files under dist/client.
+# `vite build` emits the srvx fetch handler as dist/server.js (plus any shared
+# chunks under dist/assets) and the static client files under dist/client.
 RUN pnpm run --filter "@farbenmeer/toapi-example-todo-list^..." build
 RUN pnpm run --filter "@farbenmeer/toapi-example-todo-list" build
 
