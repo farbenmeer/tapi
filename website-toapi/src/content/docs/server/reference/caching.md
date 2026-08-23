@@ -88,14 +88,12 @@ listenForInvalidations({ url: process.env.INVALIDATION_ROUTE });
 
 Make sure `process.env.INVALIDATION_ROUTE` points to the route served by [`streamRevalidatedTags`](/tapi/server/reference/stream-revalidated-tags/) (mounted at `<basePath>/__tapi/invalidations` by default). When listening for invalidations, the worker marks all of its cached entries as expired and notifies its clients to reload them as soon as it connects to the invalidation stream.
 
-To bound long-term cache growth, call `cleanup({ maximumStaleAge })` from the service worker's `activate` event. It deletes cache entries whose `expiresAt` is older than `maximumStaleAge` seconds, removes cache entries that no longer have a meta record, and rebuilds the tags index from the surviving meta records:
+To bound long-term cache growth, call `cleanup({ maximumStaleAge })` at the top level of the service worker, so it runs on every worker startup. It deletes cache entries whose `expiresAt` is older than `maximumStaleAge` seconds, removes cache entries that no longer have a meta record, and rebuilds the tags index from the surviving meta records:
 
 ```ts
 import { cleanup } from "@toapi/worker";
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
-});
+cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }).catch(console.error);
 ```
 
 See the [`@toapi/worker`](/tapi/worker/) package for the full service-worker toolkit.

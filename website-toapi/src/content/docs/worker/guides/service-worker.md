@@ -20,8 +20,8 @@ declare const self: ServiceWorkerGlobalScope;
 setupToapiWorker();
 ```
 
-That single call registers the `activate` and `fetch` listeners and opens
-the revalidation stream. By default it caches same-origin requests under
+That single call registers the `fetch` listener, runs a cleanup pass, and
+opens the revalidation stream. By default it caches same-origin requests under
 `/api` (excluding the `/api/__tapi` control endpoints) and listens for
 invalidations on `/api/__tapi/invalidations`. Pass options to adjust the
 base path, stream URL, stale window, or logger:
@@ -35,16 +35,18 @@ setupToapiWorker({
 
 When the service worker connects to the invalidation stream, it
 automatically marks every cached entry as expired so the next access
-revalidates it. On each `activate` it also runs a cleanup pass that bounds
-long-term cache growth: entries whose `expiresAt` is older than
-`maximumStaleAge` seconds are deleted, cache entries that no longer have a
-meta record are removed, and the tags index is rebuilt from the surviving
-meta records.
+revalidates it. If the stream drops it reconnects with a growing backoff,
+expiring everything again on each reconnect.
+
+On every worker startup it also runs a cleanup pass that bounds long-term
+cache growth: entries whose `expiresAt` is older than `maximumStaleAge`
+seconds are deleted, cache entries that no longer have a meta record are
+removed, and the tags index is rebuilt from the surviving meta records.
 
 ### Wiring it up by hand
 
-If you need to interleave Toapi with your own `activate`/`fetch` logic,
-call the underlying functions directly instead of `setupToapiWorker`:
+If you need to interleave Toapi with your own `fetch` logic, call the
+underlying functions directly instead of `setupToapiWorker`:
 
 ```ts
 // service-worker.ts
@@ -56,12 +58,6 @@ import {
 
 declare const self: ServiceWorkerGlobalScope;
 
-self.addEventListener("activate", (event) => {
-  // Drop cache entries that have been expired longer than 7 days,
-  // delete orphans, and rebuild the tags index from meta.
-  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
-});
-
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (
@@ -72,7 +68,13 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-listenForInvalidations({ url: "/api/__tapi/invalidations" });
+listenForInvalidations({ url: "/api/__tapi/invalidations" }).catch(
+  console.error,
+);
+
+// Drop cache entries that have been expired longer than 7 days,
+// delete orphans, and rebuild the tags index from meta.
+cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }).catch(console.error);
 ```
 
 Adjust the pathname checks to match your API base path and revalidation

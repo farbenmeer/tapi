@@ -151,13 +151,17 @@ A value that may or may not be wrapped in a promise. Used wherever a callback (s
 
 ### `Logger`
 
-An optional error sink you can pass to the request handler. Only `error` is defined; it may return a promise.
+An optional log sink you can pass to the request handler, the fetch client, or the service worker. Every method is optional and may return a promise; consumers fall back to the matching `console` method for the ones you leave out.
 
 ```ts
 export interface Logger {
   error?: (error: unknown) => MaybePromise<void>;
+  warn?: (message: string) => MaybePromise<void>;
+  info?: (message: string) => MaybePromise<void>;
 }
 ```
+
+`error` receives the thrown value itself, while `warn` and `info` receive a preformatted message string. Not every consumer uses all three — the server request handler and the fetch client only report through `error`; `@toapi/worker` also uses `warn` and `info` for revalidation-stream retries and progress.
 
 ## Runtime values
 

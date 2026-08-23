@@ -1,17 +1,26 @@
 import {
   INVALIDATION_POST_EVENT,
   TAGS_CONTENT_TYPE,
+  type Logger,
 } from "@toapi/common";
 import { deleteCache, expireAll, invalidateTags } from "./cache";
+import { consoleFallback } from "./console-fallback";
 
 declare const self: ServiceWorkerGlobalScope;
 
 interface Options {
   url: string;
+  timeout?: number;
+  logger?: Logger;
 }
 
-export async function listenForInvalidations({ url }: Options) {
-  console.info("TApi: Listening for invalidations...");
+export async function listenForInvalidations({
+  url,
+  timeout = 5000,
+  logger: customLogger,
+}: Options) {
+  const logger = consoleFallback(customLogger);
+  logger.info("Listening for invalidations...");
 
   let res: Response | null = null;
   const MAX_ATTEMPTS = 1000;
@@ -20,9 +29,8 @@ export async function listenForInvalidations({ url }: Options) {
       res = await fetch(url);
       break;
     } catch (error) {
-      console.warn(
-        `TApi: Failed attempt #${retry + 1} to open invalidation stream`,
-        error,
+      logger.warn(
+        `Failed attempt #${retry + 1} to open invalidation stream\n${String(error)}`,
       );
     }
     await new Promise((resolve) =>
@@ -31,25 +39,29 @@ export async function listenForInvalidations({ url }: Options) {
   }
 
   if (!res) {
-    console.error(
-      `TApi: Failed to open invalidation stream after ${MAX_ATTEMPTS} attempts, giving up.`,
+    logger.error(
+      new Error(
+        `Failed to open invalidation stream after ${MAX_ATTEMPTS} attempts, giving up.`,
+      ),
     );
     return;
   }
 
   const contentType = res.headers.get("Content-Type");
   if (!res.ok || contentType !== TAGS_CONTENT_TYPE || !res.body) {
-    console.error(
-      "TApi: Failed to open invalidation stream. Cleaning up and unregistering service worker.",
-      res.status,
-      res.statusText,
+    logger.error(
+      new Error(
+        `Failed to open invalidation stream: Received ${res.status} ${
+          res.statusText
+        } with content type ${contentType}. Cleaning up and unregistering service worker.`,
+      ),
     );
     await deleteCache();
     await self.registration.unregister();
     return;
   }
 
-  console.info("TApi: Invalidation Stream Connection Established");
+  logger.info("Invalidation Stream Connection Established");
 
   try {
     const tags = await expireAll();
@@ -57,9 +69,9 @@ export async function listenForInvalidations({ url }: Options) {
     for (const client of clients) {
       client.postMessage({ type: INVALIDATION_POST_EVENT, tags });
     }
-    console.info("TApi: Marked all cached entries as expired");
+    logger.info("Marked all cached entries as expired");
   } catch {
-    console.warn("TApi: Failed to expire existing cache entries");
+    logger.warn("Failed to expire existing cache entries");
   }
 
   try {
@@ -76,7 +88,7 @@ export async function listenForInvalidations({ url }: Options) {
         const rawTags = line.trim();
         if (!rawTags) continue;
         const tags = rawTags.split(" ");
-        console.info("TApi: Remote-Invalidating tags", tags);
+        logger.info(`Remote-Invalidating tags: ${tags}`);
         await invalidateTags(tags);
         for (const client of clients) {
           client.postMessage({ type: INVALIDATION_POST_EVENT, tags });
@@ -84,14 +96,11 @@ export async function listenForInvalidations({ url }: Options) {
       }
     }
   } catch (error) {
-    if (error instanceof Error && error.name === "NetworkError") {
-      console.info(
-        "TApi: Network disconnected, retrying revalidation connection...",
-      );
-      setTimeout(() => {
-        listenForInvalidations({ url });
-      }, 5000);
-    }
-    console.error("TApi: Failed to read invalidation stream", error);
+    logger.warn(
+      `Invalidation stream failure, retrying in ${Math.round(timeout / 1000)}s`,
+    );
+    setTimeout(() => {
+      listenForInvalidations({ url, timeout: Math.round(timeout * 1.5) });
+    }, timeout);
   }
 }

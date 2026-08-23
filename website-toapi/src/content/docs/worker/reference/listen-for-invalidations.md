@@ -12,11 +12,22 @@ refetched on next access. It also notifies open page clients so hooks like
 ## Signature
 
 ```ts
-function listenForInvalidations(options: { url: string }): Promise<void>;
+function listenForInvalidations(options: {
+  url: string;
+  timeout?: number;
+  logger?: Logger;
+}): Promise<void>;
 ```
 
 - **`url`** — the URL of the server's revalidation stream endpoint (for example
   `/api/__tapi/invalidations`).
+- **`timeout`** — how long in milliseconds to wait before reconnecting after the
+  stream fails. Each reconnect multiplies it by 1.5, so a backend that stays
+  down is polled less and less often. Defaults to `5000`.
+- **`logger`** — an optional [`Logger`](/tapi/worker/reference/handle-toapi-request/#logger).
+  Its `error`, `warn`, and `info` methods report a fatal stream failure, failed
+  connection attempts, and connection/invalidation progress respectively. Each
+  method that you leave out falls back to the matching `console` method.
 
 The returned promise resolves when the stream ends or the function gives up; you
 normally call it once at the top level of your service worker and do not await
@@ -71,9 +82,18 @@ the cache and posts them to all open clients.
 
 ### Reconnection
 
-If the stream read fails with a `NetworkError` (the connection dropped), the
-worker logs the disconnect and schedules a reconnect by calling
-`listenForInvalidations` again after 5 seconds.
+If reading the stream fails for **any** reason — the connection dropped, the
+server restarted, the device went offline — the worker logs a warning and
+schedules a reconnect by calling `listenForInvalidations` again after `timeout`
+milliseconds. Each reconnect increases `timeout` by 50%, so a backend that stays
+unreachable is retried with a growing backoff instead of every 5 seconds
+forever.
+
+:::note
+Because every reconnect re-runs the "expire everything" step above, a dropped
+and restored connection leaves no stale data behind: after reconnecting, each
+cached resource is revalidated on its next read.
+:::
 
 ## Client messages
 

@@ -3,14 +3,13 @@ import { isMutation } from "@toapi/common";
 import { getCachedEntry, getMetadata } from "./cache";
 import { mutateAndInvalidate } from "./mutate-and-invalidate";
 import { serveFromNetwork } from "./serve-from-network";
+import { consoleFallback } from "./console-fallback";
 
 export async function handleToapiRequest(
   req: Request,
   options?: { logger?: Logger },
 ) {
-  const errorLog =
-    options?.logger?.error ??
-    ((err: unknown) => console.error("Toapi Worker fetch failed", err));
+  const logger = consoleFallback(options?.logger);
 
   if (isMutation(req)) {
     return mutateAndInvalidate(req);
@@ -24,25 +23,19 @@ export async function handleToapiRequest(
 
     const meta = await getMetadata(req.url);
 
-    if (meta?.expiresAt) {
-      if (meta.expiresAt > Date.now()) {
-        // cached response is still valid
+    if (meta && (!meta.expiresAt || meta.expiresAt > Date.now())) {
+      return cachedResponse;
+    } else {
+      // cached response is expired
+      try {
+        // try to serve from network
+        return await serveFromNetwork(req);
+      } catch (error) {
+        // probably network not available, serve old response
+        logger.error(error);
         return cachedResponse;
-      } else {
-        // cached response is expired
-        try {
-          // try to serve from network
-          return await serveFromNetwork(req);
-        } catch (error) {
-          // probably network not available, serve old response
-          errorLog(error);
-          return cachedResponse;
-        }
       }
     }
-
-    // no expiration header, serve cached response
-    return cachedResponse;
   }
 }
 

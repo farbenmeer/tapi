@@ -34,10 +34,10 @@ setup and the full build/register recipe.
 | [`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/) | function | Set up the whole worker in one call: registers the listeners and opens the stream. |
 | [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/) | function | Handle a single `fetch` event: serve from cache, network, or invalidate on mutation. |
 | [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/) | function | Open the server's revalidation stream and apply remote tag invalidations. |
-| [`cleanup`](/tapi/worker/reference/cleanup/) | function | Reconcile the cache and metadata stores, typically from the `activate` event. |
+| [`cleanup`](/tapi/worker/reference/cleanup/) | function | Reconcile the cache and metadata stores; run once on worker startup. |
 | `SetupToapiWorkerOptions` | type | Options for [`setupToapiWorker`](/tapi/worker/reference/setup-toapi-worker/). |
 | `CleanupOptions` | type | Options for [`cleanup`](/tapi/worker/reference/cleanup/). |
-| `Logger` | type | Re-exported from `@toapi/common`; the optional logger accepted by `handleToapiRequest`. |
+| `Logger` | type | Re-exported from `@toapi/common`; the optional logger accepted by `handleToapiRequest`, `listenForInvalidations`, and `setupToapiWorker`. |
 
 ## Minimal service worker
 
@@ -53,8 +53,8 @@ setupToapiWorker();
 ```
 
 By default this caches same-origin requests under `/api` (excluding the
-`/api/__tapi` control endpoints) and listens for invalidations on
-`/api/__tapi/invalidations`. Pass options to change the base path, stream URL,
+`/api/__tapi` control endpoints), listens for invalidations on
+`/api/__tapi/invalidations`, and runs a cleanup pass on every worker startup. Pass options to change the base path, stream URL,
 stale window, or logger:
 
 ```ts
@@ -72,7 +72,7 @@ precaching. See the
 [vite-plugin service-worker guide](/tapi/vite-plugin/guides/service-worker/).
 :::
 
-If you need to interleave Toapi with your own `activate`/`fetch` logic, you can
+If you need to interleave Toapi with your own `fetch` logic, you can
 wire up [`cleanup`](/tapi/worker/reference/cleanup/),
 [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/), and
 [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/) by

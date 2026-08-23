@@ -118,9 +118,9 @@ recognizes `ServiceWorkerGlobalScope` and related globals:
 - Match `setupToapiWorker`'s `basePath` to the `basePath` you pass to `toapi()`.
   It defaults to `/api`.
 - Pass `maximumStaleAge` to `setupToapiWorker` to tune the grace period, in
-  seconds, past a cache entry's `expiresAt` before it is deleted on the next SW
-  activation. It defaults to 7 days.
-- Need to interleave your own `activate`/`fetch` logic with Toapi's? Call
+  seconds, past a cache entry's `expiresAt` before it is deleted by the cleanup
+  pass that runs on every worker startup. It defaults to 7 days.
+- Need to interleave your own `fetch` logic with Toapi's? Call
   [`cleanup`](/tapi/worker/reference/cleanup/),
   [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/), and
   [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/)

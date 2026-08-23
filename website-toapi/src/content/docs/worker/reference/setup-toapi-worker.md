@@ -4,7 +4,7 @@ description: "Wire up the whole Toapi service worker — cleanup, request handli
 ---
 
 `setupToapiWorker` is the one-call way to set up a Toapi service worker. It
-registers the `activate` and `fetch` listeners and opens the revalidation
+registers the `fetch` listener, runs a cleanup pass, and opens the revalidation
 stream, so you don't have to wire up [`cleanup`](/tapi/worker/reference/cleanup/),
 [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/), and
 [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/)
@@ -22,7 +22,7 @@ interface SetupToapiWorkerOptions {
   invalidationsUrl?: string;
   /** Grace period in seconds past expiry before cleanup drops an entry. Default: 7 days. */
   maximumStaleAge?: number;
-  /** Optional logger for failed refetches and a fatal stream failure. Default: `console.error`. */
+  /** Optional logger for worker errors, warnings, and progress. Default: the matching `console` methods. */
   logger?: Logger;
 }
 ```
@@ -34,9 +34,12 @@ interface SetupToapiWorkerOptions {
 - **`invalidationsUrl`** — the URL of the server's revalidation stream. Defaults
   to `${basePath}/__tapi/invalidations`.
 - **`maximumStaleAge`** — how many seconds an entry may remain past its
-  `expiresAt` before [`cleanup`](/tapi/worker/reference/cleanup/) drops it on the
-  next `activate`. Defaults to 7 days.
-- **`logger`** — an optional [`Logger`](/tapi/worker/reference/handle-toapi-request/#logger).
+  `expiresAt` before [`cleanup`](/tapi/worker/reference/cleanup/) drops it.
+  Cleanup runs once each time the worker starts up. Defaults to 7 days.
+- **`logger`** — an optional [`Logger`](/tapi/worker/reference/handle-toapi-request/#logger),
+  passed on to [`handleToapiRequest`](/tapi/worker/reference/handle-toapi-request/)
+  and [`listenForInvalidations`](/tapi/worker/reference/listen-for-invalidations/).
+  Any method you leave out falls back to the matching `console` method.
 
 ## Usage
 
@@ -81,10 +84,6 @@ import {
 
 declare const self: ServiceWorkerGlobalScope;
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }));
-});
-
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
@@ -96,11 +95,14 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-listenForInvalidations({ url: "/api/__tapi/invalidations" });
+listenForInvalidations({ url: "/api/__tapi/invalidations" }).catch(
+  console.error,
+);
+cleanup({ maximumStaleAge: 60 * 60 * 24 * 7 }).catch(console.error);
 ```
 
 Reach for the individual functions when you need to interleave Toapi with your
-own `activate`/`fetch` logic; otherwise prefer `setupToapiWorker`.
+own `fetch` logic or cleanup scheduling; otherwise prefer `setupToapiWorker`.
 
 ## Related
 
