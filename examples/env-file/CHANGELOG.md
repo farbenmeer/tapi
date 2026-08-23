@@ -1,5 +1,11 @@
 # @farbenmeer/bunny-example-env-file
 
+## 0.1.6
+
+### Patch Changes
+
+- 1a2e6e8: remove dependencies on deprecated packages
+
 ## 0.1.5
 
 ### Patch Changes
