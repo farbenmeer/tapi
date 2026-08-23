@@ -3,14 +3,13 @@ import { isMutation } from "@toapi/common";
 import { getCachedEntry, getMetadata } from "./cache";
 import { mutateAndInvalidate } from "./mutate-and-invalidate";
 import { serveFromNetwork } from "./serve-from-network";
+import { consoleFallback } from "./console-fallback";
 
 export async function handleToapiRequest(
   req: Request,
   options?: { logger?: Logger },
 ) {
-  const errorLog =
-    options?.logger?.error ??
-    ((err: unknown) => console.error("Toapi Worker fetch failed", err));
+  const logger = consoleFallback(options?.logger);
 
   if (isMutation(req)) {
     return mutateAndInvalidate(req);
@@ -33,7 +32,7 @@ export async function handleToapiRequest(
         return await serveFromNetwork(req);
       } catch (error) {
         // probably network not available, serve old response
-        errorLog(error);
+        logger.error(error);
         return cachedResponse;
       }
     }
