@@ -7,7 +7,6 @@
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
-    "baseUrl": "./src",
 
     // Bundler mode
     "moduleResolution": "bundler",
@@ -27,5 +26,5 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
   },
-  "include": ["./src"],
+  "include": ["./src", "./e2e", "./vite.config.ts", "./playwright.config.ts"],
 }

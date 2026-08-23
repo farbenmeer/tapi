@@ -5,7 +5,7 @@ The `Link` component provides declarative navigation between routes. It renders 
 ## Usage
 
 ```tsx
-import { Link } from "@farbenmeer/router";
+import { Link } from "@toapi/router";
 
 function Navigation() {
   return (

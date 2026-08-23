@@ -1,28 +1,34 @@
 {
-  "name": "@farbenmeer/bunny-example-env-file",
+  "name": "@farbenmeer/toapi-example-env-file",
   "version": "0.1.5",
   "type": "module",
   "private": true,
   "files": [
     "src",
     ".gitignore",
-    "Dockerfile",
-    "tsconfig.json"
+    "index.html",
+    "tsconfig.json",
+    "vite.config.ts"
   ],
   "scripts": {
-    "dev": "bunny dev",
-    "build": "bunny build",
-    "start": "bunny start"
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview"
   },
   "dependencies": {
-    "@farbenmeer/bunny": "workspace:^",
+    "@toapi/client": "workspace:^",
+    "@toapi/react": "workspace:^",
+    "@toapi/server": "workspace:^",
+    "@toapi/vite-plugin": "workspace:^",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "vite": "^8.0.9"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
     "@types/react": "^19",
-    "@types/react-dom": "^19"
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.0"
   },
   "peerDependencies": {
     "typescript": "^5"

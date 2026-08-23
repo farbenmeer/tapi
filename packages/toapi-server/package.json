@@ -29,7 +29,7 @@
     "zod-openapi": "^6.0.0"
   },
   "devDependencies": {
-    "@farbenmeer/tag-based-cache": "workspace:*",
+    "@toapi/cache": "workspace:^",
     "@types/node": "^25.0.3",
     "vitest": "^4.0.16",
     "zod": "^4.0.17"

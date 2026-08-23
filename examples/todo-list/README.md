@@ -1,12 +1,11 @@
-# Bunny Project
+# Toapi TODO List Example
 
-This project was created using `@farbenmeer/bunny init`.
-
-It uses the `@farbenmeer/bunny`-Framework.
+A small React + Vite app that talks to a [Toapi](https://www.npmjs.com/package/@toapi/server)
+API through `@toapi/vite-plugin`. Todos are stored in a local SQLite database
+(`db/todos.sqlite`) via `node:sqlite`.
 
 Commands:
-* `bun run dev` starts the dev-server.
-* `bun run build` creates a production build.
-* `bun run start` starts the production server (run `bun run build` first).
-* `bun run generate` generates a migration based on the drizzle schema in `src/lib/schema.ts`
-* `bun run migrate` to apply the migrations
+* `pnpm dev` starts the Vite dev server (API included, with hot reload).
+* `pnpm build` creates a production build (`dist/client` + `dist/server.js`).
+* `pnpm start` previews the production build (run `pnpm build` first).
+* `pnpm test` runs the Playwright end-to-end tests against dev and prod.

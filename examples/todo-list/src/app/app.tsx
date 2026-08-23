@@ -1,6 +1,6 @@
 import { useOptimistic, startTransition } from "react";
-import { useQuery } from "@farbenmeer/bunny/client";
-import { client } from "client";
+import { useQuery } from "@toapi/react";
+import { client } from "../client";
 
 export function App() {
   const todos = useQuery(client.todos.get());
@@ -12,7 +12,7 @@ export function App() {
 
   return (
     <div className="w-full h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold">Bunny TODO List</h1>
+      <h1 className="text-4xl font-bold">Toapi TODO List</h1>
       <form action={client.todos.post}>
         <input name="text" placeholder="Add a todo" />
         <button type="submit">Add</button>

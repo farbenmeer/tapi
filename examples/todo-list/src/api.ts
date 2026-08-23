@@ -1,4 +1,4 @@
-import { defineApi } from "@farbenmeer/bunny/server";
+import { defineApi } from "@toapi/server";
 
 export const api = defineApi()
   .route("/todos", import("./api/todos"))

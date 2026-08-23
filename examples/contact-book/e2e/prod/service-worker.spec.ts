@@ -19,19 +19,30 @@ test("service worker is registered", async ({ page }) => {
   }).toPass({ timeout: 10000 });
 });
 
-test("static cache exists with entries", async ({ page }) => {
+test("api responses are cached by the service worker", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("app-title")).toBeVisible();
 
-  // Wait for SW to activate and cache files
+  // Wait for the service worker to take control, then reload so it
+  // intercepts the app's API requests.
+  await expect(async () => {
+    const controlled = await page.evaluate(
+      () => navigator.serviceWorker.controller !== null,
+    );
+    expect(controlled).toBe(true);
+  }).toPass({ timeout: 10000 });
+
+  await page.reload();
+  await expect(page.getByTestId("app-title")).toBeVisible();
+
   await expect(async () => {
     const cacheInfo = await page.evaluate(async () => {
       const keys = await caches.keys();
-      const staticCache = keys.find((k) => k.startsWith("bunny-static-cache"));
-      if (!staticCache) return null;
-      const cache = await caches.open(staticCache);
+      const tapiCache = keys.find((k) => k.startsWith("tapi-cache"));
+      if (!tapiCache) return null;
+      const cache = await caches.open(tapiCache);
       const entries = await cache.keys();
-      return { name: staticCache, count: entries.length };
+      return { name: tapiCache, count: entries.length };
     });
     expect(cacheInfo).not.toBeNull();
     expect(cacheInfo!.count).toBeGreaterThan(0);
@@ -61,7 +72,7 @@ test("invalidations endpoint is accessible", async ({ page }) => {
 
   const status = await page.evaluate(async () => {
     const controller = new AbortController();
-    const res = await fetch("/__tapi/invalidations", {
+    const res = await fetch("/api/__tapi/invalidations", {
       signal: controller.signal,
     });
     controller.abort();

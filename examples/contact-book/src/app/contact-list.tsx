@@ -1,6 +1,6 @@
-import { useQuery } from "@farbenmeer/bunny/client";
+import { useQuery } from "@toapi/react";
 import { Link } from "@toapi/router";
-import { client } from "client";
+import { client } from "../client";
 
 export function ContactList() {
   const contacts = useQuery(client.contacts.get());

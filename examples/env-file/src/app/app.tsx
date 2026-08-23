@@ -1,5 +1,5 @@
-import { useQuery } from "@farbenmeer/bunny/client";
-import { client } from "client";
+import { useQuery } from "@toapi/react";
+import { client } from "../client";
 
 export function App() {
   const env = useQuery(client.env.get());

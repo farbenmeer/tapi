@@ -1,5 +1,5 @@
-import { defineHandler, TResponse } from "@farbenmeer/bunny/server";
-import { db } from "db";
+import { defineHandler, TResponse } from "@toapi/server";
+import { db } from "../db";
 import { z } from "zod";
 
 const todo = z.object({

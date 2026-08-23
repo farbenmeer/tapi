@@ -5,7 +5,7 @@ The `Route` component conditionally renders its children based on the current pa
 ## Usage
 
 ```tsx
-import { Route } from "@farbenmeer/router";
+import { Route } from "@toapi/router";
 
 function App() {
   return (

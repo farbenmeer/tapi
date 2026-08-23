@@ -1,4 +1,4 @@
-import { InMemoryCache } from "@farbenmeer/tag-based-cache/in-memory-cache";
+import { InMemoryCache } from "@toapi/cache/in-memory-cache";
 import { describe, expect, test, vi } from "vitest";
 import {
   compilePathRegex,
