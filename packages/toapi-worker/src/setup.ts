@@ -66,14 +66,6 @@ export function setupToapiWorker({
   logger,
 }: SetupToapiWorkerOptions = {}) {
   const controlPrefix = `${basePath}/__tapi`;
-  const errorLog =
-    logger?.error ??
-    ((err: unknown) =>
-      console.error("Toapi Worker: invalidation stream failed", err));
-
-  self.addEventListener("activate", (event) => {
-    event.waitUntil(cleanup({ maximumStaleAge }));
-  });
 
   self.addEventListener("fetch", (event) => {
     const url = new URL(event.request.url);
@@ -87,5 +79,13 @@ export function setupToapiWorker({
     }
   });
 
-  listenForInvalidations({ url: invalidationsUrl }).catch(errorLog);
+  listenForInvalidations({ url: invalidationsUrl }).catch(
+    logger?.error ??
+      ((err: unknown) =>
+        console.error("Toapi Worker: invalidation stream failed", err)),
+  );
+  cleanup({ maximumStaleAge }).catch(
+    logger?.error ??
+      ((err: unknown) => console.error("Toapi Worker: cleanup failed", err)),
+  );
 }
