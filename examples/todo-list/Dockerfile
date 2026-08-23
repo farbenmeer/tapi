@@ -1,11 +1,13 @@
 # Build context is the monorepo root (workspace dependencies must be
-# available), e.g. `docker build -f examples/todo-list/Dockerfile .`
+# available), e.g. `podman build -f examples/todo-list/Dockerfile .`
 
 # --- Build stage: compile workspace deps and bundle the app ---
+# NODE_ENV is deliberately left unset here: pnpm skips devDependencies when it
+# is "production", and the build needs them (typescript for the workspace
+# packages, @vitejs/plugin-react and @tailwindcss/vite for vite.config.ts).
 FROM node:24-slim AS builder
 WORKDIR /usr/src/app
 RUN corepack enable
-ENV NODE_ENV=production
 
 COPY . .
 RUN pnpm install --frozen-lockfile
@@ -22,12 +24,15 @@ ENV NODE_ENV=production
 
 RUN npm install -g srvx@^0.11.15
 
-COPY --from=builder /usr/src/app/examples/todo-list/dist/server.js ./server.js
-COPY --from=builder /usr/src/app/examples/todo-list/dist/client ./client
+# The whole dist tree, not just server.js: the api's dynamic `import()` route
+# definitions make the server bundle emit shared chunks into dist/assets, which
+# server.js imports by relative path.
+COPY --from=builder /usr/src/app/examples/todo-list/dist ./dist
 
 # The sqlite database lives in ./db (see src/db.ts) and must be writable.
 RUN mkdir db && chown -R node:node db
 
 USER node
 EXPOSE 3000/tcp
-CMD [ "srvx", "serve", "--prod", "--host", "0.0.0.0", "--port", "3000", "-s", "client", "server.js" ]
+# `-s client` is resolved relative to the entry, i.e. dist/client.
+CMD [ "srvx", "serve", "--prod", "--host", "0.0.0.0", "--port", "3000", "-s", "client", "dist/server.js" ]
