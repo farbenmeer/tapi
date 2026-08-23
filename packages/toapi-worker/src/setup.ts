@@ -3,6 +3,7 @@ import { INVALIDATIONS_ROUTE } from "@toapi/common";
 import { cleanup } from "./cleanup";
 import { handleToapiRequest } from "./handle-toapi-request";
 import { listenForInvalidations } from "./revalidation-stream";
+import { consoleFallback } from "./console-fallback";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -63,8 +64,9 @@ export function setupToapiWorker({
   basePath = "/api",
   invalidationsUrl = `${basePath}${INVALIDATIONS_ROUTE}`,
   maximumStaleAge = ONE_WEEK_SECONDS,
-  logger,
+  logger: customLogger,
 }: SetupToapiWorkerOptions = {}) {
+  const logger = consoleFallback(customLogger);
   const controlPrefix = `${basePath}/__tapi`;
 
   self.addEventListener("fetch", (event) => {
@@ -79,13 +81,6 @@ export function setupToapiWorker({
     }
   });
 
-  listenForInvalidations({ url: invalidationsUrl }).catch(
-    logger?.error ??
-      ((err: unknown) =>
-        console.error("Toapi Worker: invalidation stream failed", err)),
-  );
-  cleanup({ maximumStaleAge }).catch(
-    logger?.error ??
-      ((err: unknown) => console.error("Toapi Worker: cleanup failed", err)),
-  );
+  listenForInvalidations({ url: invalidationsUrl, logger }).catch(logger.error);
+  cleanup({ maximumStaleAge }).catch(logger.error);
 }
