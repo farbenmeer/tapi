@@ -1,5 +1,11 @@
 # @toapi/router
 
+## 1.0.1
+
+### Patch Changes
+
+- 1a2e6e8: remove dependencies on deprecated packages
+
 ## 1.0.0
 
 ### Major Changes

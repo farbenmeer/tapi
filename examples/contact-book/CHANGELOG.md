@@ -1,5 +1,11 @@
 # @farbenmeer/bunny-example-contact-book
 
+## 0.1.8
+
+### Patch Changes
+
+- 1a2e6e8: remove dependencies on deprecated packages
+
 ## 0.1.7
 
 ### Patch Changes

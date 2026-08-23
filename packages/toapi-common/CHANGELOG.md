@@ -1,5 +1,11 @@
 # @toapi/common
 
+## 1.2.2
+
+### Patch Changes
+
+- bc9da1a: fix immortal worker cache entries
+
 ## 1.2.1
 
 ### Patch Changes
