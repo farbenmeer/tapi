@@ -14,7 +14,7 @@ test("invalidations endpoint is accessible in dev mode", async ({ page }) => {
   await page.goto("/");
   const status = await page.evaluate(async () => {
     const controller = new AbortController();
-    const res = await fetch("/__tapi/invalidations", {
+    const res = await fetch("/api/__tapi/invalidations", {
       signal: controller.signal,
     });
     controller.abort();

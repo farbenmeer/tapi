@@ -5,7 +5,7 @@ The `Router` component is the root component that provides routing context to yo
 ## Usage
 
 ```tsx
-import { Router } from "@farbenmeer/router";
+import { Router } from "@toapi/router";
 
 function App() {
   return (
@@ -100,7 +100,7 @@ When using custom `location` prop:
 ### Basic Setup
 
 ```tsx
-import { Router, Route, Link } from "@farbenmeer/router";
+import { Router, Route, Link } from "@toapi/router";
 
 function App() {
   return (

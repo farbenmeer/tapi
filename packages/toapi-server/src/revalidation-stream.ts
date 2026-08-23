@@ -31,10 +31,12 @@ export function streamRevalidatedTags({ cache }: Options) {
         controller.enqueue(textEncoder.encode(`${tags.join(" ")}\n`));
       });
 
-      // keepalive
-      interval = setInterval(() => {
-        controller.enqueue("\n");
-      }, KEEPALIVE_INTERVAL);
+      // keepalive. The first one is sent right away so the response headers
+      // are flushed immediately instead of only once the interval first
+      // fires — consumers skip empty lines, so this is a no-op for them.
+      const keepalive = () => controller.enqueue(textEncoder.encode("\n"));
+      keepalive();
+      interval = setInterval(keepalive, KEEPALIVE_INTERVAL);
     },
     cancel() {
       if (interval) clearInterval(interval);

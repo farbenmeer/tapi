@@ -5,7 +5,7 @@ The `useHash` hook provides access to the current URL hash fragment (the part af
 ## Usage
 
 ```tsx
-import { useHash } from "@farbenmeer/router";
+import { useHash } from "@toapi/router";
 
 function TableOfContents() {
   const hash = useHash();

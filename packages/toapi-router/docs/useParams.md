@@ -5,7 +5,7 @@ The `useParams` hook provides access to the current route parameters extracted f
 ## Usage
 
 ```tsx
-import { useParams } from "@farbenmeer/router";
+import { useParams } from "@toapi/router";
 
 function UserProfile() {
   const params = useParams();

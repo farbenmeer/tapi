@@ -46,16 +46,16 @@ test("full CRUD workflow", async ({ page, baseURL }) => {
 test("dev-only code is stripped from production bundle", async ({ page }) => {
   await page.goto("/");
   const marker = await page.evaluate(
-    () => (window as unknown as { __BUNNY_DEV_MARKER__?: string }).__BUNNY_DEV_MARKER__,
+    () => (window as unknown as { __DEV_MARKER__?: string }).__DEV_MARKER__,
   );
   expect(marker).toBeUndefined();
 
-  const assetsDir = path.join(process.cwd(), ".bunny/prod/dist/assets");
+  const assetsDir = path.join(process.cwd(), "dist/client/assets");
   const jsFiles = readdirSync(assetsDir).filter((f) => f.endsWith(".js"));
   expect(jsFiles.length).toBeGreaterThan(0);
   for (const file of jsFiles) {
     const contents = readFileSync(path.join(assetsDir, file), "utf8");
-    expect(contents).not.toContain("BUNNY_DEV_ONLY_MARKER_9f3a1b7c");
+    expect(contents).not.toContain("DEV_ONLY_MARKER_9f3a1b7c");
   }
 });
 

@@ -1,29 +1,35 @@
 {
-  "name": "@farbenmeer/bunny-example-contact-book",
+  "name": "@farbenmeer/toapi-example-contact-book",
   "version": "0.1.7",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bunny dev",
-    "build": "bunny build",
-    "start": "bunny start",
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview",
     "test": "playwright test",
     "test:dev": "playwright test --project=dev",
     "test:prod": "playwright test --project=prod"
   },
   "dependencies": {
-    "@farbenmeer/bunny": "workspace:^",
-    "@toapi/router": "workspace:^",
     "@toapi/cache": "workspace:^",
-    "zod": "^4",
+    "@toapi/client": "workspace:^",
+    "@toapi/react": "workspace:^",
+    "@toapi/router": "workspace:^",
+    "@toapi/server": "workspace:^",
+    "@toapi/vite-plugin": "workspace:^",
+    "@toapi/worker": "workspace:^",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "vite": "^8.0.9",
+    "zod": "^4"
   },
   "devDependencies": {
+    "@playwright/test": "catalog:",
     "@types/node": "^25.0.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@playwright/test": "catalog:"
+    "@vitejs/plugin-react": "^6.0.0"
   },
   "peerDependencies": {
     "typescript": "^5"

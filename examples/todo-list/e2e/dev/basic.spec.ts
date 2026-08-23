@@ -7,7 +7,7 @@ test.beforeEach(async ({ baseURL }) => {
 
 test("page renders with title", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText("Bunny TODO List")).toBeVisible();
+  await expect(page.getByText("Toapi TODO List")).toBeVisible();
 });
 
 test("adds a todo", async ({ page }) => {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter, Link } from "@toapi/router";
-import { client } from "client";
+import { client } from "../client";
 
 export function ContactForm() {
   const router = useRouter();

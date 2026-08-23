@@ -1,4 +1,4 @@
-import { defineHandler, TResponse, HttpError } from "@farbenmeer/bunny/server";
+import { defineHandler, TResponse, HttpError } from "@toapi/server";
 import { z } from "zod";
 import { contactsMap } from "./contacts";
 

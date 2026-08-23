@@ -13,13 +13,25 @@ describe("revalidation stream", () => {
     ).toBeTruthy();
   });
 
-  test("should send revalidated tags", async () => {
+  test("should flush an initial keepalive so headers are sent immediately", async () => {
     const cache = new PubSub();
     const response = streamRevalidatedTags({ cache });
 
+    const result = await response.body?.getReader().read();
+    expect(new TextDecoder().decode(result?.value)).toBe("\n");
+  });
+
+  test("should send revalidated tags", async () => {
+    const cache = new PubSub();
+    const response = streamRevalidatedTags({ cache });
+    const reader = response.body!.getReader();
+
+    // consume the initial keepalive
+    await reader.read();
+
     await cache.delete(["tag1"]);
 
-    const result = await response.body?.getReader().read();
+    const result = await reader.read();
     expect(new TextDecoder().decode(result?.value)).toBe("tag1\n");
   });
 });

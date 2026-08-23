@@ -1,4 +1,4 @@
-import { defineHandler, TResponse } from "@farbenmeer/bunny/server";
+import { defineHandler, TResponse } from "@toapi/server";
 import { z } from "zod";
 
 export interface Contact {

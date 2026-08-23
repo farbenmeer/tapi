@@ -1,4 +1,4 @@
-import { defineApi } from "@farbenmeer/bunny/server";
+import { defineApi } from "@toapi/server";
 import { InMemoryCache } from "@toapi/cache/in-memory-cache";
 
 const cache = new InMemoryCache();

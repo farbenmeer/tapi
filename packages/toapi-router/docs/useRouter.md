@@ -5,7 +5,7 @@ The `useRouter` hook provides access to navigation methods for programmatic rout
 ## Usage
 
 ```tsx
-import { useRouter } from "@farbenmeer/router";
+import { useRouter } from "@toapi/router";
 
 function LoginForm() {
   const router = useRouter();

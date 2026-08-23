@@ -5,7 +5,7 @@ The `usePathname` hook provides access to the current pathname of the URL. It re
 ## Usage
 
 ```tsx
-import { usePathname } from "@farbenmeer/router";
+import { usePathname } from "@toapi/router";
 
 function Navigation() {
   const pathname = usePathname();

@@ -1,1 +1,20 @@
-node_modules
+# The example Dockerfiles build from the monorepo root, so everything not
+# needed to install and build lands here. `node_modules` on its own would only
+# match the root one — the `**/` form covers the per-package ones too.
+**/node_modules
+.pnpm-store
+.git
+.github
+
+# Build output and test artifacts are regenerated inside the image.
+**/dist
+**/.bunny
+**/test-results
+**/playwright-report
+**/*.tsbuildinfo
+
+# Local tooling / editor state
+.claude
+.ai-pod
+.playwright-cli
+**/.DS_Store
