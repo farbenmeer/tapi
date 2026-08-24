@@ -264,7 +264,7 @@ importers:
         version: 12.11.1
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
+        version: 0.45.2(@electric-sql/pglite@0.5.5)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.0
@@ -299,7 +299,7 @@ importers:
     devDependencies:
       '@electric-sql/pglite':
         specifier: ^0.5.0
-        version: 0.5.4
+        version: 0.5.5
       '@prisma/adapter-better-sqlite3':
         specifier: ^7.0.0
         version: 7.8.0
@@ -320,7 +320,7 @@ importers:
         version: 12.11.1
       pglite-prisma-adapter:
         specifier: ^0.7.0
-        version: 0.7.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))
+        version: 0.7.2(@electric-sql/pglite@0.5.5)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))
       prisma:
         specifier: '>=6.0.0'
         version: 7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)
@@ -541,10 +541,10 @@ importers:
         version: 2.5.9
       '@electric-sql/pglite':
         specifier: ^0.5.0
-        version: 0.5.4
+        version: 0.5.5
       '@electric-sql/pglite-socket':
         specifier: ^0.2.0
-        version: 0.2.7(@electric-sql/pglite-age@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_hashids@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_ivm@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_textsearch@0.0.6(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_uuidv7@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pgtap@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pgvector@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite@0.5.4)
+        version: 0.2.7(@electric-sql/pglite-age@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_hashids@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_ivm@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_textsearch@0.0.6(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_uuidv7@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pgtap@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pgvector@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite@0.5.5)
       '@types/better-sqlite3':
         specifier: ^7.6.0
         version: 7.6.13
@@ -559,7 +559,7 @@ importers:
         version: 0.31.10
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
+        version: 0.45.2(@electric-sql/pglite@0.5.5)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))
       kysely-codegen:
         specifier: ^0.20.0
         version: 0.20.0(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(typescript@6.0.3)
@@ -1038,8 +1038,8 @@ packages:
   '@electric-sql/pglite@0.4.1':
     resolution: {integrity: sha512-mZ9NzzUSYPOCnxHH1oAHPRzoMFJHY472raDKwXl/+6oPbpdJ7g8LsCN4FSaIIfkiCKHhb3iF/Zqo3NYxaIhU7Q==}
 
-  '@electric-sql/pglite@0.5.4':
-    resolution: {integrity: sha512-yYZUyyXrHU7tPlCjwZQJ6hIG9DscdCCn7Uk0mYKwC1FeHX286AbcmFveMiRBEak8e9iPupjsoVImN3yJZVed2g==}
+  '@electric-sql/pglite@0.5.5':
+    resolution: {integrity: sha512-QeZ+oB7QaU4EJj2awrB8hwFZ5TXxLRBQ9Gfq0dQauYDdWsRtuWRCERgtri35vRfL07KQHlVlc/4Qxvn7a5AXeA==}
 
   '@emnapi/core@1.11.1':
     resolution: {integrity: sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==}
@@ -5428,48 +5428,48 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
-  '@electric-sql/pglite-age@0.0.5(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-age@0.0.5(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
 
-  '@electric-sql/pglite-pg_hashids@0.0.5(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-pg_hashids@0.0.5(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
 
-  '@electric-sql/pglite-pg_ivm@0.0.5(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-pg_ivm@0.0.5(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
 
-  '@electric-sql/pglite-pg_textsearch@0.0.6(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-pg_textsearch@0.0.6(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
 
-  '@electric-sql/pglite-pg_uuidv7@0.0.5(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-pg_uuidv7@0.0.5(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
 
-  '@electric-sql/pglite-pgtap@0.0.5(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-pgtap@0.0.5(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
 
-  '@electric-sql/pglite-pgvector@0.0.5(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-pgvector@0.0.5(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
 
   '@electric-sql/pglite-socket@0.1.1(@electric-sql/pglite@0.4.1)':
     dependencies:
       '@electric-sql/pglite': 0.4.1
 
-  '@electric-sql/pglite-socket@0.2.7(@electric-sql/pglite-age@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_hashids@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_ivm@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_textsearch@0.0.6(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pg_uuidv7@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pgtap@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite-pgvector@0.0.5(@electric-sql/pglite@0.5.4))(@electric-sql/pglite@0.5.4)':
+  '@electric-sql/pglite-socket@0.2.7(@electric-sql/pglite-age@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_hashids@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_ivm@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_textsearch@0.0.6(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pg_uuidv7@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pgtap@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite-pgvector@0.0.5(@electric-sql/pglite@0.5.5))(@electric-sql/pglite@0.5.5)':
     dependencies:
-      '@electric-sql/pglite': 0.5.4
-      '@electric-sql/pglite-age': 0.0.5(@electric-sql/pglite@0.5.4)
-      '@electric-sql/pglite-pg_hashids': 0.0.5(@electric-sql/pglite@0.5.4)
-      '@electric-sql/pglite-pg_ivm': 0.0.5(@electric-sql/pglite@0.5.4)
-      '@electric-sql/pglite-pg_textsearch': 0.0.6(@electric-sql/pglite@0.5.4)
-      '@electric-sql/pglite-pg_uuidv7': 0.0.5(@electric-sql/pglite@0.5.4)
-      '@electric-sql/pglite-pgtap': 0.0.5(@electric-sql/pglite@0.5.4)
-      '@electric-sql/pglite-pgvector': 0.0.5(@electric-sql/pglite@0.5.4)
+      '@electric-sql/pglite': 0.5.5
+      '@electric-sql/pglite-age': 0.0.5(@electric-sql/pglite@0.5.5)
+      '@electric-sql/pglite-pg_hashids': 0.0.5(@electric-sql/pglite@0.5.5)
+      '@electric-sql/pglite-pg_ivm': 0.0.5(@electric-sql/pglite@0.5.5)
+      '@electric-sql/pglite-pg_textsearch': 0.0.6(@electric-sql/pglite@0.5.5)
+      '@electric-sql/pglite-pg_uuidv7': 0.0.5(@electric-sql/pglite@0.5.5)
+      '@electric-sql/pglite-pgtap': 0.0.5(@electric-sql/pglite@0.5.5)
+      '@electric-sql/pglite-pgvector': 0.0.5(@electric-sql/pglite@0.5.5)
 
   '@electric-sql/pglite-tools@0.3.1(@electric-sql/pglite@0.4.1)':
     dependencies:
@@ -5477,7 +5477,7 @@ snapshots:
 
   '@electric-sql/pglite@0.4.1': {}
 
-  '@electric-sql/pglite@0.5.4': {}
+  '@electric-sql/pglite@0.5.5': {}
 
   '@emnapi/core@1.11.1':
     dependencies:
@@ -7053,9 +7053,9 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.23.12
 
-  drizzle-orm@0.45.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)):
+  drizzle-orm@0.45.2(@electric-sql/pglite@0.5.5)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.4)(better-sqlite3@12.11.1)(kysely@0.29.5)(mysql2@3.15.3)(pg@8.22.0)(postgres@3.4.7)(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)):
     optionalDependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
       '@prisma/client': 7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3)
       '@types/better-sqlite3': 7.6.13
       '@types/pg': 8.20.4
@@ -8580,9 +8580,9 @@ snapshots:
     optionalDependencies:
       pg-cloudflare: 1.4.0
 
-  pglite-prisma-adapter@0.7.2(@electric-sql/pglite@0.5.4)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3)):
+  pglite-prisma-adapter@0.7.2(@electric-sql/pglite@0.5.5)(@prisma/client@7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3)):
     dependencies:
-      '@electric-sql/pglite': 0.5.4
+      '@electric-sql/pglite': 0.5.5
       '@prisma/client': 7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(typescript@6.0.3)
       '@prisma/driver-adapter-utils': 7.2.0
       postgres-array: 3.0.4
