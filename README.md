@@ -31,9 +31,6 @@ Service worker runtime that caches Toapi responses and keeps them in sync with t
 ### [@farbenmeer/lacy](./packages/lacy)
 Lightweight lazy evaluation utility library.
 
-### [@farbenmeer/workflow](./packages/workflow)
-Durable workflow engine with SQLite, Postgres and Drizzle adapters.
-
 ### [@farbenmeer/prisma-migrate-test](./packages/prisma-migrate-test)
 Run Prisma migrations against throwaway SQLite/PGlite databases in tests.
 
@@ -53,6 +50,3 @@ Example of rendering server data with `@toapi/react`.
 
 ### [vite-plugin-tapi-demo](./examples/vite-plugin-tapi-demo)
 Minimal `@toapi/vite-plugin` setup, including a Docker deployment.
-
-### [workflow-engine](./examples/workflow-engine)
-Example of using `@farbenmeer/workflow` with Drizzle and SQLite.
