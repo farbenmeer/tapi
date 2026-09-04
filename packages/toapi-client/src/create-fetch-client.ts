@@ -20,7 +20,10 @@ async function listenForInvalidations(url: string, cache: Cache) {
   for (let retry = 0; retry < MAX_ATTEMPTS; retry++) {
     try {
       const res = await globalFetch(url);
-      if (!res.ok || !res.body) break;
+      if (!res.ok || !res.body) continue;
+
+      // reset retry counter
+      retry = 0;
 
       let buffer = "";
       const decoder = new TextDecoder();
@@ -34,12 +37,14 @@ async function listenForInvalidations(url: string, cache: Cache) {
           await cache.revalidateTags(rawTags.split(" "));
         }
       }
-    } catch {
-      // network error — retry below
+    } finally {
+      // error or stream ended, retry with exponential backoff
+      await new Promise((resolve) =>
+        setTimeout(resolve, 500 * Math.pow(2, Math.min(retry, 10))),
+      );
+      // invalidate everything in the cache, it might have gone stale while we were not listening
+      await cache.revalidateAll();
     }
-    await new Promise((resolve) =>
-      setTimeout(resolve, 500 * Math.pow(2, Math.min(retry, 10))),
-    );
   }
 }
 

@@ -210,6 +210,12 @@ export class Cache {
     );
   }
 
+  async revalidateAll() {
+    await Promise.allSettled(
+      Array.from(this.storage.keys()).map((url) => this.revalidateUrl(url)),
+    );
+  }
+
   private evictEntry(url: string) {
     const entry = this.storage.get(url);
     if (!entry) return;
