@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { ImmutableSearchParams } from "./immutable-search-params";
+import { ImmutableSearchParams } from "./immutable-search-params.js";
 
 describe("ImmutableSearchParams", () => {
   test("set", () => {

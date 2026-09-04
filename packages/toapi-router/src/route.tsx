@@ -1,6 +1,6 @@
 import { use, useMemo } from "react";
-import { PathnameContext, RouteContext } from "./context";
-import { buildFullPath, compileExactPathRegex, compilePathRegex } from "./path";
+import { PathnameContext, RouteContext } from "./context.js";
+import { buildFullPath, compileExactPathRegex, compilePathRegex } from "./path.js";
 
 export interface RouteProps {
   path?: string;

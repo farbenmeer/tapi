@@ -8,7 +8,7 @@ import {
   expect,
   test,
 } from "vitest";
-import { PostgresCache } from "./postgres-cache";
+import { PostgresCache } from "./postgres-cache.js";
 
 const POSTGRES_URL =
   process.env.POSTGRES_URL ??

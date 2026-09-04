@@ -1,8 +1,8 @@
 import { describe, expect, vi, test, afterEach } from "vitest";
 import { render } from "vitest-browser-react";
-import { Link } from "./link";
-import { Route } from "./route";
-import { Router } from "./router";
+import { Link } from "./link.js";
+import { Route } from "./route.js";
+import { Router } from "./router.js";
 
 describe("Link", () => {
   const mockHistory = {

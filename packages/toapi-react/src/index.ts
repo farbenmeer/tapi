@@ -1,1 +1,1 @@
-export { useQuery } from "./use-query";
+export { useQuery } from "./use-query.js";

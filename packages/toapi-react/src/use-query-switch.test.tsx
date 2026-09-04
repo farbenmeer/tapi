@@ -4,7 +4,7 @@ import { act, render, screen } from "@testing-library/react";
 import { Suspense } from "react";
 import { describe, expect, test } from "vitest";
 import { z } from "zod/v4";
-import { useQuery } from "./use-query";
+import { useQuery } from "./use-query.js";
 
 /**
  * When the query changes, the hook must not keep showing the previous

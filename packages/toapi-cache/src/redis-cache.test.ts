@@ -7,7 +7,7 @@ import {
   expect,
   test,
 } from "vitest";
-import { RedisCache } from "./redis-cache";
+import { RedisCache } from "./redis-cache.js";
 
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { PubSub } from "./cache";
-import { streamRevalidatedTags } from "./revalidation-stream";
+import { PubSub } from "./cache.js";
+import { streamRevalidatedTags } from "./revalidation-stream.js";
 import { SESSION_COOKIE_NAME } from "@toapi/common";
 
 describe("revalidation stream", () => {

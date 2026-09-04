@@ -1,5 +1,5 @@
 import type { Pool, PoolClient, Notification } from "pg";
-import type { Cache, CacheEntry, Json, Subscription } from "./index";
+import type { Cache, CacheEntry, Json, Subscription } from "./index.js";
 
 const CHANNEL = "tag_based_cache_invalidate";
 

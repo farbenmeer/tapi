@@ -1,9 +1,9 @@
 import type { Logger } from "@toapi/common";
 import { INVALIDATIONS_ROUTE } from "@toapi/common";
-import { cleanup } from "./cleanup";
-import { handleToapiRequest } from "./handle-toapi-request";
-import { listenForInvalidations } from "./revalidation-stream";
-import { consoleFallback } from "./console-fallback";
+import { cleanup } from "./cleanup.js";
+import { handleToapiRequest } from "./handle-toapi-request.js";
+import { listenForInvalidations } from "./revalidation-stream.js";
+import { consoleFallback } from "./console-fallback.js";
 
 declare const self: ServiceWorkerGlobalScope;
 

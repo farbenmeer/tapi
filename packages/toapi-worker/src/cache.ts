@@ -1,5 +1,5 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "@toapi/common";
-import { deleteDB, openDB } from "./idb";
+import { deleteDB, openDB } from "./idb.js";
 
 const DB_NAME = "tapi-cache-meta";
 const CACHE_NAME = "tapi-cache";

@@ -1,12 +1,12 @@
 import { describe, expect, test } from "vitest";
 import { render } from "vitest-browser-react";
-import { Router } from "./router";
+import { Router } from "./router.js";
 import { useEffect } from "react";
-import { useRouter } from "./use-router";
-import { usePathname } from "./use-pathname";
-import { useSearchParams } from "./use-search-params";
-import { Route } from "./route";
-import { mockHistory } from "./mock-history";
+import { useRouter } from "./use-router.js";
+import { usePathname } from "./use-pathname.js";
+import { useSearchParams } from "./use-search-params.js";
+import { Route } from "./route.js";
+import { mockHistory } from "./mock-history.js";
 
 describe("useRouter", () => {
   test("should change url when router.push is called", async () => {

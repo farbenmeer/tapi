@@ -1,4 +1,4 @@
-import { ImmutableSearchParams } from "./immutable-search-params";
+import { ImmutableSearchParams } from "./immutable-search-params.js";
 
 interface Options {
   pathname: string;

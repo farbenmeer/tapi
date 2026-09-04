@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { render } from "vitest-browser-react";
-import { Router } from "./router";
-import { Route } from "./route";
-import { useParams } from "./use-params";
-import { mockHistory } from "./mock-history";
-import { Link } from "./link";
+import { Router } from "./router.js";
+import { Route } from "./route.js";
+import { useParams } from "./use-params.js";
+import { mockHistory } from "./mock-history.js";
+import { Link } from "./link.js";
 
 describe("useParams", () => {
   function ParamsDisplay() {

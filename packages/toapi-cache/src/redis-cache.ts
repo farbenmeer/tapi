@@ -1,5 +1,5 @@
 import type { RedisClientType } from "@redis/client";
-import type { Cache, CacheEntry, Json, Subscription } from "./index";
+import type { Cache, CacheEntry, Json, Subscription } from "./index.js";
 
 const BLOB_STRING_TYPE = 36;
 

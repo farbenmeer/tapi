@@ -1,11 +1,11 @@
 import { Children, use, useMemo, type ReactElement } from "react";
-import type { Route, RouteProps } from "./route";
+import type { Route, RouteProps } from "./route.js";
 import {
   PathnameContext,
   RouteContext,
   type RouteContextValue,
-} from "./context";
-import { buildFullPath, compileExactPathRegex, compilePathRegex } from "./path";
+} from "./context.js";
+import { buildFullPath, compileExactPathRegex, compilePathRegex } from "./path.js";
 
 interface Props {
   children:
