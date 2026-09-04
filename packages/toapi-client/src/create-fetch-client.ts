@@ -16,7 +16,7 @@ import { handleResponse } from "./handle-response.js";
 const globalFetch = fetch;
 
 async function listenForInvalidations(url: string, cache: Cache) {
-  const MAX_ATTEMPTS = 1000;
+  const MAX_ATTEMPTS = 300;
   for (let retry = 0; retry < MAX_ATTEMPTS; retry++) {
     try {
       const res = await globalFetch(url);
@@ -40,11 +40,13 @@ async function listenForInvalidations(url: string, cache: Cache) {
     } finally {
       // error or stream ended, retry with exponential backoff
       await new Promise((resolve) =>
-        setTimeout(resolve, 500 * Math.pow(2, Math.min(retry, 10))),
+        setTimeout(resolve, 500 * Math.pow(1.1, retry)),
       );
       // invalidate everything in the cache, it might have gone stale while we were not listening
       await cache.revalidateAll();
     }
+
+    throw new Error("Toapi: Failed to reconnect to invalidation stream.");
   }
 }
 
