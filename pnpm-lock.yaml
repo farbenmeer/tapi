@@ -282,19 +282,6 @@ importers:
         specifier: ^6.0.0
         version: 6.0.3
 
-  packages/lacy:
-    dependencies:
-      typescript:
-        specifier: ^5 || ^6.0.0
-        version: 6.0.3
-    devDependencies:
-      '@types/node':
-        specifier: ^25.0.3
-        version: 25.9.5
-      vitest:
-        specifier: ^4.0.16
-        version: 4.1.11(@types/node@25.9.5)(@vitest/browser-playwright@4.1.11)(happy-dom@20.10.6)(msw@2.15.0(@types/node@25.9.5)(typescript@6.0.3))(vite@8.2.2(@types/node@25.9.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
-
   packages/prisma-migrate-test:
     devDependencies:
       '@electric-sql/pglite':

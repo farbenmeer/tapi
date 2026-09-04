@@ -1,5 +1,7 @@
 # @farbenmeer/prisma-migrate-test
 
+> This package is deprecated and unmaintained. There is no direct replacement. Project requirements turned out to be too diverse to find reasonable common ground to cover in a package like this.
+
 Factory functions for creating isolated test databases using the template-clone pattern: migrations run **once** to build a template, then each test gets a cheap clone — no repeated migration overhead.
 
 ## Installation
@@ -51,9 +53,11 @@ afterEach(async () => {
 Runs all migrations once into an in-memory template, then provides cheap per-test clones written to a temp directory.
 
 **Parameters:**
+
 - `options.migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
 
 **Returns:** `SqliteTestDb`
+
 - `getAdapter(): Promise<PrismaBetterSqlite3>` — writes a clone of the template to disk and returns a new adapter backed by it
 - `cleanup(): void` — deletes the temp directory
 
@@ -101,11 +105,13 @@ afterEach(async () => {
 Runs all migrations once into an in-memory PGlite instance and dumps the result, then provides cheap per-test clones restored from that dump.
 
 **Parameters:**
+
 - `options.migrationsPath` — path to the Prisma migrations folder (default: `"prisma/migrations"`)
 - `options.extensions` — PGlite extensions to pass to each instance (default: `{}`)
 - `options.seed` — optional seed data applied after migrations. Pass a SQL string or an async function `(adapter: PrismaPGlite) => Promise<void>` to seed via Prisma. The seed runs once when the template is built, so every clone includes the seeded data.
 
 **Returns:** `PgliteTestDb`
+
 - `getAdapter(): Promise<PrismaPGlite & { reset(): Promise<void> }>` — restores a clone from the dump and returns a new adapter with a `reset()` method that truncates all public tables
 - `cleanup(): Promise<void>` — closes all open PGlite instances
 
@@ -121,7 +127,9 @@ const testDb = createPgliteTestDb({
 const testDb = createPgliteTestDb({
   seed: async (adapter) => {
     const prisma = new PrismaClient({ adapter });
-    await prisma.user.create({ data: { email: "alice@test.com", name: "Alice" } });
+    await prisma.user.create({
+      data: { email: "alice@test.com", name: "Alice" },
+    });
     await prisma.$disconnect();
   },
 });
