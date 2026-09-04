@@ -1,5 +1,11 @@
 # @farbenmeer/prisma-migrate-test
 
+## 0.3.1
+
+### Patch Changes
+
+- 59b2217: document deprecation
+
 ## 0.3.0
 
 ### Minor Changes
