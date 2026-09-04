@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { CookieStore } from "./cookie-store";
+import { CookieStore } from "./cookie-store.js";
 
 function makeRequest(cookie?: string): Request {
   const headers = new Headers();

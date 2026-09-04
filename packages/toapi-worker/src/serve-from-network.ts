@@ -1,5 +1,5 @@
 import { EXPIRES_AT_HEADER, TAGS_HEADER } from "@toapi/common";
-import { deleteCacheEntry, storeCacheEntry } from "./cache";
+import { deleteCacheEntry, storeCacheEntry } from "./cache.js";
 
 export async function serveFromNetwork(req: Request) {
   const res = await fetch(req);

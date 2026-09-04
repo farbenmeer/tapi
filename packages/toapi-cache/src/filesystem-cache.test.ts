@@ -10,7 +10,7 @@ import {
   test,
   vi,
 } from "vitest";
-import { FilesystemCache } from "./filesystem-cache";
+import { FilesystemCache } from "./filesystem-cache.js";
 
 describe("FilesystemCache", () => {
   const dir =

@@ -3,8 +3,8 @@ import {
   TAGS_CONTENT_TYPE,
   type Logger,
 } from "@toapi/common";
-import { deleteCache, expireAll, invalidateTags } from "./cache";
-import { consoleFallback } from "./console-fallback";
+import { deleteCache, expireAll, invalidateTags } from "./cache.js";
+import { consoleFallback } from "./console-fallback.js";
 
 declare const self: ServiceWorkerGlobalScope;
 

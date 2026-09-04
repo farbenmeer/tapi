@@ -4,9 +4,9 @@ import {
   PathnameContext,
   RouterContext,
   SearchParamsContext,
-} from "./context";
-import { ImmutableSearchParams } from "./immutable-search-params";
-import { removeTrailingSlash } from "./path";
+} from "./context.js";
+import { ImmutableSearchParams } from "./immutable-search-params.js";
+import { removeTrailingSlash } from "./path.js";
 
 interface Props {
   children: ReactNode;

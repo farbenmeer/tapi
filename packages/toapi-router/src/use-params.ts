@@ -1,5 +1,5 @@
 import { use } from "react";
-import { RouteContext } from "./context";
+import { RouteContext } from "./context.js";
 
 export function useParams<
   T extends Record<string, string | string[]> = Record<

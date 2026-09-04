@@ -4,7 +4,7 @@ import {
   TAGS_STORE_NAME,
   openCache,
   openCacheMetaDB,
-} from "./cache";
+} from "./cache.js";
 
 export interface CleanupOptions {
   /**

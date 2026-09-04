@@ -1,9 +1,9 @@
 import type { Logger } from "@toapi/common";
 import { isMutation } from "@toapi/common";
-import { getCachedEntry, getMetadata } from "./cache";
-import { mutateAndInvalidate } from "./mutate-and-invalidate";
-import { serveFromNetwork } from "./serve-from-network";
-import { consoleFallback } from "./console-fallback";
+import { getCachedEntry, getMetadata } from "./cache.js";
+import { mutateAndInvalidate } from "./mutate-and-invalidate.js";
+import { serveFromNetwork } from "./serve-from-network.js";
+import { consoleFallback } from "./console-fallback.js";
 
 export async function handleToapiRequest(
   req: Request,

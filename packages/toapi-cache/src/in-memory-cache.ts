@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import type { CacheEntry, Cache, Subscription, Json } from "./index";
+import type { CacheEntry, Cache, Subscription, Json } from "./index.js";
 
 const MIN_GC_TIMEOUT = 5 * 1000;
 const MAX_GC_TIMEOUT = 5 * 60 * 1000;

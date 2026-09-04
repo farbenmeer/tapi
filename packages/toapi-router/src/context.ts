@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { ImmutableSearchParams } from "./immutable-search-params";
+import { ImmutableSearchParams } from "./immutable-search-params.js";
 
 export const PathnameContext = createContext<string>("/");
 

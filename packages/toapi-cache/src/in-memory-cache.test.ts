@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { InMemoryCache } from "./in-memory-cache";
+import { InMemoryCache } from "./in-memory-cache.js";
 
 describe("InMemoryCache", () => {
   beforeEach(() => {

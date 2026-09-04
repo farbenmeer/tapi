@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { render } from "vitest-browser-react";
-import { Route } from "./route";
-import { useParams } from "./use-params";
-import { Router } from "./router";
-import { mockHistory } from "./mock-history";
-import { usePathname } from "./use-pathname";
-import { Switch } from "./switch";
+import { Route } from "./route.js";
+import { useParams } from "./use-params.js";
+import { Router } from "./router.js";
+import { mockHistory } from "./mock-history.js";
+import { usePathname } from "./use-pathname.js";
+import { Switch } from "./switch.js";
 
 describe("Switch", () => {
   describe("basic routing", () => {

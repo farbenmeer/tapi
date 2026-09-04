@@ -4,8 +4,8 @@ import {
   RouteContext,
   RouterContext,
   SearchParamsContext,
-} from "./context";
-import { resolve } from "./path";
+} from "./context.js";
+import { resolve } from "./path.js";
 
 interface Props extends HTMLProps<HTMLAnchorElement> {
   href: string;

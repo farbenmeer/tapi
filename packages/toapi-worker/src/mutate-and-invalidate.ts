@@ -1,5 +1,5 @@
 import { TAGS_HEADER } from "@toapi/common";
-import { invalidateTags } from "./cache";
+import { invalidateTags } from "./cache.js";
 
 export async function mutateAndInvalidate(req: Request) {
   const res = await fetch(req);
