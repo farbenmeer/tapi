@@ -28,9 +28,6 @@ Vite plugin that serves a Toapi API in dev and preview, and bundles it for produ
 ### [@toapi/worker](./packages/toapi-worker)
 Service worker runtime that caches Toapi responses and keeps them in sync with the server.
 
-### [@farbenmeer/lacy](./packages/lacy)
-Lightweight lazy evaluation utility library.
-
 ### [@farbenmeer/prisma-migrate-test](./packages/prisma-migrate-test)
 Run Prisma migrations against throwaway SQLite/PGlite databases in tests.
 

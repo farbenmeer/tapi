@@ -31,17 +31,6 @@ export default defineConfig({
           ],
         },
         {
-          label: "Lacy",
-          collapsed: true,
-          items: [
-            { label: "Introduction", slug: "lacy" },
-            {
-              label: "Reference",
-              items: [{ autogenerate: { directory: "lacy/reference" } }],
-            },
-          ],
-        },
-        {
           label: "Router",
           collapsed: true,
           items: [
