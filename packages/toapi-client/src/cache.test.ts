@@ -154,4 +154,52 @@ describe("Cache", () => {
     // keeping the rejected revalidation as its current observable.
     await expect(cache.request(url, fetch)).resolves.toEqual({ v: "a" });
   });
+
+  test("a failed stale request does not evict the replacement created by revalidateAll", async () => {
+    // The logger is stubbed only to keep A's failure out of the console.
+    const cache = new Cache({ minTTL: 100_000, logger: { error: vi.fn() } });
+    const url = "/thing";
+
+    // Request A stays in-flight until we settle it, and then fails with a 500.
+    // Request B is the replacement revalidateAll installs while A is still
+    // pending; it succeeds afterwards.
+    const requestA = deferred<Response>();
+    const requestB = deferred<Response>();
+    let calls = 0;
+    const fetch = vi.fn(() => {
+      calls += 1;
+      if (calls === 1) return requestA.promise;
+      if (calls === 2) return requestB.promise;
+      return Promise.resolve(jsonResponse({ v: "c" }, ["thing"]));
+    });
+
+    // Entry is pending on A, with a subscriber so revalidateUrl doesn't take
+    // the zero-subscriber eviction branch. Swallow the rejection A pushes.
+    const observable = cache.request(url, fetch);
+    observable.catch(() => {});
+    observable.subscribe((data) => data.catch(() => {}));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    // revalidateAll sees a pending entry and replaces its state with B.
+    // A is now orphaned but still in flight.
+    const revalidateAllDone = cache.revalidateAll();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetch).toHaveBeenCalledTimes(2);
+
+    // The orphaned request A fails. Its resolve hook must not touch the entry,
+    // which no longer belongs to it.
+    requestA.resolve(new Response(null, { status: 500 }));
+    await vi.advanceTimersByTimeAsync(0);
+
+    // The replacement B succeeds and its result must be cached.
+    requestB.resolve(jsonResponse({ v: "b" }, ["thing"]));
+    await revalidateAllDone;
+    await vi.advanceTimersByTimeAsync(0);
+
+    // If A's failure evicted the entry, B's resolve hook found no entry and
+    // dropped the fresh response, so this re-fetches instead of serving "b".
+    await expect(cache.request(url, fetch)).resolves.toEqual({ v: "b" });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
 });
