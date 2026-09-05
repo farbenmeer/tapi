@@ -1,9 +1,8 @@
 import {
   EXPIRES_AT_HEADER,
   HttpError,
-  TAGS_HEADER,
   type Logger,
-  type Observable,
+  TAGS_HEADER,
 } from "@toapi/common";
 import { handleResponse } from "./handle-response.js";
 import {
