@@ -138,6 +138,10 @@ export class Cache {
       this.errorLog(error);
       switch (entry.state.status) {
         case "pending":
+          if (entry.state.queued) {
+            entry.state = init(entry.state.queued);
+            return;
+          }
           // no point to caching a failed request
           this.evictEntry(url);
           return;
@@ -171,8 +175,8 @@ export class Cache {
 
     switch (entry.state.status) {
       case "pending":
-        // pending is stale now, replace it with a fresh request
-        entry.state = init(observable);
+        // pending, queue the new revalidation
+        entry.state = queue(entry.state, observable);
         break;
 
       case "cached":
