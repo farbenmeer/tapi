@@ -45,9 +45,9 @@ async function listenForInvalidations(url: string, cache: Cache) {
       // invalidate everything in the cache, it might have gone stale while we were not listening
       await cache.revalidateAll();
     }
-
-    throw new Error("Toapi: Failed to reconnect to invalidation stream.");
   }
+
+  throw new Error("Toapi: Failed to reconnect to invalidation stream.");
 }
 
 interface Options {
