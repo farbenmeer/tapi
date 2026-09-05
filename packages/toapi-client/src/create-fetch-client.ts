@@ -40,7 +40,11 @@ async function listenForInvalidations(url: string, cache: Cache) {
     } finally {
       // error or stream ended, retry with exponential backoff
       await new Promise((resolve) =>
-        setTimeout(resolve, 500 * Math.pow(1.1, Math.min(retry, 100)),
+        // so the retry interval is roughly
+        // 0.55s, 0.61s, 0.66s, 0.73s 
+        // growing exponentially up to 1.9hours and then stays constant
+        // for about 63 days before it throws an error
+        setTimeout(resolve, 500 * Math.pow(1.1, Math.min(retry, 100))),
       );
       // invalidate everything in the cache, it might have gone stale while we were not listening
       await cache.revalidateAll();
