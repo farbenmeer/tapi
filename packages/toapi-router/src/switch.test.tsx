@@ -33,7 +33,7 @@ describe("Switch", () => {
       );
 
       await expect.element(screen.getByText("Bar")).toBeInTheDocument();
-      await expect.element(screen.queryByText("Baz")).not.toBeInTheDocument();
+      await expect.element(screen.getByText("Baz")).not.toBeInTheDocument();
     });
 
     test("renders route without path as fallback", async () => {
