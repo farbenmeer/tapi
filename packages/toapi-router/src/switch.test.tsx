@@ -24,9 +24,11 @@ describe("Switch", () => {
     test("renders first matching route", async () => {
       const screen = await render(
         <Router location={{ pathname: "/bar", search: "", hash: "" }}>
-          <Route path="/foo">Foo</Route>
-          <Route path="/bar">Bar</Route>
-          <Route path="/bar">Baz</Route>
+          <Switch>
+            <Route path="/foo">Foo</Route>
+            <Route path="/bar">Bar</Route>
+            <Route path="/bar">Baz</Route>
+          </Switch>
         </Router>
       );
 
@@ -37,9 +39,11 @@ describe("Switch", () => {
     test("renders route without path as fallback", async () => {
       const screen = await render(
         <Router location={{ pathname: "/baz", search: "", hash: "" }}>
-          <Route path="/foo">Foo</Route>
-          <Route path="/bar">Bar</Route>
-          <Route>Baz</Route>
+          <Switch>
+            <Route path="/foo">Foo</Route>
+            <Route path="/bar">Bar</Route>
+            <Route>Baz</Route>
+          </Switch>
         </Router>
       );
 
