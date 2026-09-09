@@ -37,31 +37,30 @@ export function Switch({ children }: Props) {
     ]
   );
 
-  const match = useMemo((): [string, RouteContextValue] | null => {
-    for (const meta of routeMeta) {
-      const match = pathname.match(meta.pathRegex);
-      if (match)
-        return [
-          meta.path,
-          {
-            path: meta.fullPath,
-            params: match?.groups ?? {},
-            matchedPathname: match?.[1] ?? "",
-          },
-        ];
-    }
-    return null;
-  }, [routeMeta, pathname]);
+  const match = useMemo(
+    (): [number, RouteContextValue] | null => {
+      for (const [index, meta] of routeMeta.entries()) {
+        const match = pathname.match(meta.pathRegex);
+        if (match)
+          return [
+            index,
+            {
+              path: meta.fullPath,
+              params: match.groups ?? {},
+              matchedPathname: match[1] ?? "",
+            },
+          ];
+      }
+      return null;
+    },
+    [routeMeta, pathname]
+  );
 
   if (!match) {
     return null;
   }
 
-  const [path, context] = match;
+  const [routeIndex, context] = match;
 
-  return (
-    <RouteContext value={context}>
-      {props.find((route) => route.path === path)?.children}
-    </RouteContext>
-  );
+  return <RouteContext value={context}>{props[routeIndex]!.children}</RouteContext>;
 }
