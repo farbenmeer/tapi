@@ -27,7 +27,7 @@ jobs:
           - 6379:6379
       postgres:
         # Docker Hub image
-        image: postgres:17
+        image: postgres:18
         env:
           POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
