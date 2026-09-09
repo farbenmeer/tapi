@@ -457,8 +457,8 @@ importers:
   packages/toapi-vite-plugin:
     dependencies:
       srvx:
-        specifier: ^0.11.15
-        version: 0.11.22
+        specifier: ^0.12.0
+        version: 0.12.8
       typescript:
         specifier: ^5 || ^6.0.0
         version: 6.0.3
@@ -513,8 +513,8 @@ importers:
         specifier: ^0.35.0
         version: 0.35.4(@types/node@25.9.5)
       starlight-theme-vintage:
-        specifier: ^0.1.0
-        version: 0.1.0(@astrojs/starlight@0.41.11(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@25.9.5)(jiti@2.7.0))(typescript@6.0.3))
+        specifier: ^0.2.0
+        version: 0.2.0(@astrojs/starlight@0.41.11(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@25.9.5)(jiti@2.7.0))(typescript@6.0.3))
     devDependencies:
       typescript:
         specifier: ^6.0.3
@@ -3759,14 +3759,19 @@ packages:
     engines: {node: '>=20.16.0'}
     hasBin: true
 
+  srvx@0.12.8:
+    resolution: {integrity: sha512-7k9HoDhluTlD7UJ+F+OopZoPZXB2J8f/5nW2VMLaB8KsSlZlRQxyyoX0hWEQCxB+F+3ZvB5QX3LqB6xSBRfxQQ==}
+    engines: {node: '>=20.16.0'}
+    hasBin: true
+
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
-  starlight-theme-vintage@0.1.0:
-    resolution: {integrity: sha512-xHp5ovkqkg66TpRfWV85lIPQ8/F2eiYxINnj8fKseBgnzOUVts0sGMFozzrC1QURffiN1LjtdwiXT9PL7ZrfZg==}
-    engines: {node: '>=18'}
+  starlight-theme-vintage@0.2.0:
+    resolution: {integrity: sha512-ZBFrxYNZjtKyleEKy+XZriM+xXn4Q/TeTwa679ZGmWo5L+KJpBabcGG/U5B0No+K9mIpf6YF7o6SsYveaDPt+Q==}
+    engines: {node: '>=22.12.0'}
     peerDependencies:
-      '@astrojs/starlight': '>=0.37.0'
+      '@astrojs/starlight': '>=0.42.0'
 
   std-env@3.10.0:
     resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
@@ -7968,9 +7973,11 @@ snapshots:
 
   srvx@0.11.22: {}
 
+  srvx@0.12.8: {}
+
   stackback@0.0.2: {}
 
-  starlight-theme-vintage@0.1.0(@astrojs/starlight@0.41.11(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@25.9.5)(jiti@2.7.0))(typescript@6.0.3)):
+  starlight-theme-vintage@0.2.0(@astrojs/starlight@0.41.11(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@25.9.5)(jiti@2.7.0))(typescript@6.0.3)):
     dependencies:
       '@astrojs/starlight': 0.41.11(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@25.9.5)(jiti@2.7.0))(typescript@6.0.3)
 
