@@ -24,7 +24,7 @@
     "release": "pnpm build && pnpm publish --no-git-checks"
   },
   "dependencies": {
-    "srvx": "^0.12.0"
+    "srvx": "^1.0.0"
   },
   "peerDependencies": {
     "@toapi/server": "workspace:^",

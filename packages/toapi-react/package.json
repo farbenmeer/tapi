@@ -30,7 +30,7 @@
     "@toapi/server": "workspace:^",
     "@happy-dom/global-registrator": "^20.0.0",
     "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
