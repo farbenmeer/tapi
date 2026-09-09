@@ -32,8 +32,8 @@ describe("Switch", () => {
         </Router>
       );
 
-      const container = screen.container;
-      expect(container).toHaveTextContent("Bar");
+      await expect.element(screen.getByText("Bar")).toBeInTheDocument();
+      await expect.element(screen.queryByText("Baz")).not.toBeInTheDocument();
     });
 
     test("renders route without path as fallback", async () => {
