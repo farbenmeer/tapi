@@ -35,7 +35,7 @@
     "zod": "^4.0.17"
   },
   "peerDependencies": {
-    "typescript": "^5 || ^6.0.0",
+    "typescript": "^5 || ^6.0.0 || ^7.0.0",
     "zod": "^4.0.17"
   },
   "repository": {
