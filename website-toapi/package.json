@@ -18,6 +18,6 @@
     "starlight-theme-vintage": "^0.2.0"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.0"
   }
 }
