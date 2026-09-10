@@ -6,6 +6,7 @@ import {
   TResponse,
 } from "@toapi/server";
 import { act, render, screen } from "@testing-library/react";
+import { ErrorBoundary } from "react-error-boundary";
 import { Suspense } from "react";
 import { describe, expect, test } from "vitest";
 import { z } from "zod/v4";
@@ -34,6 +35,16 @@ describe("useQuery", () => {
         async (req) => {
           const { q } = req.query();
           return TResponse.json({ message: `Query: ${q}` });
+        },
+      ),
+    })
+    .route("/error", {
+      GET: defineHandler(
+        {
+          authorize: () => true,
+        },
+        async () => {
+          throw new Error("API route failed");
         },
       ),
     });
@@ -75,6 +86,27 @@ describe("useQuery", () => {
     );
 
     expect(screen.getByText("Query: test")).toBeInTheDocument();
+  });
+
+  test("handles errors with an error boundary", async () => {
+    const query = client.error.get();
+
+    function Sut() {
+      const data = useQuery(query);
+      return <div>{data.message}</div>;
+    }
+
+    await act(() =>
+      render(
+        <ErrorBoundary fallback={<div>Error boundary fallback</div>}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Sut />
+          </Suspense>
+        </ErrorBoundary>,
+      ),
+    );
+
+    expect(screen.getByText("Error boundary fallback")).toBeVisible();
   });
 
   describe("Route as Prop", () => {
