@@ -31,6 +31,44 @@ describe("Cache", () => {
     vi.useRealTimers();
   });
 
+  test("query identity survives queued refreshes but not a different query or cache entry", async () => {
+    const cache = new Cache({ minTTL: 100_000 });
+    const url = "/identity";
+    const fetch = vi.fn(async () => jsonResponse({ version: 1 }, ["identity"]));
+    const initial = cache.request(url, fetch);
+    const unsubscribe = initial.subscribe(vi.fn());
+    await initial;
+    await vi.runAllTicks();
+
+    const pending = deferred<Response>();
+    fetch.mockImplementationOnce(() => pending.promise);
+    const firstRefresh = cache.revalidateTags(["identity"]);
+    const refreshing = cache.request(url, fetch);
+    expect(refreshing).not.toBe(initial);
+    expect(initial.queryKey).toBeDefined();
+    expect(refreshing.queryKey).toBe(initial.queryKey);
+
+    const secondRefresh = cache.revalidateUrl(url);
+    const queued = cache.request(url, fetch);
+    expect(queued).not.toBe(refreshing);
+    expect(queued.queryKey).toBe(initial.queryKey);
+    pending.resolve(jsonResponse({ version: 2 }, ["identity"]));
+    await Promise.all([firstRefresh, secondRefresh]);
+    expect(cache.request(url, fetch).queryKey).toBe(initial.queryKey);
+
+    const otherUrl = cache.request(`${url}?page=2`, fetch);
+    const otherClient = new Cache({}).request(url, fetch);
+    expect(otherUrl.queryKey).not.toBe(initial.queryKey);
+    expect(otherClient.queryKey).not.toBe(initial.queryKey);
+    await Promise.all([otherUrl, otherClient]);
+
+    unsubscribe();
+    await cache.revalidateUrl(url); // No subscribers: evicts the entry.
+    const replacement = cache.request(url, fetch);
+    expect(replacement.queryKey).not.toBe(initial.queryKey);
+    await replacement;
+  });
+
   test("stale in-flight revalidation of an evicted entry does not corrupt the replacement's tag index", async () => {
     // A large minTTL keeps the queued cleanup timeouts from firing during the
     // test, so the only mutations we observe come from the race under test.

@@ -106,6 +106,8 @@ function SearchResults({ initial = "" }: { initial?: string }) {
 
 ### Automatic updates after a mutation
 
+Background revalidation keeps the last resolved value visible while the new response loads, even when a parent re-renders or the user types into the component. Inline query factories are supported without memoization. A different URL, query parameter, or client instance is a different query and suspends for its own data. Use React component keys for navigation identity, not refresh timestamps or response versions.
+
 Because `useQuery` subscribes to the client, a component reading a query updates itself once a mutation invalidates the matching tags — no manual refetch needed. Just make sure `POST /books` invalidates at least one of the tags associated with `GET /books`.
 
 ```tsx
