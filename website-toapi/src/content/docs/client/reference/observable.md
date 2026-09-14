@@ -9,6 +9,7 @@ description: "The Observable type augments GET promises with a subscribe() metho
 
 ```ts
 export type Observable<T> = {
+  readonly queryKey?: object;
   subscribe(callback: (value: Promise<T>) => void): () => void;
 };
 ```
@@ -26,6 +27,12 @@ const unsubscribe = result.subscribe((next) => {
   next.then((users) => render(users));
 });
 ```
+
+## `queryKey`
+
+The fetch client supplies an opaque object identifying the cached query. It stays the same across refresh promises, including queued revalidations. Different URLs (including query parameters), client instances, and evicted/recreated entries receive different objects. Compare it by reference; do not serialize it or use response data as a key.
+
+`useQuery` uses this identity to keep resolved data visible during background refreshes. It is optional for custom observables: without it, the observable promise itself identifies the query, preserving the original behavior.
 
 ## `subscribe(callback)`
 

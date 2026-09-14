@@ -15,12 +15,13 @@ export function useQuery<T>(
     typeof query === "function" ? query : () => query,
     [query]
   );
-  // The value is kept together with the observable it was loaded for.
-  // Revalidation pushes a new promise for the *same* query, so the stored
-  // value stays valid; a different query invalidates it and we fall back to
-  // `use`, which suspends instead of rendering the previous query's data.
+  // The client keeps queryKey stable for the lifetime of a cached query,
+  // while each refresh returns a new promise. Comparing promises would mistake
+  // an inline factory's next render for a query switch and suspend on refresh.
+  // Custom observables without a key retain their existing identity semantics.
+  const source = observable.queryKey ?? observable;
   const [state, setState] = React.useState<{
-    source: ObservablePromise<T>;
+    source: object;
     value: T;
   } | null>(null);
 
@@ -31,16 +32,16 @@ export function useQuery<T>(
         const value = await next;
         // A late update from a subscription we have already left behind must
         // not overwrite the current one.
-        if (active) setState({ source: observable, value });
+        if (active) setState({ source, value });
       });
     });
     return () => {
       active = false;
       unsubscribe();
     };
-  }, [observable]);
+  }, [source, startTransition]);
 
-  return state !== null && state.source === observable
+  return state !== null && state.source === source
     ? state.value
     : React.use(observable);
 }

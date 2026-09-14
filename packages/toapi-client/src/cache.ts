@@ -21,6 +21,7 @@ type Fetcher = () => Promise<Response>;
 
 interface CacheEntry {
   state: CacheEntryState;
+  queryKey: object;
   fetch: Fetcher;
   subscriptions: Set<Subscription>;
   timeout: ReturnType<typeof setTimeout> | null;
@@ -63,6 +64,7 @@ export class Cache {
       const { observable } = this.loadFreshData(url, fetch);
       this.storage.set(url, {
         state: init(observable),
+        queryKey: observable.queryKey,
         fetch,
         subscriptions: new Set(),
         timeout: null,
@@ -230,15 +232,17 @@ export class Cache {
     url: string,
     fetch: Fetcher,
     waitFor: Promise<unknown> = Promise.resolve(),
-  ): { observable: ObservablePromise; resolved: Promise<void> } {
+  ): { observable: ObservablePromise & { queryKey: object }; resolved: Promise<void> } {
     // actually load fresh data
     const responsePromise = waitFor.then(() => fetch());
 
-    const observable: ObservablePromise = Object.assign(
+    const observable = Object.assign(
       responsePromise.then(handleResponse),
       {
-        subscribe: (callback: Subscription) =>
-          this.subscribe(url, fetch, callback),
+        // A response promise changes on every refresh, but the query does not.
+        // An object also separates identical URLs on different client caches.
+        queryKey: this.storage.get(url)?.queryKey ?? {},
+        subscribe: (callback: Subscription) => this.subscribe(url, fetch, callback),
       },
     );
 
@@ -259,6 +263,7 @@ export class Cache {
       const { observable } = this.loadFreshData(url, fetch);
       const newEntry = {
         state: init(observable),
+        queryKey: observable.queryKey,
         fetch,
         subscriptions: new Set([callback]),
         timeout: null,
