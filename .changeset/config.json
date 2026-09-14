@@ -6,7 +6,7 @@
     ["@toapi/server", "@toapi/client", "@toapi/common", "@toapi/worker", "@toapi/react"]
   ],
   "linked": [],
-  "access": "restricted",
+  "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "minor",
   "ignore": []
