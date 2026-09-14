@@ -1,5 +1,11 @@
 # @toapi/common
 
+## 1.2.5
+
+### Patch Changes
+
+- 613d1fa: Give query observables an optional stable queryKey across revalidation promises. React retains the last resolved data during background refreshes, including when inline query factories run again because of parent updates or typing. Switching URLs, query parameters, or client instances still suspends for the new query. Custom observables without a key keep their existing identity behavior.
+
 ## 1.2.4
 
 ## 1.2.3

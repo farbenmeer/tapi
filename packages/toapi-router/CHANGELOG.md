@@ -1,5 +1,11 @@
 # @toapi/router
 
+## 1.0.3
+
+### Patch Changes
+
+- 9fffc7b: Render only the first matching route in `Switch`.
+
 ## 1.0.2
 
 ### Patch Changes
