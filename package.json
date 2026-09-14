@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm run -r build",
-    "release": "pnpm -r --no-bail release",
+    "release": "pnpm --filter './packages/*' -r build && pnpm exec changeset publish",
     "test": "pnpm run -r test",
     "lint": "biome check ."
   },
