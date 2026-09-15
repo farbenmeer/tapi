@@ -65,6 +65,19 @@ const customHistory = {
 </Router>
 ```
 
+### `useTransition` (optional)
+
+- **Type**: `boolean | ((scope: () => void) => void)`
+- **Description**: Default `useTransition` behavior for this Router's own state updates (on `popstate`) and for `push`/`replace` calls that don't specify their own `useTransition` option. See [`Link`'s `useTransition` prop](./Link.md) for the full description of each value.
+- **Default**: `undefined` (wraps updates in `startTransition`)
+
+```tsx
+// Disable transitions for the whole app
+<Router useTransition={false}>
+  <App />
+</Router>
+```
+
 ## Context Providers
 
 The Router component provides several React contexts that can be accessed by child components:

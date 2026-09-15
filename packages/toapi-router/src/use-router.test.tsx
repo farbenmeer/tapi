@@ -108,4 +108,30 @@ describe("useRouter", () => {
       .element(screen.getByTestId("sut"))
       .toHaveTextContent("/parent/child");
   });
+
+  test("navigates exactly once when router.push is called with useTransition: false", async () => {
+    const { location, history } = mockHistory();
+    const pushState = history.pushState;
+
+    function Sut() {
+      const router = useRouter();
+      const pathname = usePathname();
+
+      useEffect(() => {
+        router.push("/new-url", { useTransition: false });
+      }, []);
+
+      return <div data-testid="sut">{pathname}</div>;
+    }
+    const screen = await render(
+      <Router history={history} location={location}>
+        <Sut />
+      </Router>
+    );
+
+    await expect
+      .element(screen.getByTestId("sut"))
+      .toHaveTextContent("/new-url");
+    expect(pushState).toHaveBeenCalledTimes(1);
+  });
 });

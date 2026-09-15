@@ -60,6 +60,20 @@ function Navigation() {
 </Link>
 ```
 
+### `useTransition` (optional)
+
+- **Type**: `boolean | ((scope: () => void) => void)`
+- **Description**: Controls how the navigation update is scheduled.
+  - `undefined` (default): the update is wrapped in React's `startTransition`, so navigation stays interruptible and doesn't block urgent updates.
+  - `false`: the update runs synchronously, outside of a transition.
+  - a function: called with the update as its `scope` argument, so you can supply your own transition — for example the `startTransition` returned by React's `useTransition()` hook, which also gives you an `isPending` flag.
+
+```tsx
+<Link href="/settings" useTransition={false}>
+  Settings
+</Link>
+```
+
 ### HTML Anchor Props
 
 All standard HTML anchor element props are supported and passed through:
@@ -131,10 +145,11 @@ The link component does not handle external URLs. Use the `<a>` tag for external
 ### Client-Side Navigation
 The Link component handles client-side navigation for internal links:
 
-1. Prevents the default browser navigation (`event.preventDefault()`)
-2. Calls the custom `onClick` handler (if provided)
-3. Uses the router's `push` or `replace` method for navigation
-4. Updates the URL and triggers re-renders
+1. Calls the custom `onClick` handler (if provided), together with the navigation, inside a transition (see the `useTransition` prop above).
+2. If the handler called `event.preventDefault()`, the router skips its own navigation.
+3. Otherwise it uses the router's `push` or `replace` method for navigation.
+4. Prevents the default browser anchor navigation.
+5. Updates the URL and triggers re-renders.
 
 
 ### Navigation Methods
@@ -295,6 +310,64 @@ function SmartLink({ href, children, ...props }) {
   return (
     <Link href={href} {...props}>
       {children}
+    </Link>
+  );
+}
+```
+
+### Navigating Without a Transition
+
+Set `useTransition={false}` when you want the URL and route state to update synchronously, for example to keep a click handler's side effects (like `event.preventDefault()`-driven scroll locks) in sync with the navigation:
+
+```tsx
+<Link href="/checkout" useTransition={false}>
+  Checkout
+</Link>
+```
+
+### Showing a Loading State with `useTransition`
+
+Pass React's own `startTransition` (from the `useTransition()` hook) as the `useTransition` prop to surface an `isPending` flag while the navigation is in flight:
+
+```tsx
+import { useTransition } from "react";
+import { Link } from "@toapi/router";
+
+function NavLink({ href, children }) {
+  const [isPending, startTransition] = useTransition();
+
+  return (
+    <Link href={href} useTransition={startTransition} aria-busy={isPending}>
+      {children}
+      {isPending && <Spinner />}
+    </Link>
+  );
+}
+```
+
+### Using `Link` with `useOptimistic`
+
+`Link` always wraps its click handling in a transition (by default via `startTransition`), so an optimistic update triggered inside `onClick` is compatible with `useOptimistic`:
+
+```tsx
+import { useOptimistic } from "react";
+import { Link } from "@toapi/router";
+
+function LikeButton({ postId, likes, onLike }) {
+  const [optimisticLikes, addOptimisticLike] = useOptimistic(
+    likes,
+    (state) => state + 1,
+  );
+
+  return (
+    <Link
+      href={`/posts/${postId}`}
+      onClick={() => {
+        addOptimisticLike(null);
+        onLike(postId);
+      }}
+    >
+      {optimisticLikes} likes
     </Link>
   );
 }

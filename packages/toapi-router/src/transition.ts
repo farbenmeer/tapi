@@ -9,9 +9,11 @@ export function runTransition(
 ) {
   if (p === false) {
     scope();
+    return;
   }
   if (typeof p === "function") {
     p(scope);
+    return;
   }
   startTransition(scope);
 }
