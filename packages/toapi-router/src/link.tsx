@@ -1,4 +1,4 @@
-import { use, useMemo, type HTMLProps, type ReactNode } from "react";
+import { startTransition, use, useMemo, type HTMLProps } from "react";
 import {
   PathnameContext,
   RouteContext,
@@ -20,21 +20,24 @@ export function Link({ href, replace, children, onClick, ...rawProps }: Props) {
 
   const target = useMemo(
     () => resolve(href, { pathname, parentPathname, searchParams }),
-    [href, parentPathname, pathname]
+    [href, parentPathname, pathname],
   );
 
   return (
     <a
       href={target}
       onClick={(event) => {
-        onClick?.(event);
-        if (event.defaultPrevented) return;
+        const { defaultPrevented } = event;
         event.preventDefault();
-        if (replace) {
-          router.replace(target);
-        } else {
-          router.push(target);
-        }
+        startTransition(() => {
+          onClick?.(event);
+          if (defaultPrevented) return;
+          if (replace) {
+            router.replace(target);
+          } else {
+            router.push(target);
+          }
+        });
       }}
       {...rawProps}
     >
