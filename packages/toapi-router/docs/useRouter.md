@@ -31,11 +31,15 @@ function LoginForm() {
 
 The hook returns an object with the following methods:
 
-### `push(url: string)`
+### `push(url: string, options?: { useTransition?: boolean | ((scope: () => void) => void) })`
 
 - **Description**: Navigate to a new route by adding a new entry to the browser's history stack
 - **Parameters**:
   - `url` (string): The destination URL (absolute path, relative path, or full URL with query parameters)
+  - `options.useTransition` (optional): Controls how the resulting state update is scheduled.
+    - `undefined` (default): wrapped in React's `startTransition`.
+    - `false`: applied synchronously, outside of a transition.
+    - a function: called with the update, so you can supply your own transition (e.g. the `startTransition` from React's `useTransition()` hook).
 - **Returns**: `void`
 
 ```tsx
@@ -55,13 +59,17 @@ router.push("/docs#installation");
 
 // Navigate with everything
 router.push("/products?category=electronics&sort=price#top");
+
+// Navigate synchronously, without a transition
+router.push("/checkout", { useTransition: false });
 ```
 
-### `replace(url: string)`
+### `replace(url: string, options?: { useTransition?: boolean | ((scope: () => void) => void) })`
 
 - **Description**: Navigate to a new route by replacing the current entry in the browser's history stack
 - **Parameters**:
   - `url` (string): The destination URL (absolute path, relative path, or full URL with query parameters)
+  - `options.useTransition` (optional): Same as `push`'s `options.useTransition`.
 - **Returns**: `void`
 
 ```tsx
@@ -80,3 +88,78 @@ router.replace("/dashboard");
 |--------|---------------|----------|
 | `push` | Adds new entry | Normal navigation, allows back button |
 | `replace` | Replaces current entry | Redirects, login flows, error corrections |
+
+## Examples
+
+### Navigating Without a Transition
+
+Pass `useTransition: false` when a caller needs the pathname/search state to update synchronously, right after `push`/`replace` returns:
+
+```tsx
+function CheckoutButton() {
+  const router = useRouter();
+
+  return (
+    <button
+      onClick={() => {
+        router.push("/checkout", { useTransition: false });
+      }}
+    >
+      Checkout
+    </button>
+  );
+}
+```
+
+### Showing a Loading State with `useTransition`
+
+Pass React's `startTransition` (from the `useTransition()` hook) as `options.useTransition` to get an `isPending` flag for the duration of the navigation:
+
+```tsx
+import { useTransition } from "react";
+import { useRouter } from "@toapi/router";
+
+function DashboardLink() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  return (
+    <button
+      disabled={isPending}
+      onClick={() => {
+        router.push("/dashboard", { useTransition: startTransition });
+      }}
+    >
+      {isPending ? "Loading…" : "Go to Dashboard"}
+    </button>
+  );
+}
+```
+
+### Combining with `useOptimistic`
+
+`useOptimistic` updates must happen inside a transition. Wrap the whole handler — the optimistic update and the navigation — in `startTransition` yourself, and pass `useTransition: false` to `push`/`replace` so it doesn't start a second, nested transition:
+
+```tsx
+import { startTransition, useOptimistic } from "react";
+import { useRouter } from "@toapi/router";
+
+function ArchiveButton({ itemId, onArchive }) {
+  const router = useRouter();
+  const [isArchived, setOptimisticArchived] = useOptimistic(false);
+
+  return (
+    <button
+      onClick={() => {
+        startTransition(() => {
+          setOptimisticArchived(true);
+          onArchive(itemId);
+          router.push("/items", { useTransition: false });
+        });
+      }}
+    >
+      {isArchived ? "Archiving…" : "Archive"}
+    </button>
+  );
+}
+```
