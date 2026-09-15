@@ -202,4 +202,60 @@ describe("Cache", () => {
     await expect(cache.request(url, fetch)).resolves.toEqual({ v: "b" });
     expect(fetch).toHaveBeenCalledTimes(2);
   });
+
+  test("an older queued request does not evict the newer pending request", async () => {
+    // The logger is stubbed only to keep the failures out of the console.
+    const cache = new Cache({ minTTL: 100_000, logger: { error: vi.fn() } });
+    const url = "/thing";
+
+    // Three concurrent requests: A is the initial one, B and C are successive
+    // revalidations started while A is still pending. A and B fail, C succeeds.
+    const requestA = deferred<Response>();
+    const requestB = deferred<Response>();
+    const requestC = deferred<Response>();
+    let calls = 0;
+    const fetch = vi.fn(() => {
+      calls += 1;
+      if (calls === 1) return requestA.promise;
+      if (calls === 2) return requestB.promise;
+      if (calls === 3) return requestC.promise;
+      return Promise.resolve(jsonResponse({ v: "d" }, ["thing"]));
+    });
+
+    // Entry is pending on A, with a subscriber so revalidateUrl doesn't take
+    // the zero-subscriber eviction branch. Swallow the rejections pushed to it.
+    const observable = cache.request(url, fetch);
+    observable.catch(() => {});
+    observable.subscribe((data) => data.catch(() => {}));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    // Two revalidations while A is still pending. The first queues B, the
+    // second is ignored as the first queue has not even started its request
+    const firstRevalidation = cache.revalidateAll();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetch).toHaveBeenCalledTimes(2);
+
+    const secondRevalidation = cache.revalidateAll();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetch).toHaveBeenCalledTimes(2);
+
+    // A fails, so the queued B is promoted to the entry's pending request.
+    requestA.resolve(new Response(null, { status: 500 }));
+    await vi.advanceTimersByTimeAsync(0);
+
+    // The orphaned B fails. It must not touch the entry, which is now C's.
+    requestB.resolve(new Response(null, { status: 500 }));
+    await vi.advanceTimersByTimeAsync(0);
+
+    // C succeeds and its result must be cached.
+    requestC.resolve(jsonResponse({ v: "c" }, ["thing"]));
+    await Promise.all([firstRevalidation, secondRevalidation]);
+    await vi.advanceTimersByTimeAsync(0);
+
+    // If B's failure evicted the entry, C's resolve hook found no entry and
+    // dropped the fresh response, so this re-fetches instead of serving "c".
+    await expect(cache.request(url, fetch)).resolves.toEqual({ v: "c" });
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
 });

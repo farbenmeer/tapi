@@ -1,6 +1,9 @@
 import type { Observable } from "@toapi/common";
 
-export type ObservablePromise = Promise<unknown> & Observable<unknown>;
+export type ObservablePromise = Promise<unknown> &
+  Observable<unknown> & {
+    resolved: Promise<void>;
+  };
 
 export type Pending = {
   status: "pending";
@@ -89,4 +92,10 @@ export function revert(state: Revalidating): Cached {
     tags: state.tags,
     expiresAt: state.expiresAt,
   };
+}
+
+export function isLoading(
+  state: CacheEntryState,
+): state is Pending | Revalidating {
+  return state.status === "pending" || state.status === "revalidating";
 }

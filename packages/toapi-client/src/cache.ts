@@ -8,6 +8,7 @@ import { handleResponse } from "./handle-response.js";
 import {
   type CacheEntryState,
   init,
+  isLoading,
   type ObservablePromise,
   queue,
   resolve,
@@ -165,12 +166,15 @@ export class Cache {
       return Promise.resolve();
     }
 
+    if (isLoading(entry.state) && entry.state.queued) {
+      // there is already a queued request
+      return entry.state.queued.then(() => undefined);
+    }
+
     const { observable, resolved } = this.loadFreshData(
       url,
       entry.fetch,
-      entry.state.status === "revalidating"
-        ? entry.state.next
-        : Promise.resolve(),
+      isLoading(entry.state) ? entry.state.next : Promise.resolve(),
     );
 
     switch (entry.state.status) {
@@ -248,10 +252,9 @@ export class Cache {
       {
         subscribe: (callback: Subscription) =>
           this.subscribe(url, fetch, callback),
+        resolved: this.setResolveHook(url, responsePromise, observable),
       },
     );
-
-    const resolved = this.setResolveHook(url, responsePromise, observable);
 
     return { observable, resolved };
   }
