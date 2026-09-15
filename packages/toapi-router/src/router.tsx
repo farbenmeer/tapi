@@ -69,7 +69,7 @@ export function Router({
         });
       },
     }),
-    [location, history],
+    [location, history, useTransition],
   );
 
   return (
