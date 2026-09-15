@@ -16,11 +16,17 @@ import { handleResponse } from "./handle-response.js";
 const globalFetch = fetch;
 
 async function listenForInvalidations(url: string, cache: Cache) {
-  const MAX_ATTEMPTS = 1000;
+  const MAX_ATTEMPTS = 500;
   for (let retry = 0; retry < MAX_ATTEMPTS; retry++) {
     try {
       const res = await globalFetch(url);
-      if (!res.ok || !res.body) break;
+      if (!res.ok || !res.body) continue;
+
+      // reset retry counter
+      retry = 0;
+
+      // invalidate everything in the cache, it might have gone stale while we were not listening
+      await cache.revalidateAll();
 
       let buffer = "";
       const decoder = new TextDecoder();
@@ -34,13 +40,19 @@ async function listenForInvalidations(url: string, cache: Cache) {
           await cache.revalidateTags(rawTags.split(" "));
         }
       }
-    } catch {
-      // network error — retry below
+    } finally {
+      // error or stream ended, retry with exponential backoff
+      await new Promise((resolve) =>
+        // so the retry interval is roughly
+        // 0.55s, 0.61s, 0.66s, 0.73s
+        // growing exponentially up to 1.9hours and then stays constant
+        // for about 63 days before it throws an error
+        setTimeout(resolve, 500 * Math.pow(1.1, Math.min(retry, 100))),
+      );
     }
-    await new Promise((resolve) =>
-      setTimeout(resolve, 500 * Math.pow(2, Math.min(retry, 10))),
-    );
   }
+
+  throw new Error("Toapi: Failed to reconnect to invalidation stream.");
 }
 
 interface Options {
