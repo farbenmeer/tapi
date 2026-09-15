@@ -1,4 +1,4 @@
-import { startTransition, use, useMemo, type HTMLProps } from "react";
+import { use, useMemo, type HTMLProps } from "react";
 import {
   PathnameContext,
   RouteContext,
@@ -6,13 +6,22 @@ import {
   SearchParamsContext,
 } from "./context.js";
 import { resolve } from "./path.js";
+import { runTransition, type UseTransitionParameter } from "./transition.js";
 
 interface Props extends HTMLProps<HTMLAnchorElement> {
   href: string;
   replace?: boolean;
+  useTransition?: UseTransitionParameter;
 }
 
-export function Link({ href, replace, children, onClick, ...rawProps }: Props) {
+export function Link({
+  href,
+  replace,
+  children,
+  useTransition,
+  onClick,
+  ...rawProps
+}: Props) {
   const { matchedPathname: parentPathname } = use(RouteContext);
   const router = use(RouterContext);
   const pathname = use(PathnameContext);
@@ -27,17 +36,16 @@ export function Link({ href, replace, children, onClick, ...rawProps }: Props) {
     <a
       href={target}
       onClick={(event) => {
-        const { defaultPrevented } = event;
-        event.preventDefault();
-        startTransition(() => {
+        runTransition(useTransition, () => {
           onClick?.(event);
-          if (defaultPrevented) return;
+          if (event.defaultPrevented) return;
           if (replace) {
-            router.replace(target);
+            router.replace(target, { useTransition: false });
           } else {
-            router.push(target);
+            router.push(target, { useTransition: false });
           }
         });
+        event.preventDefault();
       }}
       {...rawProps}
     >

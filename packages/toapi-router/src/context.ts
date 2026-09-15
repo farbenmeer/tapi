@@ -1,17 +1,20 @@
 import { createContext } from "react";
 import { ImmutableSearchParams } from "./immutable-search-params.js";
+import type { UseTransitionParameter } from "./transition.js";
 
 export const PathnameContext = createContext<string>("/");
 
 export const SearchParamsContext = createContext<ImmutableSearchParams>(
-  new ImmutableSearchParams()
+  new ImmutableSearchParams(),
 );
 
 export const HashContext = createContext<string>("");
 
+export type RouteFunctionOptions = { useTransition?: UseTransitionParameter };
+
 export const RouterContext = createContext<{
-  push: (href: string) => void;
-  replace: (href: string) => void;
+  push: (href: string, options?: RouteFunctionOptions) => void;
+  replace: (href: string, options?: RouteFunctionOptions) => void;
 }>({
   push: () => {},
   replace: () => {},
