@@ -48,7 +48,7 @@ export function Router({
     };
     window.addEventListener("popstate", handlePopstate);
     return () => window.removeEventListener("popstate", handlePopstate);
-  }, [location]);
+  }, [location, useTransition]);
 
   const routerContextValue = useMemo(
     () => ({

@@ -1,7 +1,7 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { render } from "vitest-browser-react";
 import { Router } from "./router.js";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useRouter } from "./use-router.js";
 import { usePathname } from "./use-pathname.js";
 import { useSearchParams } from "./use-search-params.js";
@@ -133,5 +133,75 @@ describe("useRouter", () => {
       .element(screen.getByTestId("sut"))
       .toHaveTextContent("/new-url");
     expect(pushState).toHaveBeenCalledTimes(1);
+  });
+
+  test("uses an updated default transition policy from an existing navigation callback", async () => {
+    const { location, history } = mockHistory();
+    const initialTransition = vi.fn((scope: () => void) => scope());
+    const updatedTransition = vi.fn((scope: () => void) => scope());
+    let navigate: () => void;
+
+    function Sut() {
+      const router = useRouter();
+      navigate = useCallback(() => router.push("/new-url"), []);
+      return null;
+    }
+
+    const view = await render(
+      <Router
+        history={history}
+        location={location}
+        useTransition={initialTransition}
+      >
+        <Sut />
+      </Router>,
+    );
+
+    view.rerender(
+      <Router
+        history={history}
+        location={location}
+        useTransition={updatedTransition}
+      >
+        <Sut />
+      </Router>,
+    );
+
+    navigate!();
+
+    expect(initialTransition).not.toHaveBeenCalled();
+    expect(updatedTransition).toHaveBeenCalledTimes(1);
+  });
+
+  test("uses an updated transition policy for popstate", async () => {
+    const { location, history, back } = mockHistory("/original");
+    const initialTransition = vi.fn((scope: () => void) => scope());
+    const updatedTransition = vi.fn((scope: () => void) => scope());
+
+    const view = await render(
+      <Router
+        history={history}
+        location={location}
+        useTransition={initialTransition}
+      >
+        <div />
+      </Router>,
+    );
+
+    history.pushState(null, "", "/new-url");
+    view.rerender(
+      <Router
+        history={history}
+        location={location}
+        useTransition={updatedTransition}
+      >
+        <div />
+      </Router>,
+    );
+
+    back();
+
+    expect(initialTransition).not.toHaveBeenCalled();
+    expect(updatedTransition).toHaveBeenCalledTimes(1);
   });
 });

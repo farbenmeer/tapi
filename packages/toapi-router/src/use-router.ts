@@ -36,6 +36,6 @@ export function useRouter(): ContextType<typeof RouterContext> {
         );
       },
     }),
-    [pathname, searchParams, parentPathname],
+    [pathname, searchParams, parentPathname, push, replace],
   );
 }
