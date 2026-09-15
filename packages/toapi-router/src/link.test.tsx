@@ -233,6 +233,27 @@ describe("Link", () => {
 
       expect(mockHistory.pushState).not.toHaveBeenCalled();
     });
+
+    test("navigates exactly once when useTransition is false", async () => {
+      const screen = await render(
+        <Router
+          location={{ pathname: "/", search: "", hash: "" }}
+          history={mockHistory}
+        >
+          <Route path="/">
+            <Link href="/test" useTransition={false}>
+              Test Link
+            </Link>
+          </Route>
+        </Router>
+      );
+
+      const link = screen.getByRole("link");
+      await link.click();
+
+      expect(mockHistory.pushState).toHaveBeenCalledTimes(1);
+      expect(mockHistory.pushState).toHaveBeenCalledWith(null, "", "/test");
+    });
   });
 
   describe("nested route context", () => {

@@ -15,25 +15,27 @@ export function useRouter(): ContextType<typeof RouterContext> {
 
   return useMemo(
     () => ({
-      push(href) {
+      push(href, options) {
         push(
           resolve(href, {
             pathname,
             searchParams,
             parentPathname,
-          })
+          }),
+          options,
         );
       },
-      replace(href) {
+      replace(href, options) {
         replace(
           resolve(href, {
             pathname,
             searchParams,
             parentPathname,
-          })
+          }),
+          options,
         );
       },
     }),
-    [pathname, searchParams, parentPathname]
+    [pathname, searchParams, parentPathname],
   );
 }

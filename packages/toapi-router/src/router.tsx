@@ -1,12 +1,14 @@
-import { startTransition, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   HashContext,
   PathnameContext,
   RouterContext,
   SearchParamsContext,
+  type RouteFunctionOptions,
 } from "./context.js";
 import { ImmutableSearchParams } from "./immutable-search-params.js";
 import { removeTrailingSlash } from "./path.js";
+import { runTransition, type UseTransitionParameter } from "./transition.js";
 
 interface Props {
   children: ReactNode;
@@ -19,24 +21,26 @@ interface Props {
     pushState: (state: any, title: string, url: string) => void;
     replaceState: (state: any, title: string, url: string) => void;
   };
+  useTransition?: UseTransitionParameter;
 }
 
 export function Router({
   history = window.history,
   location = window.location,
   children,
+  useTransition,
 }: Props) {
   const [pathname, setPathname] = useState(
-    removeTrailingSlash(location.pathname)
+    removeTrailingSlash(location.pathname),
   );
   const [searchParams, setSearchParams] = useState(
-    new ImmutableSearchParams(location.search)
+    new ImmutableSearchParams(location.search),
   );
   const [hash, setHash] = useState(location.hash);
 
   useEffect(() => {
     const handlePopstate = () => {
-      startTransition(() => {
+      runTransition(useTransition, () => {
         setPathname(removeTrailingSlash(location.pathname));
         setSearchParams(new ImmutableSearchParams(location.search));
         setHash(location.hash);
@@ -48,24 +52,24 @@ export function Router({
 
   const routerContextValue = useMemo(
     () => ({
-      push: (url: string) => {
+      push: (url: string, options?: RouteFunctionOptions) => {
         history.pushState(null, "", url);
-        startTransition(() => {
+        runTransition(options?.useTransition ?? useTransition, () => {
           setPathname(removeTrailingSlash(location.pathname));
           setSearchParams(new ImmutableSearchParams(location.search));
           setHash(location.hash);
         });
       },
-      replace: (url: string) => {
+      replace: (url: string, options?: RouteFunctionOptions) => {
         history.replaceState(null, "", url);
-        startTransition(() => {
+        runTransition(options?.useTransition ?? useTransition, () => {
           setPathname(removeTrailingSlash(location.pathname));
           setSearchParams(new ImmutableSearchParams(location.search));
           setHash(location.hash);
         });
       },
     }),
-    [location, history]
+    [location, history, useTransition],
   );
 
   return (
