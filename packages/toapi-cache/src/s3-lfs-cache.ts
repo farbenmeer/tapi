@@ -93,11 +93,11 @@ export class S3LfsCache implements Cache {
     await this.base.set(input);
   }
 
-  async delete(tags: string[], meta?: { clientId?: string }) {
-    await this.invalidate(tags, meta);
+  delete(tags: string[], meta?: { clientId?: string }) {
+    return this.invalidate(tags, meta);
   }
-  async invalidate(tags: string[], meta?: { clientId?: string }) {
-    await this.base.invalidate(tags);
+  invalidate(tags: string[], meta?: { clientId?: string }) {
+    return this.base.invalidate(tags);
   }
   subscribe(callback: Subscription) {
     return this.base.subscribe(callback);
