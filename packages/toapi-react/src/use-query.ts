@@ -5,12 +5,13 @@ type ObservablePromise<T> = Promise<T> & Observable<T>;
 
 interface Options {
   startTransition?: typeof React.startTransition;
+  onStatusChange?(status: "loading" | "idle"): void;
 }
 
 export function useQuery<T>(
   // TODO remove the useless function-form in next major release
   query: ObservablePromise<T> | (() => ObservablePromise<T>),
-  { startTransition = React.startTransition }: Options = {},
+  { startTransition = React.startTransition, onStatusChange }: Options = {},
 ) {
   const observable = typeof query === "function" ? query() : query;
   const queryKey = observable.queryKey;
@@ -26,12 +27,18 @@ export function useQuery<T>(
     let active = true;
     const unsubscribe = observable.subscribe(async (next) => {
       try {
+        onStatusChange?.("loading");
         const value = await next;
         // A late update from a subscription we have already left behind must
         // not overwrite the current one.
-        if (active)
+        if (active) {
           startTransition(() => setState({ promise: next, queryKey, value }));
-      } catch {}
+        }
+      } finally {
+        if (active) {
+          onStatusChange?.("idle");
+        }
+      }
     });
     return () => {
       active = false;
