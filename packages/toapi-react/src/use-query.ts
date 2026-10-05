@@ -24,15 +24,14 @@ export function useQuery<T>(
 
   React.useEffect(() => {
     let active = true;
-    const unsubscribe = observable.subscribe((next) => {
-      startTransition(async () => {
-        try {
-          const value = await next;
-          // A late update from a subscription we have already left behind must
-          // not overwrite the current one.
-          if (active) setState({ promise: next, queryKey, value });
-        } catch {}
-      });
+    const unsubscribe = observable.subscribe(async (next) => {
+      try {
+        const value = await next;
+        // A late update from a subscription we have already left behind must
+        // not overwrite the current one.
+        if (active)
+          startTransition(() => setState({ promise: next, queryKey, value }));
+      } catch {}
     });
     return () => {
       active = false;
