@@ -1,5 +1,12 @@
 # @toapi/worker
 
+## 1.4.0
+
+### Patch Changes
+
+- Updated dependencies [b108495]
+  - @toapi/common@1.4.0
+
 ## 1.3.4
 
 ## 1.3.3
