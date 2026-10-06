@@ -28,7 +28,11 @@ export function buildObservable(
       if (invalidUrls.has(url)) {
         const { data } = request(options);
         // TODO in major release pass the finished data, not the promise here so subscribers don't need to bother with races.
-        return callback(data);
+        callback(data);
+        try {
+          // wait for the promise to resolve so revalidation handlers correctly await a fully revalidated state
+          await data;
+        } catch {}
       }
     });
   }
