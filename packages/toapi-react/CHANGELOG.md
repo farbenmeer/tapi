@@ -1,5 +1,18 @@
 # @toapi/react
 
+## 1.4.0
+
+### Minor Changes
+
+- b108495: - Do not wait for revalidations in transition
+  - Await revalidations correctly
+  - Serialize revalidation state updates
+
+### Patch Changes
+
+- Updated dependencies [b108495]
+  - @toapi/common@1.4.0
+
 ## 1.3.4
 
 ## 1.3.3

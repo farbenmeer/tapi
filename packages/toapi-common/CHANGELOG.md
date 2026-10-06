@@ -1,5 +1,13 @@
 # @toapi/common
 
+## 1.4.0
+
+### Minor Changes
+
+- b108495: - Do not wait for revalidations in transition
+  - Await revalidations correctly
+  - Serialize revalidation state updates
+
 ## 1.3.4
 
 ## 1.3.3

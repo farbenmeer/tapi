@@ -1,5 +1,17 @@
 # @toapi/server
 
+## 1.4.0
+
+### Minor Changes
+
+- 027a13f: add option to filter tags based on the revalidation stream request
+
+### Patch Changes
+
+- 8aca1e8: debounce and dedupe tags stream
+- Updated dependencies [b108495]
+  - @toapi/common@1.4.0
+
 ## 1.3.4
 
 ## 1.3.3
