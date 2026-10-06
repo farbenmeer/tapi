@@ -65,6 +65,7 @@ export function createFetchClient<
       },
       pubSub,
       cache,
+      logger: options.logger,
     });
   }
 
