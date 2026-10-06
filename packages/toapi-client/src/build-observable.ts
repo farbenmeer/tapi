@@ -27,7 +27,8 @@ export function buildObservable(
     return pubSub.subscribe(async (invalidUrls) => {
       if (invalidUrls.has(url)) {
         const { data } = request(options);
-        callback(data);
+        // TODO in major release pass the finished data, not the promise here so subscribers don't need to bother with races.
+        return callback(data);
       }
     });
   }
