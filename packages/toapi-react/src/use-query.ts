@@ -25,19 +25,22 @@ export function useQuery<T>(
 
   React.useEffect(() => {
     let active = true;
+    let emitted = 0;
+    let applied = 0;
     const unsubscribe = observable.subscribe(async (next) => {
+      const seq = ++emitted;
+      onStatusChange?.("loading");
       try {
-        onStatusChange?.("loading");
         const value = await next;
         // A late update from a subscription we have already left behind must
         // not overwrite the current one.
-        if (active) {
-          startTransition(() => setState({ promise: next, queryKey, value }));
-        }
+        if (!active || seq < applied) return;
+        applied = seq;
+        startTransition(() => setState({ promise: next, queryKey, value }));
       } finally {
-        if (active) {
-          onStatusChange?.("idle");
-        }
+        if (!active || seq < applied) return;
+        applied = seq;
+        onStatusChange?.("idle");
       }
     });
     return () => {
